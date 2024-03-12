@@ -38,5 +38,21 @@ brew install libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev pkg-config
 Then repeat 4th step.
 
 ## Building the Project
+1. **CMake**: We are using CMake to build the project. It isn't automated yet, so you have to choose your proper [VCPKG_TARGET_TRIPLET](CMakeLists.txt) value manually. 
+   You can find the list of triplets [here](https://vcpkg.io/en/getting-started.html). 
+   For example, if you are using MacOS, you can use the following command to build the project:
+```bash
+mkdir build
+cd build
+cmake ../
+make all
+./minecraft
+```
+
+or
+
+Green magic button in your IDE e.g. CLion.
+
+But for multiplatform development, I recommend using the terminal. WSL should works fine.
 
 
