@@ -1,16 +1,18 @@
-cmake_minimum_required(VERSION 3.27)
+cmake_minimum_required(VERSION 3.22)
 set(project_name "minecraft")
 project(${project_name})
 
 set(VCPKG_ROOT_DIR "./vcpkg")
 # Below variable should determine the target platform by itself, but it doesn't work sometimes, so choose yours.
-set(VCPKG_TARGET_TRIPLET "x64-osx")
+#set(VCPKG_TARGET_TRIPLET "x64-osx")
 #set(VCPKG_TARGET_TRIPLET "x64-windows")
-#set(VCPKG_TARGET_TRIPLET "x64-linux")
+set(VCPKG_TARGET_TRIPLET "x64-linux")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_PREFIX_PATH "${VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}/share/glm")
 set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}/share/glad")
+set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}/share/glfw3")
+
 
 find_package(OpenGL REQUIRED)
 find_package(glm CONFIG REQUIRED)

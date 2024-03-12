@@ -35,6 +35,12 @@ MacOS:
 ```bash
 brew install libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev pkg-config
 ```
+
+Ubuntu:
+```bash
+sudo apt install libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev pkg-config
+```
+
 Then repeat 4th step.
 
 ## Building the Project
@@ -55,4 +61,6 @@ Green magic button in your IDE e.g. CLion.
 
 But for multiplatform development, I recommend using the terminal. WSL should works fine.
 
+## Requirements
 
+cmake
