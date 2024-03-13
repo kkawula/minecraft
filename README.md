@@ -24,7 +24,7 @@ git clone --recursive --shallow-submodules https://github.com/taylor-swif/minecr
    vcpkg install glfw3 glew glad imgui
 
 ```bash
-./vcpkg/vcpkg install opengl glad glfw3 glm imgui
+./vcpkg/vcpkg install opengl glad glew glfw3 glm imgui
 ```
 ***WARNING***
 
