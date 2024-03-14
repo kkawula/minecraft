@@ -29,6 +29,12 @@ set(SOURCE_FILES
         src/world/Block.h
         src/world/BlockType.h
         src/world/Block.cpp
+        src/Game/Game.h
+        src/menu/Menu.h
+        src/Game/Game.cpp
+        src/menu/Menu.cpp
+        src/menu/Button.h
+        src/menu/Button.cpp
 )
 
 add_executable(${project_name} ${SOURCE_FILES})

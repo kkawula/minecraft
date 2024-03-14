@@ -3,13 +3,7 @@
 
 int main() {
     Window window(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE);
-
-    while (!window.shouldClose()) {
-
-
-        window.swapBuffers();
-        window.pollEvents();
-    }
+    window.run();
 
     return 0;
 }
