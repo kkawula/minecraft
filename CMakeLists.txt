@@ -25,6 +25,10 @@ find_package(GLEW REQUIRED)
 set(SOURCE_FILES
         src/main.cpp
         src/window/window.cpp
+        src/config.h
+        src/world/Block.h
+        src/world/BlockType.h
+        src/world/Block.cpp
 )
 
 add_executable(${project_name} ${SOURCE_FILES})
