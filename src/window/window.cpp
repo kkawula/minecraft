@@ -1,7 +1,6 @@
 #include <iostream>
 #include "window.h"
-
-Window::Window(int width, int height, const char* title) : menu(this) {
+Window::Window(int width, int height, const char* title) : menu(this), game(this) {
     if (!glfwInit()) {
         return;
     }
@@ -27,6 +26,9 @@ void Window::run() {
 
 
     while (!glfwWindowShouldClose(window)) {
+
+        glClear(GL_COLOR_BUFFER_BIT);
+
         if (menu.isActive()) {
             menu.update();
             menu.render();
@@ -38,18 +40,25 @@ void Window::run() {
     }
 }
 
-GLFWwindow* Window::getGLFWwindow() {
-    return window;
-}
-
-Menu& Window::getMenu() {
-    return menu;
-}
-
 void Window::mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
     Window* windowObj = static_cast<Window*>(glfwGetWindowUserPointer(window));
+    double xpos, ypos;
+    glfwGetCursorPos(window, &xpos, &ypos);
+
     if (windowObj) {
-        // Wywołanie metody mouse_button_callback na obiekcie Window
-        windowObj->menu.handleMouseClick(10, 10);
+        if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+            windowObj->menu.handleMouseClick(xpos, ypos);
     }
+}
+
+int Window::getWidth() {
+    int width, height;
+    glfwGetWindowSize(window, &width, &height);
+    return width;
+}
+
+int Window::getHeight() {
+    int width, height;
+    glfwGetWindowSize(window, &width, &height);
+    return height;
 }

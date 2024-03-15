@@ -1,15 +1,17 @@
 #ifndef BUTTON_H
 #define BUTTON_H
 
+#include <GLFW/glfw3.h>
+
 class Button {
 public:
-    Button(int x, int y, int width, int height);
-    bool isClicked(int mouseX, int mouseY) const;
-    void render() const;
+    Button(GLfloat x, GLfloat y, GLfloat width, GLfloat height);
+    void render();
+    bool isClicked(double xpos, double ypos);
 
 private:
-    int x, y;
-    int width, height;
+    GLfloat x, y;
+    GLfloat width, height;
 };
 
 #endif // BUTTON_H

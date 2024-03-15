@@ -10,14 +10,16 @@ public:
     Window(int width, int height, const char* title);
     ~Window();
     void run();
-    Menu& getMenu();
-    GLFWwindow* getGLFWwindow();
-
+    int getWidth();
+    int getHeight();
+    void setActiveGame();
     static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 
 private:
     GLFWwindow* window;
     Menu menu;
+    Game game;
+
 };
 
 #endif
