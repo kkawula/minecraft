@@ -1,14 +1,15 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include "../window/WindowState.h"
+
 class Window;
 
-class Game {
+class Game : public WindowState {
 public:
     Game(Window* window);
-    void update();
-    void render();
-    bool isActive() const;
+    void update() override;
+    void render() override;
 
 private:
     Window* window;

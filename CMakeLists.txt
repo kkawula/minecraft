@@ -24,7 +24,7 @@ find_package(GLEW REQUIRED)
 
 set(SOURCE_FILES
         src/main.cpp
-        src/window/window.cpp
+        src/window/Window.cpp
         src/config.h
         src/world/Block.h
         src/world/BlockType.h
@@ -35,6 +35,7 @@ set(SOURCE_FILES
         src/menu/Menu.cpp
         src/menu/Button.h
         src/menu/Button.cpp
+        src/window/WindowState.h
 )
 
 add_executable(${project_name} ${SOURCE_FILES})

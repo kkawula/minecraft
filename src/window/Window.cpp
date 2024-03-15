@@ -1,11 +1,13 @@
 #include <iostream>
-#include "window.h"
+#include "Window.h"
 Window::Window(int width, int height, const char* title) : menu(this), game(this) {
     if (!glfwInit()) {
         return;
     }
 
     window = glfwCreateWindow(width, height, title, nullptr, nullptr);
+    this->currentState = &menu;
+
     if (!window) {
         glfwTerminate();
         return;
@@ -29,12 +31,9 @@ void Window::run() {
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        if (menu.isActive()) {
-            menu.update();
-            menu.render();
-        }else {
-            std::cout << "Error: no active window" << std::endl;
-        }
+        currentState->update();
+        currentState->render();
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -49,6 +48,16 @@ void Window::mouse_button_callback(GLFWwindow* window, int button, int action, i
         if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
             windowObj->menu.handleMouseClick(xpos, ypos);
     }
+}
+
+void Window::changeToMenu() {
+    currentState = &menu;
+    std::cout << "Changed to menu" << std::endl;
+}
+
+void Window::changeToGame() {
+    currentState = &game;
+    std::cout << "Changed to game" << std::endl;
 }
 
 int Window::getWidth() {

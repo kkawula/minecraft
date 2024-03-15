@@ -6,8 +6,8 @@
 class Button {
 public:
     Button(GLfloat x, GLfloat y, GLfloat width, GLfloat height);
-    void render();
-    bool isClicked(double xpos, double ypos);
+    void render() const;
+    bool isClicked(double xpos, double ypos) const;
 
 private:
     GLfloat x, y;
