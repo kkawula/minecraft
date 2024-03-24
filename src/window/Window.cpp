@@ -17,6 +17,8 @@ Window::Window(int width, int height, const char* title) : menu(this), game(this
     glfwSetWindowUserPointer(window, this);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
 
+    glViewport(0, 0, width, height);
+    glEnable(GL_DEPTH_TEST);
 }
 
 Window::~Window() {
@@ -25,11 +27,8 @@ Window::~Window() {
 }
 
 void Window::run() {
-
-
     while (!glfwWindowShouldClose(window)) {
-
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         currentState->update();
         currentState->render();
@@ -70,4 +69,8 @@ int Window::getHeight() {
     int width, height;
     glfwGetWindowSize(window, &width, &height);
     return height;
+}
+
+GLFWwindow *Window::getWindow() {
+    return window;
 }

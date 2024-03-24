@@ -16,6 +16,7 @@ public:
     int getWidth();
     int getHeight();
     static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+    GLFWwindow* getWindow();
 
 private:
     GLFWwindow* window;
