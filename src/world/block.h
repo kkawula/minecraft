@@ -6,11 +6,9 @@
 #define MINECRAFT_BLOCK_H
 
 
-
-class block {
+class Block {
 
 };
-
 
 
 #endif //MINECRAFT_BLOCK_H

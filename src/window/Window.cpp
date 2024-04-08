@@ -17,7 +17,7 @@ Window::Window(int width, int height, const char* title) : menu(this), game(this
     glfwSetWindowUserPointer(window, this);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
 
-    glViewport(0, 0, width, height);
+//    glViewport(0, 0, width, height); TODO: troche buguje dzialanie na mac'u ale do przezycia, musze ogarnac co to robi
     glEnable(GL_DEPTH_TEST);
 }
 

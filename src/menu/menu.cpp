@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Menu.h"
+#include "menu.h"
 #include "../window/Window.h"
 
 Menu::Menu(Window* window) : window(window), startButton(-0.25f, -0.25f, 0.5f, 0.5f) {
@@ -11,7 +11,7 @@ void Menu::handleMouseClick(double xpos, double ypos) {
 
     // normalized to [-1, 1]
     double normalizedX = 2 * (xpos - window->getWidth()/2.0) / window->getWidth();
-    double normalizedY = 2*  (ypos - window->getHeight()/2.0) / window->getHeight();
+    double normalizedY = 2 * (ypos - window->getHeight()/2.0) / window->getHeight();
 
     if (startButton.isClicked(normalizedX, normalizedY)) {
         std::cout << "Start button was clicked." << std::endl;

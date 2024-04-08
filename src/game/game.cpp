@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Game.h"
+#include "game.h"
 #include "../window/Window.h"
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -14,23 +14,32 @@ Game::Game(Window* window) {
 }
 
 void Game::update() {
-    if (glfwGetKey(window->getWindow(), GLFW_KEY_W) == GLFW_PRESS) {
-        cameraPosition.z -= 0.1f;
-    }
-    if (glfwGetKey(window->getWindow(), GLFW_KEY_S) == GLFW_PRESS) {
-        cameraPosition.z += 0.1f;
-    }
-    if (glfwGetKey(window->getWindow(), GLFW_KEY_A) == GLFW_PRESS) {
-        cameraPosition.x -= 0.1f;
-    }
-    if (glfwGetKey(window->getWindow(), GLFW_KEY_D) == GLFW_PRESS) {
-        cameraPosition.x += 0.1f;
-    }
-    if (glfwGetKey(window->getWindow(), GLFW_KEY_SPACE) == GLFW_PRESS) {
-        cameraPosition.y += 0.1f;
-    }
-    if (glfwGetKey(window->getWindow(), GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
-        cameraPosition.y -= 0.1f;
+//    if (glfwGetKey(window->getWindow(), GLFW_KEY_W) == GLFW_PRESS) {
+//        cameraPosition.z -= 0.1f;
+//    }
+//    if (glfwGetKey(window->getWindow(), GLFW_KEY_S) == GLFW_PRESS) {
+//        cameraPosition.z += 0.1f;
+//
+//    }
+//    if (glfwGetKey(window->getWindow(), GLFW_KEY_A) == GLFW_PRESS) {
+//        cameraPosition.x -= 0.1f;
+//    }
+//    if (glfwGetKey(window->getWindow(), GLFW_KEY_D) == GLFW_PRESS) {
+//        cameraPosition.x += 0.1f;
+//    }
+//    if (glfwGetKey(window->getWindow(), GLFW_KEY_SPACE) == GLFW_PRESS) {
+//        cameraPosition.y += 0.1f;
+//    }
+//    if (glfwGetKey(window->getWindow(), GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
+//        cameraPosition.y -= 0.1f;
+//    }
+    if (glfwGetKey(window->getWindow(), GLFW_KEY_W) == GLFW_PRESS ||
+        glfwGetKey(window->getWindow(), GLFW_KEY_S) == GLFW_PRESS ||
+        glfwGetKey(window->getWindow(), GLFW_KEY_A) == GLFW_PRESS ||
+        glfwGetKey(window->getWindow(), GLFW_KEY_D) == GLFW_PRESS ||
+        glfwGetKey(window->getWindow(), GLFW_KEY_SPACE) == GLFW_PRESS ||
+        glfwGetKey(window->getWindow(), GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
+        camera.processKeyboard(glfwGetKey(window->getWindow(), GLFW_KEY_W));
     }
 }
 

@@ -1,16 +1,18 @@
-//
-// Created by Kamil on 05/04/2024.
-//
+#ifndef CAMERA_H
+#define CAMERA_H
 
-#ifndef MINECRAFT_CAMERA_H
-#define MINECRAFT_CAMERA_H
+#include <glm/glm.hpp>
 
+class Camera {
+public:
+    Camera();
 
+    void processKeyboard(int key);
 
-class camera {
+    glm::vec3 getPosition();
 
+private:
+    glm::vec3 position = glm::vec3(0.0f, 0.0f, 5.0f);
 };
 
-
-
-#endif //MINECRAFT_CAMERA_H
+#endif // CAMERA_H

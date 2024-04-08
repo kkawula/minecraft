@@ -2,8 +2,8 @@
 #define WINDOW_H
 
 #include <GLFW/glfw3.h>
-#include "../menu/Menu.h"
-#include "../Game/Game.h"
+#include "../menu/menu.h"
+#include "../game/game.h"
 
 class Window {
 public:

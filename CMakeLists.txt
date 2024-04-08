@@ -26,16 +26,17 @@ set(SOURCE_FILES
         src/main.cpp
         src/window/Window.cpp
         src/config.h
-        src/world/Block.h
-        src/world/BlockType.h
-        src/world/Block.cpp
-        src/Game/Game.h
-        src/menu/Menu.h
-        src/Game/Game.cpp
+        src/game/game.h
+        src/menu/menu.h
+        src/game/game.cpp
         src/menu/Menu.cpp
         src/menu/Button.h
-        src/menu/Button.cpp
+        src/menu/button.cpp
         src/window/WindowState.h
+        src/game/camera.h
+        src/game/camera.cpp
+        src/world/block.h
+        src/world/block.cpp
 )
 
 add_executable(${project_name} ${SOURCE_FILES})
