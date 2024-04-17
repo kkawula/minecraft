@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Window.h"
+#include "window.h"
 Window::Window(int width, int height, const char* title) : menu(this), game(this) {
     if (!glfwInit()) {
         return;

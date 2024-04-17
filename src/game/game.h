@@ -1,7 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "../window/WindowState.h"
+#include "../window/window_state.h"
 #include "./camera.h"
 
 class Window;

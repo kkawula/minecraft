@@ -1,8 +1,8 @@
 #ifndef MENU_H
 #define MENU_H
 
-#include "Button.h"
-#include "../window/WindowState.h"
+#include "button.h"
+#include "../window/window_state.h"
 
 class Window;
 

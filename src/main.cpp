@@ -1,5 +1,5 @@
 #include "config.h"
-#include "window/Window.h"
+#include "window/window.h"
 
 int main() {
     Window window(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE);

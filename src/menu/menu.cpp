@@ -1,6 +1,6 @@
 #include <iostream>
 #include "menu.h"
-#include "../window/Window.h"
+#include "../window/window.h"
 
 Menu::Menu(Window* window) : window(window), startButton(-0.25f, -0.25f, 0.5f, 0.5f) {
     std::cout << "menu created" << std::endl;
