@@ -35,9 +35,9 @@ set(SOURCE_FILES
         src/menu/Menu.cpp
         src/menu/Button.h
         src/menu/button.cpp
-        src/window/window_state.h
         src/game/camera.h
         src/game/camera.cpp
+        src/Game.h
 )
 
 add_executable(${project_name} ${SOURCE_FILES})
