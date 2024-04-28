@@ -23,6 +23,7 @@
 #include "VertexBuffer.h"
 #include "VertexArray.h"
 #include "Window.h"
+#include "Renderer.h"
 
 // Properties
 const GLuint WIDTH = 800, HEIGHT = 600;
@@ -155,6 +156,8 @@ int main( )
 
     Texture texture("/Users/Kamil/Documents/Studia/pomidor/src/res/images/image1.jpg");
 
+    Renderer renderer("/Users/Kamil/Documents/Studia/pomidor/src/res/shaders/core.vs", "/Users/Kamil/Documents/Studia/pomidor/src/res/shaders/core.frag", "/Users/Kamil/Documents/Studia/pomidor/src/res/images/image1.jpg");
+
     // Game loop
     while (!window.ShouldClose()) {
         GLfloat currentFrame = glfwGetTime();
@@ -167,40 +170,41 @@ int main( )
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Activate the shader before setting uniforms
-        ourShader.Use();
-
-        // Bind Texture using the texture class
-        texture.Bind(0);  // Bind to texture unit 0
-        glUniform1i(glGetUniformLocation(ourShader.Program, "ourTexture1"), 0);
-
-        glm::mat4 projection = glm::perspective(camera.GetZoom(), (GLfloat)SCREEN_WIDTH / (GLfloat)SCREEN_HEIGHT, 0.1f, 1000.0f);
-        glm::mat4 view = camera.GetViewMatrix();
-
-        GLint modelLoc = glGetUniformLocation(ourShader.Program, "model");
-        GLint viewLoc = glGetUniformLocation(ourShader.Program, "view");
-        GLint projLoc = glGetUniformLocation(ourShader.Program, "projection");
-
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
-        // Bind VAO
-        va.Bind();
-        for (GLuint i = 0; i < 10; i++) {
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, cubePositions[i]);
-            GLfloat angle = 20.0f * 0;  // This seems like it was meant to be dynamic
-            model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
-
-            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
-
-        // Unbind VAO
-        va.Unbind();
-
-        // Unbind texture when done, to prevent accidentally using this texture elsewhere
-        texture.Unbind();
+//        // Activate the shader before setting uniforms
+//        ourShader.Use();
+//
+//        // Bind Texture using the texture class
+//        texture.Bind(0);  // Bind to texture unit 0
+//        glUniform1i(glGetUniformLocation(ourShader.Program, "ourTexture1"), 0);
+//
+//        glm::mat4 projection = glm::perspective(camera.GetZoom(), (GLfloat)SCREEN_WIDTH / (GLfloat)SCREEN_HEIGHT, 0.1f, 1000.0f);
+//        glm::mat4 view = camera.GetViewMatrix();
+//
+//        GLint modelLoc = glGetUniformLocation(ourShader.Program, "model");
+//        GLint viewLoc = glGetUniformLocation(ourShader.Program, "view");
+//        GLint projLoc = glGetUniformLocation(ourShader.Program, "projection");
+//
+//        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+//        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+//
+//        // Bind VAO
+//        va.Bind();
+//        for (GLuint i = 0; i < 10; i++) {
+//            glm::mat4 model = glm::mat4(1.0f);
+//            model = glm::translate(model, cubePositions[i]);
+//            GLfloat angle = 20.0f * 0;  // This seems like it was meant to be dynamic
+//            model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
+//
+//            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+//            glDrawArrays(GL_TRIANGLES, 0, 36);
+//        }
+//
+//        // Unbind VAO
+//        va.Unbind();
+//
+//        // Unbind texture when done, to prevent accidentally using this texture elsewhere
+//        texture.Unbind();
+        renderer.Render(camera);
 
         // Swap buffers
         window.swapBuffers();

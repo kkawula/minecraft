@@ -11,6 +11,7 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "World.h"
+#include "Camera.h"
 
 
 class Renderer {
@@ -20,14 +21,11 @@ private:
     GLuint VAO, VBO;
 
 public:
-    Renderer(const std::string& vertexPath, const std::string& fragmentPath, const std::string& texturePath);
+    Renderer(const GLchar * vertexPath, const GLchar * fragmentPath, const std::string& texturePath);
     ~Renderer();
 
-    void Render(const World& world, const glm::mat4& view, const glm::mat4& projection);
+    void Render( Camera& camera);
     void SetupMesh();
 };
 
 #endif
-
-
-#endif //MINECRAFT_RENDERER_H
