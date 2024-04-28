@@ -32,6 +32,14 @@ set(SOURCE_FILES
         src/VertexBuffer.h
         src/Window.cpp
         src/Window.h
+        src/Renderer.cpp
+        src/Renderer.h
+        src/World.cpp
+        src/World.h
+        src/Block.cpp
+        src/Block.h
+        src/Chunk.cpp
+        src/Chunk.h
 )
 
 add_executable(${project_name} ${SOURCE_FILES})
