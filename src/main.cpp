@@ -19,6 +19,10 @@
 // Other Libs
 #include "SOIL2/SOIL2.h"
 
+#include "Texture.h"
+#include "VertexBuffer.h"
+#include "VertexArray.h"
+
 // Properties
 const GLuint WIDTH = 800, HEIGHT = 600;
 int SCREEN_WIDTH, SCREEN_HEIGHT;
@@ -50,7 +54,7 @@ int main( )
     glfwWindowHint( GLFW_RESIZABLE, GL_FALSE );
     glfwWindowHint( GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE );
     
-    GLFWwindow* window = glfwCreateWindow( WIDTH, HEIGHT, "LearnOpenGL", nullptr, nullptr ); // Windowed
+    GLFWwindow* window = glfwCreateWindow( WIDTH, HEIGHT, "Minecraft", nullptr, nullptr ); // Windowed
     
     if ( nullptr == window )
     {
@@ -96,41 +100,44 @@ int main( )
     // Set up our vertex data (and buffer(s)) and attribute pointers
     GLfloat vertices[] =
     {
+            //front
+            // x     y     z     u     v
         -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
         -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
         -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-        
+        //back
         -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
         -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
         -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        
+        //left
+        -0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+
+        // right
+        0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+        0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        // bottom
         -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
         -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
         -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        
+        // top
         -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
@@ -152,107 +159,73 @@ int main( )
         glm::vec3( 1.5f, 0.2f, -1.5f ),
         glm::vec3( -1.3f, 1.0f, -1.5f )
     };
-    
-    GLuint VBO, VAO;
-    glGenVertexArrays( 1, &VAO );
-    glGenBuffers( 1, &VBO );
-    // Bind our Vertex Array Object first, then bind and set our buffers and pointers.
-    glBindVertexArray( VAO );
-    
-    glBindBuffer( GL_ARRAY_BUFFER, VBO );
-    glBufferData( GL_ARRAY_BUFFER, sizeof( vertices ), vertices, GL_STATIC_DRAW );
-    
-    // Position attribute
-    glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof( GLfloat ), ( GLvoid * )0 );
-    glEnableVertexAttribArray( 0 );
-    // TexCoord attribute
-    glVertexAttribPointer( 2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof( GLfloat ), ( GLvoid * )( 3 * sizeof( GLfloat ) ) );
-    glEnableVertexAttribArray( 2 );
-    
-    glBindVertexArray( 0 ); // Unbind VAO
-    
-    // Load and create a texture
-    GLuint texture;
-    // --== TEXTURE == --
-    glGenTextures( 1, &texture );
-    glBindTexture( GL_TEXTURE_2D, texture ); // All upcoming GL_TEXTURE_2D operations now have effect on our texture object
-    // Set our texture parameters
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-    // Set texture filtering
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    // Load, create texture and generate mipmaps
-    int width, height;
-    unsigned char *image = SOIL_load_image( "/Users/Kamil/Documents/Studia/pomidor/src/res/images/image1.jpg", &width, &height, 0, SOIL_LOAD_RGB );
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image );
-    glGenerateMipmap( GL_TEXTURE_2D );
-    SOIL_free_image_data( image );
-    glBindTexture( GL_TEXTURE_2D, 0 ); // Unbind texture when done, so we won't accidentily mess up our texture.
-    
+
+
+    VertexArray va;
+    VertexBuffer vb(vertices, sizeof(vertices));
+
+    va.Bind();
+    vb.Bind();
+
+    va.AddBuffer(vb, 0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
+    va.AddBuffer(vb, 2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+
+    va.Unbind();
+    vb.Unbind();
+
+    Texture texture("/Users/Kamil/Documents/Studia/pomidor/src/res/images/image1.jpg");
+
     // Game loop
-    while( !glfwWindowShouldClose( window ) )
-    {
-        // Set frame time
-        GLfloat currentFrame = glfwGetTime( );
+    while (!glfwWindowShouldClose(window)) {
+        GLfloat currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
-        
-        // Check and call events
-        glfwPollEvents( );
-        DoMovement( );
-        
-        // Clear the colorbuffer
-        glClearColor( 0.2f, 0.3f, 0.3f, 1.0f );
-        glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-        
-        // Draw our first triangle
-        ourShader.Use( );
-        
-        // Bind Textures using texture units
-        glActiveTexture( GL_TEXTURE0 );
-        glBindTexture( GL_TEXTURE_2D, texture );
-        glUniform1i( glGetUniformLocation( ourShader.Program, "ourTexture1" ), 0 );
-        
-        glm::mat4 projection = glm::mat4( 1.0f );
-        projection = glm::perspective(camera.GetZoom( ), (GLfloat)SCREEN_WIDTH/(GLfloat)SCREEN_HEIGHT, 0.1f, 1000.0f);
-        
-        // Create camera transformation
-        glm::mat4 view = glm::mat4( 1.0f );
-        view = camera.GetViewMatrix( );
 
-        // Get the uniform locations
-        GLint modelLoc = glGetUniformLocation( ourShader.Program, "model" );
-        GLint viewLoc = glGetUniformLocation( ourShader.Program, "view" );
-        GLint projLoc = glGetUniformLocation( ourShader.Program, "projection" );
-        
-        // Pass the matrices to the shader
-        glUniformMatrix4fv( viewLoc, 1, GL_FALSE, glm::value_ptr( view ) );
-        glUniformMatrix4fv( projLoc, 1, GL_FALSE, glm::value_ptr( projection ) );
-        
-        glBindVertexArray( VAO );
-        
-        for( GLuint i = 0; i < 10; i++ )
-        {
-            // Calculate the model matrix for each object and pass it to shader before drawing
-            glm::mat4 model = glm::mat4( 1.0f );
-            model = glm::translate( model, cubePositions[i] );
-            GLfloat angle = 20.0f * 0;
-            model = glm::rotate(model, angle, glm::vec3( 1.0f, 0.3f, 0.5f ) );
-            glUniformMatrix4fv( modelLoc, 1, GL_FALSE, glm::value_ptr( model ) );
-            
-            glDrawArrays( GL_TRIANGLES, 0, 36 );
+        glfwPollEvents();
+        DoMovement();
+
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // Activate the shader before setting uniforms
+        ourShader.Use();
+
+        // Bind Texture using the texture class
+        texture.Bind(0);  // Bind to texture unit 0
+        glUniform1i(glGetUniformLocation(ourShader.Program, "ourTexture1"), 0);
+
+        glm::mat4 projection = glm::perspective(camera.GetZoom(), (GLfloat)SCREEN_WIDTH / (GLfloat)SCREEN_HEIGHT, 0.1f, 1000.0f);
+        glm::mat4 view = camera.GetViewMatrix();
+
+        GLint modelLoc = glGetUniformLocation(ourShader.Program, "model");
+        GLint viewLoc = glGetUniformLocation(ourShader.Program, "view");
+        GLint projLoc = glGetUniformLocation(ourShader.Program, "projection");
+
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+        // Bind VAO
+        va.Bind();
+        for (GLuint i = 0; i < 10; i++) {
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, cubePositions[i]);
+            GLfloat angle = 20.0f * 0;  // This seems like it was meant to be dynamic
+            model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
+
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+            glDrawArrays(GL_TRIANGLES, 0, 36);
         }
-        
-        glBindVertexArray( 0 );
-        
-        // Swap the buffers
-        glfwSwapBuffers( window );
+
+        // Unbind VAO
+        va.Unbind();
+
+        // Unbind texture when done, to prevent accidentally using this texture elsewhere
+        texture.Unbind();
+
+        // Swap buffers
+        glfwSwapBuffers(window);
     }
-    
-    // Properly de-allocate all resources once they've outlived their purpose
-    glDeleteVertexArrays( 1, &VAO );
-    glDeleteBuffers( 1, &VBO );
+
     glfwTerminate( );
     
     return EXIT_SUCCESS;

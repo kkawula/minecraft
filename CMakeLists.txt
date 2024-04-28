@@ -24,20 +24,12 @@ find_package(GLEW REQUIRED)
 find_package(soil2 CONFIG REQUIRED)
 
 
-
 set(SOURCE_FILES
         src/main.cpp
-        src/window/window.cpp
-        src/config.h
-        src/game/game.h
-        src/menu/menu.h
-        src/game/game.cpp
-        src/menu/Menu.cpp
-        src/menu/Button.h
-        src/menu/button.cpp
-        src/game/camera.h
-        src/game/camera.cpp
-        src/Game.h
+        src/stb_image.h
+        src/Texture.cpp
+        src/VertexArray.h
+        src/VertexBuffer.h
 )
 
 add_executable(${project_name} ${SOURCE_FILES})
