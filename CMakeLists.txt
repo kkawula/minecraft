@@ -14,14 +14,12 @@ set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${VCPKG_ROOT_DIR}/installed/${VCPKG_
 set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}/share/glad")
 set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}/share/glfw3")
 set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}/share/glew")
-set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}/share/soil2")
 
 
 find_package(OpenGL REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(GLEW REQUIRED)
-find_package(soil2 CONFIG REQUIRED)
 
 
 set(SOURCE_FILES
@@ -57,7 +55,6 @@ target_link_libraries(${project_name} PRIVATE glm::glm)
 target_link_libraries(${project_name} PRIVATE glfw)
 target_link_libraries(${project_name} PRIVATE glad)
 target_link_libraries(${project_name} PRIVATE GLEW::GLEW)
-target_link_libraries(${project_name} PRIVATE soil2)
 
 
 
