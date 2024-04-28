@@ -12,6 +12,8 @@
 #include "Texture.h"
 #include "World.h"
 #include "Camera.h"
+#include "VertexArray.h"
+#include "VertexBuffer.h"
 
 
 class Renderer {
@@ -19,6 +21,7 @@ private:
     Shader shader;
     Texture texture;
     GLuint VAO, VBO;
+    VertexArray va;
 
 public:
     Renderer(const GLchar * vertexPath, const GLchar * fragmentPath, const std::string& texturePath);

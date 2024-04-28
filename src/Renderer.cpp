@@ -6,8 +6,6 @@ Renderer::Renderer(const GLchar *vertexPath, const GLchar *fragmentPath, const s
 }
 
 Renderer::~Renderer() {
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
 }
 
 void Renderer::SetupMesh() {
@@ -60,22 +58,17 @@ void Renderer::SetupMesh() {
             };
 
 
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
+//    VertexArray va; moved to constructor
+    VertexBuffer vb(vertices, sizeof(vertices));
 
-    glBindVertexArray(VAO);
+    va.Bind();
+    vb.Bind();
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    va.AddBuffer(vb, 0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
+    va.AddBuffer(vb, 2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
 
-    // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)0);
-    glEnableVertexAttribArray(0);
-    // texture coord attribute
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(2);
-
-    glBindVertexArray(0);
+    va.Unbind();
+    vb.Unbind();
 }
 
 void Renderer::Render( Camera& camera) {
@@ -93,7 +86,7 @@ void Renderer::Render( Camera& camera) {
                     glm::vec3( 1.3f, -2.0f, -2.5f ),
                     glm::vec3( 1.5f, 2.0f, -2.5f ),
                     glm::vec3( 1.5f, 0.2f, -1.5f ),
-                    glm::vec3( -1.3f, 1.0f, -1.5f )
+                    glm::vec3( -1.3, 1.0f, -1.5f )
             };
     // Bind Texture using the texture class
     texture.Bind(0);  // Bind to texture unit 0
@@ -110,7 +103,7 @@ void Renderer::Render( Camera& camera) {
     glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
     // Bind VAO
-    glBindVertexArray(VAO);
+    va.Bind();
     for (GLuint i = 0; i < 10; i++) {
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, cubePositions[i]);
@@ -121,6 +114,5 @@ void Renderer::Render( Camera& camera) {
         glDrawArrays(GL_TRIANGLES, 0, 36);
     }
 
-    glBindVertexArray(0);
     texture.Unbind();
 }
