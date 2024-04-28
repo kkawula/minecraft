@@ -101,6 +101,7 @@ void Renderer::Render(World &world, Camera& camera) {
 //                    GLfloat angle = 20.0f * 0;  // This seems like it was meant to be dynamic
 //                    model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
                     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+                    glUniform1i(glGetUniformLocation(shader.Program, "blockType"), block.GetType());
                     glDrawArrays(GL_TRIANGLES, 0, 36);
                 }
             }
