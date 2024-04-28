@@ -7,7 +7,20 @@
 
 
 class Block {
+private:
+    bool isSolid;
+    int type;
 
+public:
+    Block(int type = 0, bool solid = true) : type(type), isSolid(solid) {}
+
+    bool IsSolid() const {
+        return isSolid;
+    }
+
+    int GetType() const {
+        return type;
+    }
 };
 
 

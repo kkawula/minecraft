@@ -20,14 +20,13 @@ class Renderer {
 private:
     Shader shader;
     Texture texture;
-    GLuint VAO, VBO;
     VertexArray va;
 
 public:
     Renderer(const GLchar * vertexPath, const GLchar * fragmentPath, const std::string& texturePath);
     ~Renderer();
 
-    void Render( Camera& camera);
+    void Render(World& world, Camera& camera);
     void SetupMesh();
 };
 

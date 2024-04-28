@@ -1,5 +1,12 @@
-//
-// Created by Kamil on 28/04/2024.
-//
-
 #include "Chunk.h"
+
+Chunk::Chunk(){
+
+    for (int x = 0; x < CHUNK_SIZE; ++x) {
+        for (int y = 0; y < CHUNK_HEIGHT; ++y) {
+            for (int z = 0; z < CHUNK_SIZE; ++z) {
+                blocks[x][y][z] = Block();
+            }
+        }
+    }
+}

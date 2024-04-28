@@ -157,7 +157,7 @@ int main( )
     Texture texture("/Users/Kamil/Documents/Studia/pomidor/src/res/images/image1.jpg");
 
     Renderer renderer("/Users/Kamil/Documents/Studia/pomidor/src/res/shaders/core.vs", "/Users/Kamil/Documents/Studia/pomidor/src/res/shaders/core.frag", "/Users/Kamil/Documents/Studia/pomidor/src/res/images/image1.jpg");
-
+    World world;
     // Game loop
     while (!window.ShouldClose()) {
         GLfloat currentFrame = glfwGetTime();
@@ -204,7 +204,7 @@ int main( )
 //
 //        // Unbind texture when done, to prevent accidentally using this texture elsewhere
 //        texture.Unbind();
-        renderer.Render(camera);
+        renderer.Render(world, camera);
 
         // Swap buffers
         window.swapBuffers();

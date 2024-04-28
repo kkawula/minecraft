@@ -10,52 +10,52 @@ Renderer::~Renderer() {
 
 void Renderer::SetupMesh() {
     GLfloat vertices[] =
-            {
-                    //front
-                    // x     y     z     u     v
-                    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-                    0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-                    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-                    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-                    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-                    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-                    //back
-                    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-                    0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-                    0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-                    0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-                    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-                    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-                    //left
-                    -0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-                    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-                    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-                    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-                    -0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-                    -0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        {
+            //front
+            // x     y     z     u     v
+            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+            0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+            //back
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+            0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+            0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+            0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+            //left
+            -0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+            -0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+            -0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
 
-                    // right
-                    0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-                    0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-                    0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-                    0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-                    0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-                    0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-                    // bottom
-                    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-                    0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-                    0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-                    0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-                    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-                    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-                    // top
-                    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-                    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-                    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-                    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-                    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-                    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-            };
+            // right
+            0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+            0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+            0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+            0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+            0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+            0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+            // bottom
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+            0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+            0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+            0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+            // top
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+        };
 
 
 //    VertexArray va; moved to constructor
@@ -71,24 +71,10 @@ void Renderer::SetupMesh() {
     vb.Unbind();
 }
 
-void Renderer::Render( Camera& camera) {
+void Renderer::Render(World &world, Camera& camera) {
     shader.Use();
     texture.Bind();
 
-    glm::vec3 cubePositions[] =
-            {
-                    glm::vec3( 0.0f, 0.0f, 0.0f ),
-                    glm::vec3( 2.0f, 5.0f, -15.0f ),
-                    glm::vec3( -1.5f, -2.2f, -2.5f ),
-                    glm::vec3( -3.8f, -2.0f, -12.3f ),
-                    glm::vec3( 2.4f, -0.4f, -3.5f ),
-                    glm::vec3( -1.7f, 3.0f, -7.5f ),
-                    glm::vec3( 1.3f, -2.0f, -2.5f ),
-                    glm::vec3( 1.5f, 2.0f, -2.5f ),
-                    glm::vec3( 1.5f, 0.2f, -1.5f ),
-                    glm::vec3( -1.3, 1.0f, -1.5f )
-            };
-    // Bind Texture using the texture class
     texture.Bind(0);  // Bind to texture unit 0
     glUniform1i(glGetUniformLocation(shader.Program, "ourTexture1"), 0);
 
@@ -104,14 +90,21 @@ void Renderer::Render( Camera& camera) {
 
     // Bind VAO
     va.Bind();
-    for (GLuint i = 0; i < 10; i++) {
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, cubePositions[i]);
-        GLfloat angle = 20.0f * 0;  // This seems like it was meant to be dynamic
-        model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
+    for (const auto& entry : world.getChunks()) {
+        for (int x = 0; x < Chunk::CHUNK_SIZE; ++x) {
+            for (int y = 0; y < Chunk::CHUNK_HEIGHT; ++y) {
+                for (int z = 0; z < Chunk::CHUNK_SIZE; ++z) {
+                    const Block& block = entry.second.GetBlock(x, y, z);
+                    if (!block.IsSolid()) continue;
 
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+                    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(entry.first.first * Chunk::CHUNK_SIZE + x, y,  entry.first.second * Chunk::CHUNK_SIZE  + z));
+//                    GLfloat angle = 20.0f * 0;  // This seems like it was meant to be dynamic
+//                    model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
+                    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+                    glDrawArrays(GL_TRIANGLES, 0, 36);
+                }
+            }
+        }
     }
 
     texture.Unbind();
