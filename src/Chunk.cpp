@@ -1,5 +1,6 @@
 #include "Chunk.h"
 #include <ctime>
+#include <cstdlib>
 
 Chunk::Chunk(){
     srand( (unsigned)time(NULL) );

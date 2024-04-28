@@ -1,7 +1,7 @@
 #include <iostream>
 #include "Texture.h"
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include "libs/stb_image.h"
 
 Texture::Texture(const std::string& path)
         : textureID(0), width(0), height(0), data(nullptr) {
