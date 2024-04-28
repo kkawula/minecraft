@@ -26,10 +26,12 @@ find_package(soil2 CONFIG REQUIRED)
 
 set(SOURCE_FILES
         src/main.cpp
-        src/stb_image.h
+        src/libs/stb_image.h
         src/Texture.cpp
         src/VertexArray.h
         src/VertexBuffer.h
+        src/Window.cpp
+        src/Window.h
 )
 
 add_executable(${project_name} ${SOURCE_FILES})

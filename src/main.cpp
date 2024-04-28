@@ -22,6 +22,7 @@
 #include "Texture.h"
 #include "VertexBuffer.h"
 #include "VertexArray.h"
+#include "Window.h"
 
 // Properties
 const GLuint WIDTH = 800, HEIGHT = 600;
@@ -46,35 +47,13 @@ GLfloat lastFrame = 0.0f;
 // The MAIN function, from here we start our application and run our Game loop
 int main( )
 {
-    // Init GLFW
-    glfwInit( );
-    glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 3 );
-    glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 3 );
-    glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
-    glfwWindowHint( GLFW_RESIZABLE, GL_FALSE );
-    glfwWindowHint( GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE );
+    Window window(800, 600, "Mincecraft");
     
-    GLFWwindow* window = glfwCreateWindow( WIDTH, HEIGHT, "Minecraft", nullptr, nullptr ); // Windowed
-    
-    if ( nullptr == window )
-    {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate( );
-        
-        return EXIT_FAILURE;
-    }
-    
-    glfwMakeContextCurrent( window );
-    
-    glfwGetFramebufferSize( window, &SCREEN_WIDTH, &SCREEN_HEIGHT );
-    
+
     // Set the required callback functions
-    glfwSetKeyCallback( window, KeyCallback );
-    glfwSetCursorPosCallback( window, MouseCallback );
-    glfwSetScrollCallback( window, ScrollCallback );
-    
-    // Options, removes the mouse cursor for a more immersive experience
-    glfwSetInputMode( window, GLFW_CURSOR, GLFW_CURSOR_DISABLED );
+    window.setCursorPosCallback(MouseCallback);
+    window.setKeyCallback(KeyCallback);
+    window.setScrollCallback(ScrollCallback);
     
     // Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions
     glewExperimental = GL_TRUE;
@@ -84,10 +63,13 @@ int main( )
         std::cout << "Failed to initialize GLEW" << std::endl;
         return EXIT_FAILURE;
     }
-    
+
+    glfwGetFramebufferSize( window.window, &SCREEN_WIDTH, &SCREEN_HEIGHT );
+
+
     // Define the viewport dimensions
     glViewport( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT );
-    
+
     // Setup some OpenGL options
     glEnable( GL_DEPTH_TEST );
     
@@ -176,7 +158,7 @@ int main( )
     Texture texture("/Users/Kamil/Documents/Studia/pomidor/src/res/images/image1.jpg");
 
     // Game loop
-    while (!glfwWindowShouldClose(window)) {
+    while (!window.ShouldClose()) {
         GLfloat currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
@@ -223,7 +205,7 @@ int main( )
         texture.Unbind();
 
         // Swap buffers
-        glfwSwapBuffers(window);
+        window.swapBuffers();
     }
 
     glfwTerminate( );
