@@ -6,6 +6,6 @@ World::World() {
 //            chunks[std::make_pair(x, z)] = Chunk();
 //        }
 //    }
-    chunks[std::make_pair(0, 0)] = Chunk();
-    chunks[std::make_pair(6, 4)] = Chunk();
+//    chunks[std::make_pair(0, 0)] = Chunk();
+    chunks[std::make_pair(-1, -2)] = Chunk();
 }

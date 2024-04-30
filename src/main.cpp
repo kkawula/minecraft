@@ -113,6 +113,16 @@ void DoMovement( )
     {
         camera.ProcessKeyboard( RIGHT, deltaTime );
     }
+
+    if (keys[GLFW_KEY_SPACE])
+    {
+        camera.ProcessKeyboard(UP, deltaTime);
+    }
+
+    if (keys[GLFW_KEY_LEFT_CONTROL])
+    {
+        camera.ProcessKeyboard(DOWN, deltaTime);
+    }
 }
 
 // Is called whenever a key is pressed/released via GLFW
@@ -121,6 +131,23 @@ void KeyCallback( GLFWwindow *window, int key, int scancode, int action, int mod
     if( key == GLFW_KEY_ESCAPE && action == GLFW_PRESS )
     {
         glfwSetWindowShouldClose(window, GL_TRUE);
+    }
+
+    if(key == GLFW_KEY_LEFT_SHIFT)
+    {
+        camera.switchShift();
+    }
+
+    if(key == GLFW_KEY_SPACE || key == GLFW_KEY_LEFT_CONTROL)
+    {
+        if( action == GLFW_PRESS )
+        {
+            keys[key] = true;
+        }
+        else if( action == GLFW_RELEASE )
+        {
+            keys[key] = false;
+        }
     }
     
     if ( key >= 0 && key < 1024 )

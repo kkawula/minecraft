@@ -15,15 +15,17 @@ enum Camera_Movement
     FORWARD,
     BACKWARD,
     LEFT,
-    RIGHT
+    RIGHT,
+    UP,
+    DOWN
 };
 
 // Default camera values
-const GLfloat YAW        = -90.0f;
-const GLfloat PITCH      =  0.0f;
-const GLfloat SPEED      =  6.0f;
-const GLfloat SENSITIVTY =  0.25f;
-const GLfloat ZOOM       =  45.0f;
+const GLfloat YAW         = -90.0f;
+const GLfloat PITCH       =  0.0f;
+const GLfloat SPEED       =  6.0f;
+const GLfloat SENSITIVITY =  0.25f;
+const GLfloat ZOOM        =  45.0f;
 
 
 // An abstract camera class that processes input and calculates the corresponding Eular Angles, Vectors and Matrices for use in OpenGL
@@ -31,7 +33,7 @@ class Camera
 {
 public:
     // Constructor with vectors
-    Camera( glm::vec3 position = glm::vec3( 0.0f, 0.0f, 0.0f ), glm::vec3 up = glm::vec3( 0.0f, 1.0f, 0.0f ), GLfloat yaw = YAW, GLfloat pitch = PITCH ) : front( glm::vec3( 0.0f, 0.0f, -1.0f ) ), movementSpeed( SPEED ), mouseSensitivity( SENSITIVTY ), zoom( ZOOM )
+    Camera( glm::vec3 position = glm::vec3( 0.0f, 0.0f, 0.0f ), glm::vec3 up = glm::vec3( 0.0f, 1.0f, 0.0f ), GLfloat yaw = YAW, GLfloat pitch = PITCH ) : front( glm::vec3( 0.0f, 0.0f, -1.0f ) ), movementSpeed( SPEED ), mouseSensitivity(SENSITIVITY ), zoom(ZOOM )
     {
         this->position = position;
         this->worldUp = up;
@@ -41,7 +43,7 @@ public:
     }
     
     // Constructor with scalar values
-    Camera( GLfloat posX, GLfloat posY, GLfloat posZ, GLfloat upX, GLfloat upY, GLfloat upZ, GLfloat yaw, GLfloat pitch ) : front( glm::vec3( 0.0f, 0.0f, -1.0f ) ), movementSpeed( SPEED ), mouseSensitivity( SENSITIVTY ), zoom( ZOOM )
+    Camera( GLfloat posX, GLfloat posY, GLfloat posZ, GLfloat upX, GLfloat upY, GLfloat upZ, GLfloat yaw, GLfloat pitch ) : front( glm::vec3( 0.0f, 0.0f, -1.0f ) ), movementSpeed( SPEED ), mouseSensitivity(SENSITIVITY ), zoom(ZOOM )
     {
         this->position = glm::vec3( posX, posY, posZ );
         this->worldUp = glm::vec3( upX, upY, upZ );
@@ -59,7 +61,8 @@ public:
     // Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
     void ProcessKeyboard( Camera_Movement direction, GLfloat deltaTime )
     {
-        GLfloat velocity = this->movementSpeed * deltaTime;
+        GLfloat speedMultiplier = this->shiftPressed ? 2.0f : 1.0f;
+        GLfloat velocity = this->movementSpeed * deltaTime * speedMultiplier;
         
         if ( direction == FORWARD )
         {
@@ -79,6 +82,16 @@ public:
         if ( direction == RIGHT )
         {
             this->position += this->right * velocity;
+        }
+
+        if (direction == UP)
+        {
+            position += worldUp * velocity;
+        }
+
+        if (direction == DOWN)
+        {
+            position -= worldUp * velocity;
         }
     }
     
@@ -132,6 +145,11 @@ public:
     {
         return this->zoom;
     }
+
+    void switchShift()
+    {
+        this->shiftPressed = !this->shiftPressed;
+    }
     
 private:
     // Camera Attributes
@@ -149,6 +167,8 @@ private:
     GLfloat movementSpeed;
     GLfloat mouseSensitivity;
     GLfloat zoom;
+
+    bool shiftPressed;
     
     // Calculates the front vector from the Camera's (updated) Eular Angles
     void updateCameraVectors( )
