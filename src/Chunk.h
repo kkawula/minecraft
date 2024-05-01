@@ -10,18 +10,18 @@ public:
     //static const int CHUNK_HEIGHT = 256;
     static const int CHUNK_HEIGHT = 16;
 
-    Chunk();
+    Chunk() {};
 
     const Block& GetBlock(int x, int y, int z) const {
         return blocks[x][y][z];
     }
 
-
-
+    void SetBlock(int x, int y, int z, const Block& block) {
+        blocks[x][y][z] = block;
+    }
 
 private:
     Block blocks[CHUNK_SIZE][CHUNK_HEIGHT][CHUNK_SIZE];
-
 };
 
 
