@@ -90,12 +90,12 @@ void Renderer::Render(World &world, Camera& camera) {
 
     // Bind VAO
     va.Bind();
-    for (const auto& entry : world.getChunks()) {
+    /*for (const auto& entry : world.getChunks()) {
         for (int x = 0; x < Chunk::CHUNK_SIZE; ++x) {
             for (int y = 0; y < Chunk::CHUNK_HEIGHT; ++y) {
                 for (int z = 0; z < Chunk::CHUNK_SIZE; ++z) {
                     const Block& block = entry.second.GetBlock(x, y, z);
-                    if (!block.IsSolid()) continue;
+                    //if (!block.IsSolid()) continue;
 
                     glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(entry.first.first * Chunk::CHUNK_SIZE + x, y,  entry.first.second * Chunk::CHUNK_SIZE  + z));
 //                    GLfloat angle = 20.0f * 0;  // This seems like it was meant to be dynamic
@@ -103,6 +103,25 @@ void Renderer::Render(World &world, Camera& camera) {
                     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
                     glUniform1i(glGetUniformLocation(shader.Program, "blockType"), block.GetType());
                     glDrawArrays(GL_TRIANGLES, 0, 36);
+                }
+            }
+        }
+    }*/
+
+    for (const auto& entry : world.getChunks()) {
+        for (int x = 0; x < Chunk::CHUNK_SIZE; ++x) {
+            for (int z = 0; z < Chunk::CHUNK_SIZE; ++z) {
+                for (int y = 0; y < Chunk::CHUNK_HEIGHT; ++y) {
+                    const Block& block = entry.second.GetBlock(x, y, z);
+                    if (y + 1 < Chunk::CHUNK_HEIGHT && entry.second.GetBlock(x, y + 1, z).IsSolid()) continue;
+
+                    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(entry.first.first * Chunk::CHUNK_SIZE + x, y,  entry.first.second * Chunk::CHUNK_SIZE  + z));
+//                    GLfloat angle = 20.0f * 0;  // This seems like it was meant to be dynamic
+//                    model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
+                    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+                    glUniform1i(glGetUniformLocation(shader.Program, "blockType"), block.GetType());
+                    glDrawArrays(GL_TRIANGLES, 0, 36);
+                    break;
                 }
             }
         }

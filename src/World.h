@@ -24,8 +24,8 @@ public:
 private:
     static constexpr int CHUNK_SIZE = Chunk::CHUNK_SIZE;
     static constexpr int CHUNK_HEIGHT = Chunk::CHUNK_HEIGHT;
-    static constexpr int WORLD_SIZE = 5;
-    static constexpr int NOISE_OCTAVE = 8;
+    static constexpr int WORLD_SIZE = 20;
+    static constexpr int NOISE_OCTAVE = 12;
     static constexpr int NOISE_WIDTH = CHUNK_SIZE * WORLD_SIZE;
     static constexpr int NOISE_HEIGHT = CHUNK_SIZE * WORLD_SIZE;
 
