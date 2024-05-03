@@ -21,6 +21,7 @@ private:
     Shader shader;
     Texture texture;
     VertexArray va;
+    GLuint ebo;
 
 public:
     Renderer(const GLchar * vertexPath, const GLchar * fragmentPath, const std::string& texturePath);

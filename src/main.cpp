@@ -65,7 +65,7 @@ int main( )
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
 
-    Renderer renderer("/Users/Kamil/Documents/Studia/pomidor/src/res/shaders/core.vs", "/Users/Kamil/Documents/Studia/pomidor/src/res/shaders/core.frag", "/Users/Kamil/Documents/Studia/pomidor/src/res/images/blockPack.png");
+    Renderer renderer("/Users/Kamil/Documents/Studia/minecraft/src/res/shaders/core.vs", "/Users/Kamil/Documents/Studia/minecraft/src/res/shaders/core.frag", "/Users/Kamil/Documents/Studia/minecraft/src/res/images/blockPack.png");
     World world;
     // Game loop
     while (!window.ShouldClose()) {
