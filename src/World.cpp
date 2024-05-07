@@ -1,6 +1,8 @@
 #include "World.h"
 #include <ctime>
 #include <iostream>
+#include <algorithm>
+#include <memory>
 
 std::vector<std::vector<float>> World::GenerateHeightMap(int width, int height, int octave) {
     std::vector<std::vector<float>> noiseValues(width, std::vector<float>(height, 0.0f));
@@ -60,7 +62,7 @@ World::World() : perlin(static_cast<unsigned int>(std::time(nullptr))) {
     for (int i = 0; i < WORLD_SIZE; ++i) {
         for (int j = 0; j < WORLD_SIZE; ++j) {
             std::pair<int, int> chunkPosition = std::make_pair(i, j);
-            Chunk chunk;
+            std::shared_ptr<Chunk> chunk = std::make_shared<Chunk>();
 
             for (int x = 0; x < CHUNK_SIZE; ++x) {
                 for (int z = 0; z < CHUNK_SIZE; ++z) {
@@ -87,11 +89,15 @@ World::World() : perlin(static_cast<unsigned int>(std::time(nullptr))) {
                         } else {
                             block = Block(0, false);
                         }
-                        chunk.SetBlock(x, y, z, block);
+                        chunk.get()->SetBlock(x, y, z, block);
                     }
                 }
             }
+            chunk.get()->UpdateMesh();
             chunks[chunkPosition] = chunk;
+
         }
     }
+
+
 }

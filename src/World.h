@@ -12,9 +12,9 @@ class World
 public:
     World();
 
-    const Chunk& GetChunk(int x, int z) const {
+     std::shared_ptr<Chunk> GetChunk(int x, int z) {
         auto key = std::make_pair(x, z);
-        return chunks.at(key);
+        return chunks[key];
     }
 
     auto getChunks() const {
@@ -34,7 +34,7 @@ private:
     std::vector<std::vector<float>> GenerateHeightMap(int width, int height, int octave);
     std::vector<std::vector<float>> GenerateBiomeMap(int width, int height, int octave);
 
-    std::map<std::pair<int, int>, Chunk> chunks;
+    std::map<std::pair<int, int>, std::shared_ptr<Chunk>> chunks;
 
     siv::PerlinNoise perlin;
 };

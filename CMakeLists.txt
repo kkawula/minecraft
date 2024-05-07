@@ -40,6 +40,8 @@ set(SOURCE_FILES
         src/Block.h
         src/Chunk.cpp
         src/Chunk.h
+        src/Mesh.cpp
+
 )
 
 add_executable(${project_name} ${SOURCE_FILES})
