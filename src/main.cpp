@@ -13,6 +13,9 @@
 #include "Window.h"
 #include "Renderer.h"
 
+#include <filesystem>
+namespace fs = std::filesystem;
+
 // Properties
 const GLuint WIDTH = 800, HEIGHT = 600;
 int SCREEN_WIDTH, SCREEN_HEIGHT;
@@ -34,7 +37,7 @@ GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
 
 // The MAIN function, from here we start our application and run our Game loop
-int main( )
+int main(int argc, char *argv[])
 {
     Window window(800, 600, "Mincecraft");
 
@@ -63,9 +66,16 @@ int main( )
     // enable alpha support
     glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    fs::path basePath = fs::absolute(argv[0]).parent_path();
+    fs::path shaderDir = basePath / "res" / "shaders";
+    fs::path textureDir = basePath / "res" / "images";
 
+    fs::path vertShaderPath = shaderDir / "vert.glsl";
+    fs::path fragShaderPath = shaderDir / "frag.glsl";
+    fs::path texturePath = textureDir / "blockPack.png";
 
-    Renderer renderer("/Users/Kamil/Documents/Studia/minecraft/src/res/shaders/core.vs", "/Users/Kamil/Documents/Studia/minecraft/src/res/shaders/core.frag", "/Users/Kamil/Documents/Studia/minecraft/src/res/images/blockPack.png");
+    Renderer renderer(vertShaderPath.string(), fragShaderPath.string(), texturePath.string());
+
     World world;
     // Game loop
     while (!window.ShouldClose()) {

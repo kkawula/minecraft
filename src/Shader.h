@@ -13,7 +13,7 @@ class Shader
 public:
     GLuint Program;
     // Constructor generates the shader on the fly
-    Shader( const GLchar *vertexPath, const GLchar *fragmentPath )
+    Shader( const std::string& vertexPath, const std::string& fragmentPath )
     {
         // 1. Retrieve the vertex/fragment source code from filePath
         std::string vertexCode;

@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.22)
 set(project_name "minecraft")
 project(${project_name})
 
+
+
 set(VCPKG_ROOT_DIR "./vcpkg")
 # Below variable should determine the target platform by itself, but it doesn't work sometimes, so choose yours.
 set(VCPKG_TARGET_TRIPLET "x64-osx")
@@ -55,6 +57,19 @@ target_link_libraries(${project_name} PRIVATE glm::glm)
 target_link_libraries(${project_name} PRIVATE glfw)
 target_link_libraries(${project_name} PRIVATE glad)
 target_link_libraries(${project_name} PRIVATE GLEW::GLEW)
+
+set(SHADER_DIR "${CMAKE_SOURCE_DIR}/src/res/shaders")
+set(TEXTURE_DIR "${CMAKE_SOURCE_DIR}/src/res/images")
+
+set(RESOURCE_OUTPUT_DIR "${CMAKE_BINARY_DIR}/res")
+
+add_custom_command(
+        TARGET ${project_name} PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${SHADER_DIR} "${RESOURCE_OUTPUT_DIR}/shaders"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${TEXTURE_DIR} "${RESOURCE_OUTPUT_DIR}/images"
+        COMMENT "Copying resources to build directory"
+
+)
 
 
 

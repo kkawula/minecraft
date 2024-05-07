@@ -24,7 +24,7 @@ private:
     GLuint ebo;
 
 public:
-    Renderer(const GLchar * vertexPath, const GLchar * fragmentPath, const std::string& texturePath);
+    Renderer(const std::string& vertexPath, const std::string& fragmentPath, const std::string& texturePath);
     ~Renderer();
 
     void Render(World& world, Camera& camera);

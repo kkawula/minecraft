@@ -1,6 +1,6 @@
 #include "Renderer.h"
 
-Renderer::Renderer(const GLchar *vertexPath, const GLchar *fragmentPath, const std::string& texturePath)
+Renderer::Renderer(const std::string& vertexPath, const std::string& fragmentPath, const std::string& texturePath)
         : shader(vertexPath, fragmentPath), texture(texturePath) {
     SetupMesh();
 }
