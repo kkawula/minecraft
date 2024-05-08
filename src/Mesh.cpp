@@ -1,29 +1,30 @@
 #include "Mesh.h"
-#include <iostream>
-void Mesh::BuildMesh(const Block blocks[16][100][16]) {
+#include "config.h"
+
+void Mesh::BuildMesh(const Block blocks[config::CHUNK_SIZE][config::CHUNK_HEIGHT][config::CHUNK_SIZE]) {
     vertices.clear();
-    for (int x = 0; x < 16; ++x) {
-        for (int y = 0; y < 100; ++y) {
-            for (int z = 0; z < 16; ++z) {
+    for (int x = 0; x < config::CHUNK_SIZE; ++x) {
+        for (int y = 0; y < config::CHUNK_HEIGHT; ++y) {
+            for (int z = 0; z < config::CHUNK_SIZE; ++z) {
                 const Block& block = blocks[x][y][z];
                 if (!block.IsSolid()) continue;
 
                 if (x == 0 || !blocks[x - 1][y][z].IsSolid()) {
                     addFaceVertices(vertices, x, y, z, block, 0);
                 }
-                if (x == 15 || !blocks[x + 1][y][z].IsSolid()) {
+                if (x == config::CHUNK_SIZE - 1 || !blocks[x + 1][y][z].IsSolid()) {
                     addFaceVertices(vertices, x, y, z, block, 1);
                 }
                 if (y == 0 || !blocks[x][y - 1][z].IsSolid()) {
                     addFaceVertices(vertices, x, y, z, block, 2);
                 }
-                if (y == 99 || !blocks[x][y + 1][z].IsSolid()) {
+                if (y == config::CHUNK_HEIGHT - 1 || !blocks[x][y + 1][z].IsSolid()) {
                     addFaceVertices(vertices, x, y, z, block, 3);
                 }
                 if (z == 0 || !blocks[x][y][z - 1].IsSolid()) {
                     addFaceVertices(vertices, x, y, z, block, 4);
                 }
-                if (z == 15 || !blocks[x][y][z + 1].IsSolid()) {
+                if (z == config::CHUNK_SIZE - 1 || !blocks[x][y][z + 1].IsSolid()) {
                     addFaceVertices(vertices, x, y, z, block, 5);
                 }
 

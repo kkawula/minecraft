@@ -2,6 +2,7 @@
 #define MINECRAFT_WORLD_H
 
 #include <map>
+#include <memory>
 
 #include "Chunk.h"
 #include "libs/PerlinNoise.hpp"

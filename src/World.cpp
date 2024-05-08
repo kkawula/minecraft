@@ -7,7 +7,7 @@
 
 std::vector<std::vector<float>> World::GenerateHeightMap(int width, int height) {
     std::vector<std::vector<float>> noiseValues(width, std::vector<float>(height, 0.0f));
-    float frequency = 0.01;
+    float frequency = 0.008;
 
     float minNoise = std::numeric_limits<float>::max();
     float maxNoise = std::numeric_limits<float>::min();
@@ -40,7 +40,7 @@ std::vector<std::vector<float>> World::GenerateHeightMap(int width, int height) 
 
 std::vector<std::vector<float>> World::GenerateBiomeMap(int width, int height, int octave) {
     std::vector<std::vector<float>> biomeValues(width, std::vector<float>(height, 0.0f));
-    float frequency = 0.01;
+    float frequency = 0.005;
 
     for (int x = 0; x < width; ++x) {
         for (int y = 0; y < height; ++y) {

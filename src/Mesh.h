@@ -6,6 +6,7 @@
 #include "Block.h"
 #include <glm/glm.hpp>
 #include <iostream>
+#include "config.h"
 
 class Mesh {
 public:
@@ -19,7 +20,7 @@ public:
         glDeleteBuffers(1, &VBO);
     }
 
-    void BuildMesh(const Block blocks[16][100][16]);
+    void BuildMesh(const Block blocks[config::CHUNK_SIZE][config::CHUNK_HEIGHT][config::CHUNK_SIZE]);
     void Draw() const;
 
     void addFaceVertices(std::vector<float>& vertices, int x, int y, int z, const Block& block, int face);
