@@ -5,11 +5,10 @@
 #include "Mesh.h"
 #include <utility>
 #include <iostream>
+#include "config.h"
 
 class Chunk {
 public:
-    static const int CHUNK_SIZE = 16;
-    static const int CHUNK_HEIGHT = 100;
 
     Chunk() {
         mesh.setupMesh();
@@ -34,7 +33,7 @@ public:
     }
 
 private:
-    Block blocks[CHUNK_SIZE][CHUNK_HEIGHT][CHUNK_SIZE];
+    Block blocks[config::CHUNK_SIZE][config::CHUNK_HEIGHT][config::CHUNK_SIZE];
     Mesh mesh;
 };
 

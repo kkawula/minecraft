@@ -12,6 +12,7 @@
 
 #include "Window.h"
 #include "Renderer.h"
+#include "config.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -39,7 +40,7 @@ GLfloat lastFrame = 0.0f;
 // The MAIN function, from here we start our application and run our Game loop
 int main(int argc, char *argv[])
 {
-    Window window(1200, 900, "Mincecraft");
+    Window window(config::WINDOW_WIDTH, config::WINDOW_WIDTH, "Mincecraft");
 
     // Set the required callback functions
     window.setCursorPosCallback(MouseCallback);

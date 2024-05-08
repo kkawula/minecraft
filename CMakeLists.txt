@@ -41,6 +41,7 @@ set(SOURCE_FILES
         src/Chunk.cpp
         src/Chunk.h
         src/Mesh.cpp
+        src/config.h
 
 )
 

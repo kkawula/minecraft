@@ -7,7 +7,7 @@
 class Texture {
 private:
     GLuint textureID;
-    int width, height; // Dimensions of the loaded texture
+    int width, height;
     unsigned char* data; // Raw texture data
 
 public:

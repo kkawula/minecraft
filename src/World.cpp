@@ -2,6 +2,7 @@
 #include <ctime>
 #include <algorithm>
 #include <memory>
+#include "config.h"
 
 std::vector<std::vector<float>> World::GenerateHeightMap(int width, int height, int octave) {
     std::vector<std::vector<float>> noiseValues(width, std::vector<float>(height, 0.0f));
@@ -49,29 +50,29 @@ std::vector<std::vector<float>> World::GenerateBiomeMap(int width, int height, i
 
 //World::World() : perlin(123456u) {
 World::World() : perlin(static_cast<unsigned int>(std::time(nullptr))) {
-    std::vector<std::vector<float>> heightMap = GenerateHeightMap(NOISE_WIDTH, NOISE_HEIGHT, NOISE_OCTAVE);
-    std::vector<std::vector<float>> biomeMap = GenerateBiomeMap(NOISE_WIDTH, NOISE_HEIGHT, BIOME_OCTAVE);
+    std::vector<std::vector<float>> heightMap = GenerateHeightMap(config::NOISE_WIDTH, config::NOISE_HEIGHT, config::NOISE_OCTAVE);
+    std::vector<std::vector<float>> biomeMap = GenerateBiomeMap(config::NOISE_WIDTH, config::NOISE_HEIGHT, config::BIOME_OCTAVE);
 
-    for(int x = 0; x < CHUNK_SIZE; x++){
-        for(int z = 0; z < CHUNK_SIZE; z++){
+    for(int x = 0; x < config::CHUNK_SIZE; x++){
+        for(int z = 0; z < config::CHUNK_SIZE; z++){
             biomeMap[x][z] *= heightMap[x][z];
         }
     }
 
-    for (int i = 0; i < WORLD_SIZE; ++i) {
-        for (int j = 0; j < WORLD_SIZE; ++j) {
+    for (int i = 0; i < config::WORLD_SIZE; ++i) {
+        for (int j = 0; j < config::WORLD_SIZE; ++j) {
             std::pair<int, int> chunkPosition = std::make_pair(i, j);
             std::shared_ptr<Chunk> chunk = std::make_shared<Chunk>();
 
-            for (int x = 0; x < CHUNK_SIZE; ++x) {
-                for (int z = 0; z < CHUNK_SIZE; ++z) {
-                    for (int y = 0; y < CHUNK_HEIGHT; ++y) {
-                        int globalX = i * CHUNK_SIZE + x;
-                        int globalZ = j * CHUNK_SIZE + z;
+            for (int x = 0; x < config::CHUNK_SIZE; ++x) {
+                for (int z = 0; z < config::CHUNK_SIZE; ++z) {
+                    for (int y = 0; y < config::CHUNK_HEIGHT; ++y) {
+                        int globalX = i * config::CHUNK_SIZE + x;
+                        int globalZ = j * config::CHUNK_SIZE + z;
                         Block block;
 
-                        if (y <= heightMap[globalX][globalZ] * CHUNK_HEIGHT) {
-                            if(y <= WATER_LEVEL + 3){
+                        if (y <= heightMap[globalX][globalZ] * config::CHUNK_HEIGHT) {
+                            if(y <= config::WATER_LEVEL + 3){
                                 block = Block(7);
                             }
                             else{
@@ -83,7 +84,7 @@ World::World() : perlin(static_cast<unsigned int>(std::time(nullptr))) {
                                     block = Block(3);
                                 }
                             }
-                        } else if(y <= WATER_LEVEL){
+                        } else if(y <= config::WATER_LEVEL){
                             block = Block(8);
                         } else {
                             block = Block(0, false);
