@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <memory>
 #include "config.h"
-
+#include <iostream>
 
 std::vector<std::vector<float>> World::GenerateHeightMap(int width, int height) {
     std::vector<std::vector<float>> noiseValues(width, std::vector<float>(height, 0.0f));
@@ -52,14 +52,133 @@ std::vector<std::vector<float>> World::GenerateBiomeMap(int width, int height, i
     return biomeValues;
 }
 
-void World::GenerateCactus(std::shared_ptr<Chunk> chunk, int x, int y, int z) {
+void World::GenerateTerrain(std::vector<std::vector<float>> heightMap, std::vector<std::vector<float>> biomeMap) {
+    for (int i = 0; i < config::WORLD_SIZE; ++i) {
+        for (int j = 0; j < config::WORLD_SIZE; ++j) {
+            std::pair<int, int> chunkPosition = std::make_pair(i, j);
+            std::shared_ptr<Chunk> chunk = std::make_shared<Chunk>();
+
+            for (int x = 0; x < config::CHUNK_SIZE; ++x) {
+                for (int z = 0; z < config::CHUNK_SIZE; ++z) {
+                    int globalX = i * config::CHUNK_SIZE + x;
+                    int globalZ = j * config::CHUNK_SIZE + z;
+                    int height = heightMap[globalX][globalZ] * config::CHUNK_HEIGHT_TO_GENERATE;
+
+                    for (int y = 0; y < config::CHUNK_HEIGHT; ++y) {
+                        Block block;
+
+                        if (y <= height) {
+                            int dirtAppearingHeight = 1;
+                            int rockAppearingHeight = 3;
+                            if (y <= config::WATER_LEVEL + 3 * biomeMap[globalX][globalZ]) {
+                                block = Block(Block::SAND);
+                                dirtAppearingHeight = 3;
+                                rockAppearingHeight = 5;
+                            } else {
+                                if (biomeMap[globalX][globalZ] < 0.3) {
+                                    block = Block(Block::SAND);
+                                    dirtAppearingHeight = 3;
+                                    rockAppearingHeight = 5;
+                                } else if (biomeMap[globalX][globalZ] > 0.8 && heightMap[globalX][globalZ] > 0.8) {
+                                    block = Block(Block::ROCK);
+                                    dirtAppearingHeight = config::CHUNK_HEIGHT; // so that it doesn't appear
+                                    rockAppearingHeight = 1;
+                                } else {
+                                    block = Block(Block::GRASS);
+                                }
+                            }
+
+                            if(y <= height - rockAppearingHeight){
+                                block = Block(Block::ROCK);
+                            }
+                            else if(y <= height - dirtAppearingHeight){
+                                block = Block(Block::DIRT);
+                            }
+                        } else if(y <= config::WATER_LEVEL){
+                            block = Block(Block::WATER, false, true);
+                        } else if(chunk->GetBlock(x, y, z).GetType() == Block::AIR){
+                            block = Block(Block::AIR, false, true);
+                        }
+
+                        chunk->SetBlock(x, y, z, block);
+                    }
+                }
+            }
+            chunks[chunkPosition] = chunk;
+        }
+    }
+}
+
+void World::GenerateVegetation(std::vector<std::vector<float>> heightMap, std::vector<std::vector<float>> biomeMap) {
+    for (int i = 0; i < config::WORLD_SIZE; ++i) {
+        for (int j = 0; j < config::WORLD_SIZE; ++j) {
+            std::shared_ptr<Chunk> chunk = GetChunk(i, j);
+
+            for (int x = 0; x < config::CHUNK_SIZE; ++x) {
+                for (int z = 0; z < config::CHUNK_SIZE; ++z) {
+                    int globalX = i * config::CHUNK_SIZE + x;
+                    int globalZ = j * config::CHUNK_SIZE + z;
+                    int y = heightMap[globalX][globalZ] * config::CHUNK_HEIGHT_TO_GENERATE + 1;
+
+                    if(y > config::WATER_LEVEL){
+                        if(biomeMap[globalX][globalZ] < 0.3 && chunk->GetBlock(x, y - 1, z).GetType() == Block::SAND) {
+                            if (rand() % 100 < 1) {
+                                World::GenerateCactus(chunk, x, y, z);
+                            }
+                        }
+                        else if(biomeMap[globalX][globalZ] > 0.8 && heightMap[globalX][globalZ] > 0.8){
+                            // mountains
+                        }
+                        else if(chunk->GetBlock(x, y - 1, z).GetType() == Block::GRASS){
+                            if (rand() % 1000 < 15) {
+                                if(x >= 2 && x <= 13 && z >= 2 && z <= 13){
+                                    World::GenerateTree(chunk, x, y, z);
+                                    chunk->SetBlock(x, y - 1, z, Block(Block::DIRT));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    /*for(int x = 0; x < config::CHUNK_SIZE * config::WORLD_SIZE; x++){
+        for(int z = 0; z < config::CHUNK_SIZE * config::WORLD_SIZE; z++){
+            int y = heightMap[x][z] * config::CHUNK_HEIGHT_TO_GENERATE + 1;
+            int chunkX = x / config::CHUNK_SIZE;
+            int chunkZ = z / config::CHUNK_SIZE;
+            std::shared_ptr<Chunk> chunk = GetChunk(chunkX, chunkZ);
+
+            if(y > config::WATER_LEVEL){
+                if(biomeMap[x][z] < 0.3 && chunk->GetBlock(x % config::CHUNK_SIZE, y - 1, z % config::CHUNK_SIZE).GetType() == Block::SAND) {
+                    if (rand() % 100 < 1) {
+                        World::GenerateCactus(chunk, x, y, z);
+                    }
+                }
+                else if(biomeMap[x][z] > 0.8 && heightMap[x][z] > 0.8){
+                    // mountains
+                }
+                else if(chunk->GetBlock(chunkX, y - 1, chunkZ).GetType() == Block::GRASS){
+                    if (rand() % 1000 < 10000) {
+                        if(chunkX >= 2 && chunkX <= 13 && chunkZ >= 2 && chunkZ <= 13){
+                            World::GenerateTree(chunk, chunkX, y, chunkZ);
+                            chunk->SetBlock(chunkX, y - 1, chunkZ, Block(Block::DIRT));
+                        }
+                    }
+                }
+            }
+        }
+    }*/
+}
+
+void World::GenerateCactus(const std::shared_ptr<Chunk>& chunk, int x, int y, int z) {
     for(int i = 0; i < 3 + rand() % 3; i++){
         auto block = Block(Block::CACTUS);
         chunk->SetBlock(x, y + i, z, block);
     }
 }
 
-void World::GenerateTree(std::shared_ptr<Chunk> chunk, int x, int y, int z) {
+void World::GenerateTree(const std::shared_ptr<Chunk>& chunk, int x, int y, int z) {
     int trunkHeight = 5 + rand() % 2;
     for(int i = 0; i < trunkHeight; i++){
         auto block = Block(Block::WOOD);
@@ -132,77 +251,11 @@ World::World() : perlinHeight(static_cast<unsigned int>(std::time(nullptr))), pe
     std::vector<std::vector<float>> heightMap = GenerateHeightMap(config::NOISE_WIDTH, config::NOISE_HEIGHT);
     std::vector<std::vector<float>> biomeMap = GenerateBiomeMap(config::NOISE_WIDTH, config::NOISE_HEIGHT, config::BIOME_OCTAVE);
 
-    for (int i = 0; i < config::WORLD_SIZE; ++i) {
-        for (int j = 0; j < config::WORLD_SIZE; ++j) {
-            std::pair<int, int> chunkPosition = std::make_pair(i, j);
-            std::shared_ptr<Chunk> chunk = std::make_shared<Chunk>();
+    GenerateTerrain(heightMap, biomeMap);
+    GenerateVegetation(heightMap, biomeMap);
 
-            for (int x = 0; x < config::CHUNK_SIZE; ++x) {
-                for (int z = 0; z < config::CHUNK_SIZE; ++z) {
-                    int globalX = i * config::CHUNK_SIZE + x;
-                    int globalZ = j * config::CHUNK_SIZE + z;
-                    int height = heightMap[globalX][globalZ] * config::CHUNK_HEIGHT_TO_GENERATE;
-
-                    for (int y = 0; y < config::CHUNK_HEIGHT; ++y) {
-                        Block block;
-
-                        if (y <= height) {
-                            int dirtAppearingHeight = 1;
-                            int rockAppearingHeight = 3;
-                            if (y <= config::WATER_LEVEL + 3 * biomeMap[globalX][globalZ]) {
-                                block = Block(Block::SAND);
-                                dirtAppearingHeight = 3;
-                                rockAppearingHeight = 5;
-                            } else {
-                                if (biomeMap[globalX][globalZ] < 0.3) {
-                                    block = Block(Block::SAND);
-                                    dirtAppearingHeight = 3;
-                                    rockAppearingHeight = 5;
-                                } else if (biomeMap[globalX][globalZ] > 0.8 && heightMap[globalX][globalZ] > 0.8) {
-                                    block = Block(Block::ROCK);
-                                    dirtAppearingHeight = config::CHUNK_HEIGHT; // so that it doesn't appear
-                                    rockAppearingHeight = 1;
-                                } else {
-                                    block = Block(Block::GRASS);
-                                }
-                            }
-
-                            if(y <= height - rockAppearingHeight){
-                                block = Block(Block::ROCK);
-                            }
-                            else if(y <= height - dirtAppearingHeight){
-                                block = Block(Block::DIRT);
-                            }
-                        } else if(y <= config::WATER_LEVEL){
-                            block = Block(Block::WATER, false, true);
-                        } else if(chunk->GetBlock(x, y, z).GetType() == Block::AIR){
-                            block = Block(Block::AIR, false, true);
-                        }
-
-                        if(y == height + 1 && y > config::WATER_LEVEL){
-                            if(biomeMap[globalX][globalZ] < 0.3) {
-                                if (rand() % 100 < 1) {
-                                    World::GenerateCactus(chunk, x, y, z);
-                                }
-                            }
-                            else if(biomeMap[globalX][globalZ] > 0.8 && heightMap[globalX][globalZ] > 0.8){
-                                // mountains
-                            }
-                            else if(chunk->GetBlock(x, y - 1, z).GetType() == Block::GRASS){
-                                if (rand() % 1000 < 15) {
-                                    World::GenerateTree(chunk, x, y, z);
-                                    chunk->SetBlock(x, y - 1, z, Block(Block::DIRT));
-                                }
-                            }
-                        }
-
-                        if(chunk->GetBlock(x, y, z).GetType() == Block::AIR)
-                            chunk->SetBlock(x, y, z, block);
-                    }
-                }
-            }
-            chunk->UpdateMesh();
-            chunks[chunkPosition] = chunk;
-        }
+    for(const auto& pair : chunks){
+        std::shared_ptr<Chunk> chunk = pair.second;
+        chunk->UpdateMesh();
     }
 }
