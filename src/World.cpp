@@ -4,30 +4,34 @@
 #include <memory>
 #include "config.h"
 
-std::vector<std::vector<float>> World::GenerateHeightMap(int width, int height, int octave) {
-    std::vector<std::vector<float>> noiseValues(width, std::vector<float>(height, 0.0f));
 
-    int centerX = width / 2;
-    int centerY = height / 2;
-    float frequency = 0.015;
+std::vector<std::vector<float>> World::GenerateHeightMap(int width, int height) {
+    std::vector<std::vector<float>> noiseValues(width, std::vector<float>(height, 0.0f));
+    float frequency = 0.01;
+
+    float minNoise = std::numeric_limits<float>::max();
+    float maxNoise = std::numeric_limits<float>::min();
 
     for (int x = 0; x < width; ++x) {
         for (int y = 0; y < height; ++y) {
-            float distanceToCenterX = std::abs(x - centerX);
-            float distanceToCenterY = std::abs(y - centerY);
+            int octaves[4] = {3, 6, 12, 24};
+            float multipliers[4] = {1.0f, .75f, .5f, .1f};
+            noiseValues[x][y] = 0;
 
-            float maxDistance = std::max(centerX, centerY);
+            for(int i = 0; i < 4; i++){
+                auto noise = static_cast<float>(perlinHeight.octave2D_01((x * frequency), (y * frequency), octaves[i]));
+                noiseValues[x][y] += noise * multipliers[i];
 
-            float normalizedDistanceX = 1.0f - (distanceToCenterX / maxDistance);
-            float normalizedDistanceY = 1.0f - (distanceToCenterY / maxDistance);
-            float normalizedDistance = std::min(normalizedDistanceX, normalizedDistanceY);
+                minNoise = std::min(minNoise, noiseValues[x][y]);
+                maxNoise = std::max(maxNoise, noiseValues[x][y]);
+            }
+        }
+    }
 
-            float edgeEffect = std::min({distanceToCenterX / centerX, distanceToCenterY / centerY});
-
-            float noise = static_cast<float>(perlin.octave2D_01((x * frequency), (y * frequency), octave));
-            float value = noise * normalizedDistance * (1.0f - edgeEffect);
-
-            noiseValues[x][y] = value;
+    float range = maxNoise - minNoise;
+    for (int x = 0; x < width; ++x) {
+        for (int y = 0; y < height; ++y) {
+            noiseValues[x][y] = (noiseValues[x][y] - minNoise) / range;
         }
     }
 
@@ -36,11 +40,11 @@ std::vector<std::vector<float>> World::GenerateHeightMap(int width, int height, 
 
 std::vector<std::vector<float>> World::GenerateBiomeMap(int width, int height, int octave) {
     std::vector<std::vector<float>> biomeValues(width, std::vector<float>(height, 0.0f));
-    float frequency = 0.005;
+    float frequency = 0.01;
 
     for (int x = 0; x < width; ++x) {
         for (int y = 0; y < height; ++y) {
-            float noise = static_cast<float>(perlin.octave2D_01((x * frequency), (y * frequency), octave));
+            auto noise = static_cast<float>(perlinBiome.octave2D_01((x * frequency), (y * frequency), octave));
             biomeValues[x][y] = noise;
         }
     }
@@ -48,9 +52,8 @@ std::vector<std::vector<float>> World::GenerateBiomeMap(int width, int height, i
     return biomeValues;
 }
 
-//World::World() : perlin(123456u) {
-World::World() : perlin(static_cast<unsigned int>(std::time(nullptr))) {
-    std::vector<std::vector<float>> heightMap = GenerateHeightMap(config::NOISE_WIDTH, config::NOISE_HEIGHT, config::NOISE_OCTAVE);
+World::World() : perlinHeight(static_cast<unsigned int>(std::time(nullptr))), perlinBiome(std::rand()) {
+    std::vector<std::vector<float>> heightMap = GenerateHeightMap(config::NOISE_WIDTH, config::NOISE_HEIGHT);
     std::vector<std::vector<float>> biomeMap = GenerateBiomeMap(config::NOISE_WIDTH, config::NOISE_HEIGHT, config::BIOME_OCTAVE);
 
     for(int x = 0; x < config::CHUNK_SIZE; x++){
@@ -72,22 +75,22 @@ World::World() : perlin(static_cast<unsigned int>(std::time(nullptr))) {
                         Block block;
 
                         if (y <= heightMap[globalX][globalZ] * config::CHUNK_HEIGHT) {
-                            if(y <= config::WATER_LEVEL + 3){
+                            if(y <= config::WATER_LEVEL + 3 * biomeMap[globalX][globalZ]){
                                 block = Block(7);
                             }
                             else{
                                 if(biomeMap[globalX][globalZ] < 0.3){
                                     block = Block(7);
-                                } else if(biomeMap[globalX][globalZ] < 0.55){
-                                    block = Block(0);
-                                } else{
+                                } else if(biomeMap[globalX][globalZ] > 0.8 && heightMap[globalX][globalZ] > 0.9){
                                     block = Block(3);
+                                } else{
+                                    block = Block(0);
                                 }
                             }
                         } else if(y <= config::WATER_LEVEL){
                             block = Block(8);
                         } else {
-                            block = Block(0, false);
+                            block = Block(15, false);
                         }
                         chunk.get()->SetBlock(x, y, z, block);
                     }
@@ -95,9 +98,6 @@ World::World() : perlin(static_cast<unsigned int>(std::time(nullptr))) {
             }
             chunk.get()->UpdateMesh();
             chunks[chunkPosition] = chunk;
-
         }
     }
-
-
 }

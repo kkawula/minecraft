@@ -23,12 +23,13 @@ public:
 
 private:
 
-    std::vector<std::vector<float>> GenerateHeightMap(int width, int height, int octave);
+    std::vector<std::vector<float>> GenerateHeightMap(int width, int height);
     std::vector<std::vector<float>> GenerateBiomeMap(int width, int height, int octave);
 
     std::map<std::pair<int, int>, std::shared_ptr<Chunk>> chunks;
 
-    siv::PerlinNoise perlin;
+    siv::PerlinNoise perlinHeight;
+    siv::PerlinNoise perlinBiome;
 };
 
 
