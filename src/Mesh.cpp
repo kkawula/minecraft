@@ -7,28 +7,40 @@ void Mesh::BuildMesh(const Block blocks[config::CHUNK_SIZE][config::CHUNK_HEIGHT
         for (int y = 0; y < config::CHUNK_HEIGHT; ++y) {
             for (int z = 0; z < config::CHUNK_SIZE; ++z) {
                 const Block& block = blocks[x][y][z];
-                if (!block.IsSolid()) continue;
+                if (block.GetType() == Block::AIR) continue;
 
-                if (x == 0 || !blocks[x - 1][y][z].IsSolid()) {
-                    addFaceVertices(vertices, x, y, z, block, 0);
-                }
-                if (x == config::CHUNK_SIZE - 1 || !blocks[x + 1][y][z].IsSolid()) {
-                    addFaceVertices(vertices, x, y, z, block, 1);
-                }
-                if (y == 0 || !blocks[x][y - 1][z].IsSolid()) {
-                    addFaceVertices(vertices, x, y, z, block, 2);
-                }
-                if (y == config::CHUNK_HEIGHT - 1 || !blocks[x][y + 1][z].IsSolid()) {
-                    addFaceVertices(vertices, x, y, z, block, 3);
-                }
-                if (z == 0 || !blocks[x][y][z - 1].IsSolid()) {
-                    addFaceVertices(vertices, x, y, z, block, 4);
-                }
-                if (z == config::CHUNK_SIZE - 1 || !blocks[x][y][z + 1].IsSolid()) {
-                    addFaceVertices(vertices, x, y, z, block, 5);
+                if(block.IsSolid()) {
+                    if (x == 0 || !blocks[x - 1][y][z].IsSolid() ||
+                        (blocks[x - 1][y][z].IsSolid() && blocks[x - 1][y][z].IsTransparent())) {
+                        addFaceVertices(vertices, x, y, z, block, 0);
+                    }
+                    if (x == config::CHUNK_SIZE - 1 || !blocks[x + 1][y][z].IsSolid() ||
+                        (blocks[x + 1][y][z].IsSolid() && blocks[x + 1][y][z].IsTransparent())) {
+                        addFaceVertices(vertices, x, y, z, block, 1);
+                    }
+                    if (y == 0 || !blocks[x][y - 1][z].IsSolid() ||
+                        (blocks[x][y - 1][z].IsSolid() && blocks[x][y - 1][z].IsTransparent())) {
+                        addFaceVertices(vertices, x, y, z, block, 2);
+                    }
+                    if (y == config::CHUNK_HEIGHT - 1 || !blocks[x][y + 1][z].IsSolid() ||
+                        (blocks[x][y + 1][z].IsSolid() && blocks[x][y + 1][z].IsTransparent())) {
+                        addFaceVertices(vertices, x, y, z, block, 3);
+                    }
+                    if (z == 0 || !blocks[x][y][z - 1].IsSolid() ||
+                        (blocks[x][y][z - 1].IsSolid() && blocks[x][y][z - 1].IsTransparent())) {
+                        addFaceVertices(vertices, x, y, z, block, 4);
+                    }
+                    if (z == config::CHUNK_SIZE - 1 || !blocks[x][y][z + 1].IsSolid() ||
+                        (blocks[x][y][z + 1].IsSolid() && blocks[x][y][z + 1].IsTransparent())) {
+                        addFaceVertices(vertices, x, y, z, block, 5);
+                    }
                 }
 
-
+                else{ //WATER
+                    if(y == config::CHUNK_HEIGHT - 1 || !blocks[x][y + 1][z].IsTransparent() || blocks[x][y + 1][z].GetType() == Block::AIR){
+                        addFaceVertices(vertices, x, y, z, block, 3);
+                    }
+                }
             }
         }
     }
@@ -76,21 +88,19 @@ void Mesh::addFaceVertices(std::vector<float>& vertices, int x, int y, int z, co
 
     // Texture coordinates for each vertex
     static const glm::vec2 textureCoords[4] = {
-            glm::vec2(0.0f, 0.0f),
-            glm::vec2(1.0f, 1.0f),
+            glm::vec2(0.0f, 1.0f),
             glm::vec2(1.0f, 0.0f),
-            glm::vec2(0.0f, 1.0f)
+            glm::vec2(1.0f, 1.0f),
+            glm::vec2(0.0f, 0.0f)
     };
 
 
     float tileSize = 1.0 / 16.0;
     int tilesPerRow = 16;
-    int blockType = block.GetType();
-    int tileX = blockType % tilesPerRow;
-    int tileY = blockType / tilesPerRow;
 
-    glm::vec2 tileOffset = glm::vec2(tileX, tileY) * tileSize;
+    std::array<int, 6> textureIndices = Block::GetTextureIndices(block.GetType());
 
+    glm::vec2 tileOffset = glm::vec2(textureIndices[face] % tilesPerRow, textureIndices[face] / tilesPerRow) * tileSize;
 
     for (int i = 0; i < 6; ++i) {
         glm::vec3 vertexPos = glm::vec3(x, y, z) + cubeVertices[faceIndices[face][i]];

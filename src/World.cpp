@@ -76,27 +76,27 @@ World::World() : perlinHeight(static_cast<unsigned int>(std::time(nullptr))), pe
 
                         if (y <= heightMap[globalX][globalZ] * config::CHUNK_HEIGHT) {
                             if(y <= config::WATER_LEVEL + 3 * biomeMap[globalX][globalZ]){
-                                block = Block(7);
+                                block = Block(Block::SAND);
                             }
                             else{
                                 if(biomeMap[globalX][globalZ] < 0.3){
-                                    block = Block(7);
+                                    block = Block(Block::SAND);
                                 } else if(biomeMap[globalX][globalZ] > 0.8 && heightMap[globalX][globalZ] > 0.9){
-                                    block = Block(3);
+                                    block = Block(Block::ROCK);
                                 } else{
-                                    block = Block(0);
+                                    block = Block(Block::GRASS);
                                 }
                             }
                         } else if(y <= config::WATER_LEVEL){
-                            block = Block(8);
+                            block = Block(Block::WATER, false, true);
                         } else {
-                            block = Block(15, false);
+                            block = Block(Block::AIR, false, true);
                         }
-                        chunk.get()->SetBlock(x, y, z, block);
+                        chunk->SetBlock(x, y, z, block);
                     }
                 }
             }
-            chunk.get()->UpdateMesh();
+            chunk->UpdateMesh();
             chunks[chunkPosition] = chunk;
         }
     }
