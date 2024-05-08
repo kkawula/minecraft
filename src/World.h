@@ -26,6 +26,7 @@ private:
 
     std::vector<std::vector<float>> GenerateHeightMap(int width, int height);
     std::vector<std::vector<float>> GenerateBiomeMap(int width, int height, int octave);
+    static void GenerateCactus(std::shared_ptr<Chunk> chunk, int x, int y, int z);
 
     std::map<std::pair<int, int>, std::shared_ptr<Chunk>> chunks;
 
