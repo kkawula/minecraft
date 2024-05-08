@@ -20,8 +20,6 @@ class Renderer {
 private:
     Shader shader;
     Texture texture;
-    VertexArray va;
-    GLuint vao, vbo, ebo;
 
 public:
     Renderer(const std::string& vertexPath, const std::string& fragmentPath, const std::string& texturePath);

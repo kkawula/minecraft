@@ -33,18 +33,9 @@ public:
         mesh.Draw();
     }
 
-    int getVerticesSize() const {
-        return mesh.getVerticesSize();
-    }
-
-    Mesh& getMesh() {
-        return mesh;
-    }
-
 private:
     Block blocks[CHUNK_SIZE][CHUNK_HEIGHT][CHUNK_SIZE];
     Mesh mesh;
-    std::string pomidor = "pomidor";
 };
 
 

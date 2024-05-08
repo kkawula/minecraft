@@ -87,18 +87,25 @@ void Mesh::addFaceVertices(std::vector<float>& vertices, int x, int y, int z, co
     };
 
 
+    float tileSize = 1.0 / 16.0;
+    int tilesPerRow = 16;
+    int blockType = block.GetType();
+    int tileX = blockType % tilesPerRow;
+    int tileY = blockType / tilesPerRow;
+
+    glm::vec2 tileOffset = glm::vec2(tileX, tileY) * tileSize;
+
 
     for (int i = 0; i < 6; ++i) {
         glm::vec3 vertexPos = glm::vec3(x, y, z) + cubeVertices[faceIndices[face][i]];
 
-        // Append vertex position
         vertices.push_back(vertexPos.x);
         vertices.push_back(vertexPos.y);
         vertices.push_back(vertexPos.z);
 
-        // Append texture coordinates
-        vertices.push_back(textureCoords[i % 4].x);
-        vertices.push_back(textureCoords[i % 4].y);
+        glm::vec2 coord = textureCoords[i % 4] * tileSize + tileOffset;
+        vertices.push_back(coord.x);
+        vertices.push_back(coord.y);
 
     }
 }

@@ -34,7 +34,6 @@ public:
 
     std::vector<float> vertices;
     unsigned int VAO, VBO;
-    std::string jajo = "jajo";
     void setupMesh();
 };
 
