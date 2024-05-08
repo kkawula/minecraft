@@ -52,10 +52,79 @@ std::vector<std::vector<float>> World::GenerateBiomeMap(int width, int height, i
     return biomeValues;
 }
 
-void World::GenerateCactus(std::shared_ptr<Chunk> chunk, int x, int y, int z){
+void World::GenerateCactus(std::shared_ptr<Chunk> chunk, int x, int y, int z) {
     for(int i = 0; i < 3 + rand() % 3; i++){
         auto block = Block(Block::CACTUS);
         chunk->SetBlock(x, y + i, z, block);
+    }
+}
+
+void World::GenerateTree(std::shared_ptr<Chunk> chunk, int x, int y, int z) {
+    int trunkHeight = 5 + rand() % 2;
+    for(int i = 0; i < trunkHeight; i++){
+        auto block = Block(Block::WOOD);
+        chunk->SetBlock(x, y + i, z, block);
+    }
+
+    int Y = y + trunkHeight - 2;
+
+    std::vector<std::pair<int,int>> leafOffsets1 = {
+            // x z
+            //first && second level
+            {-1,2},{0,2},{1,2},
+            {-2,1},{-1,1},{0,1},{1,1},{2,1},
+            {-2,0},{-1,0},{1,0},{2,0},
+            {-2,-1},{-1,-1},{0,-1},{1,-1},{2,-1},
+            {-1,-2},{0,-2},{1,-2}
+    };
+
+    std::vector<std::pair<int,int>> leafOffsets2 = {
+            // x z
+            //third level
+            {-1,1},{0,1},{1,1},
+            {-1,0},{0,0},{1,0},
+            {-1,-1},{0,-1},{1,-1},
+    };
+
+    std::vector<std::pair<int,int>> leafOffsets3 = {
+            // x z
+            //fourth level
+            {0,1},
+            {-1,0},{0,0},{1,0},
+            {0,-1}
+    };
+
+
+    for(int i = 0; i < 2; i++){
+        for(const auto& offset : leafOffsets1){
+            int xoff = offset.first;
+            int zoff = offset.second;
+            Block block = Block(Block::LEAF);
+            if(chunk->GetBlock(x + xoff, Y, z + zoff).GetType() == Block::AIR){
+                chunk->SetBlock(x + xoff, Y, z + zoff, block);
+            }
+        }
+        Y++;
+    }
+
+    for(const auto& offset : leafOffsets2){
+        int xoff = offset.first;
+        int zoff = offset.second;
+        Block block = Block(Block::LEAF);
+        if(chunk->GetBlock(x + xoff, Y, z + zoff).GetType() == Block::AIR){
+            chunk->SetBlock(x + xoff, Y, z + zoff, block);
+        }
+    }
+
+    Y++;
+
+    for(const auto& offset : leafOffsets3){
+        int xoff = offset.first;
+        int zoff = offset.second;
+        Block block = Block(Block::LEAF);
+        if(chunk->GetBlock(x + xoff, Y, z + zoff).GetType() == Block::AIR){
+            chunk->SetBlock(x + xoff, Y, z + zoff, block);
+        }
     }
 }
 
@@ -72,7 +141,7 @@ World::World() : perlinHeight(static_cast<unsigned int>(std::time(nullptr))), pe
                 for (int z = 0; z < config::CHUNK_SIZE; ++z) {
                     int globalX = i * config::CHUNK_SIZE + x;
                     int globalZ = j * config::CHUNK_SIZE + z;
-                    int height = heightMap[globalX][globalZ] * config::CHUNK_HEIGHT;
+                    int height = heightMap[globalX][globalZ] * config::CHUNK_HEIGHT_TO_GENERATE;
 
                     for (int y = 0; y < config::CHUNK_HEIGHT; ++y) {
                         Block block;
@@ -110,9 +179,20 @@ World::World() : perlinHeight(static_cast<unsigned int>(std::time(nullptr))), pe
                             block = Block(Block::AIR, false, true);
                         }
 
-                        if(y == height + 1 && biomeMap[globalX][globalZ] < 0.3 && y > config::WATER_LEVEL){
-                            if(rand() % 100 < 1){
-                                World::GenerateCactus(chunk, x, y, z);
+                        if(y == height + 1 && y > config::WATER_LEVEL){
+                            if(biomeMap[globalX][globalZ] < 0.3) {
+                                if (rand() % 100 < 1) {
+                                    World::GenerateCactus(chunk, x, y, z);
+                                }
+                            }
+                            else if(biomeMap[globalX][globalZ] > 0.8 && heightMap[globalX][globalZ] > 0.8){
+                                // mountains
+                            }
+                            else if(chunk->GetBlock(x, y - 1, z).GetType() == Block::GRASS){
+                                if (rand() % 1000 < 15) {
+                                    World::GenerateTree(chunk, x, y, z);
+                                    chunk->SetBlock(x, y - 1, z, Block(Block::DIRT));
+                                }
                             }
                         }
 

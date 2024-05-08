@@ -19,7 +19,9 @@ public:
     static constexpr int ROCK = 4;
     static constexpr int WATER = 5;
     static constexpr int WOOD = 6;
-    static constexpr int CACTUS = 7;
+    static constexpr int LEAF = 7;
+    static constexpr int CACTUS = 8;
+
 
     Block(int type = 0, bool solid = true, bool transparent = false) : type(type), isSolid(solid), isTransparent(transparent) {}
 
