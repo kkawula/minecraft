@@ -31,12 +31,10 @@ void Mesh::BuildMesh(const Block blocks[16][100][16]) {
             }
         }
     }
-    std::cout << "Vertices size: " << this->getVerticesSize() << std::endl;
     setupMesh();
 }
 
 void Mesh::setupMesh() {
-    std::cout << "VAO binded: " << VAO << std::endl;
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
@@ -49,11 +47,8 @@ void Mesh::setupMesh() {
 }
 
 void Mesh::Draw() const {
-    std::cout << "VAO draw: " << VAO << std::endl;
-
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, vertices.size() / 5);
-    std::cout << vertices.size() << std::endl;
     glBindVertexArray(0);
 }
 

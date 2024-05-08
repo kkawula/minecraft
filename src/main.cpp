@@ -40,7 +40,7 @@ GLfloat lastFrame = 0.0f;
 // The MAIN function, from here we start our application and run our Game loop
 int main(int argc, char *argv[])
 {
-    Window window(config::WINDOW_WIDTH, config::WINDOW_WIDTH, "Mincecraft");
+    Window window(config::WINDOW_WIDTH, config::WINDOW_HEIGHT, "Mincecraft");
 
     // Set the required callback functions
     window.setCursorPosCallback(MouseCallback);
