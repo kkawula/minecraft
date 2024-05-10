@@ -11,9 +11,8 @@ class Chunk {
 public:
 
     Chunk() {
-        mesh.setupMesh();
+        //mesh.setupMesh();
     }
-
 
     const Block& GetBlock(int x, int y, int z) const {
         return blocks[x][y][z];

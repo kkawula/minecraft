@@ -4,6 +4,7 @@
 #include <memory>
 #include "config.h"
 #include <iostream>
+#include <thread>
 
 std::vector<std::vector<float>> World::GenerateHeightMap(int width, int height) {
     std::vector<std::vector<float>> noiseValues(width, std::vector<float>(height, 0.0f));
@@ -12,20 +13,39 @@ std::vector<std::vector<float>> World::GenerateHeightMap(int width, int height) 
     float minNoise = std::numeric_limits<float>::max();
     float maxNoise = std::numeric_limits<float>::min();
 
-    for (int x = 0; x < width; ++x) {
-        for (int y = 0; y < height; ++y) {
-            int octaves[4] = {3, 6, 12, 24};
-            float multipliers[4] = {1.0f, .5f, .25f, .125f};
-            noiseValues[x][y] = 0;
+    auto generateColumn = [&](int start, int end) {
+        for (int x = start; x < end; ++x) {
+            for (int y = 0; y < height; ++y) {
+                int octaves[4] = {3, 6, 12, 24};
+                float multipliers[4] = {1.0f, .5f, .25f, .125f};
+                noiseValues[x][y] = 0;
 
-            for(int i = 0; i < 4; i++){
-                auto noise = static_cast<float>(perlinHeight.octave2D_01((x * frequency), (y * frequency), octaves[i]));
-                noiseValues[x][y] += noise * multipliers[i];
+                for(int i = 0; i < 4; i++){
+                    auto noise = static_cast<float>(perlinHeight.octave2D_01((x * frequency), (y * frequency), octaves[i]));
+                    noiseValues[x][y] += noise * multipliers[i];
 
-                minNoise = std::min(minNoise, noiseValues[x][y]);
-                maxNoise = std::max(maxNoise, noiseValues[x][y]);
+                    minNoise = std::min(minNoise, noiseValues[x][y]);
+                    maxNoise = std::max(maxNoise, noiseValues[x][y]);
+                }
             }
         }
+    };
+
+    int numThreads = std::thread::hardware_concurrency();
+    std::vector<std::thread> threads;
+
+    int chunkSize = width / numThreads;
+    int start = 0;
+    int end = 0;
+
+    for (int i = 0; i < numThreads; ++i) {
+        start = i * chunkSize;
+        end = (i == numThreads - 1) ? width : (i + 1) * chunkSize;
+        threads.emplace_back(generateColumn, start, end);
+    }
+
+    for (auto& thread : threads) {
+        thread.join();
     }
 
     float range = maxNoise - minNoise;
@@ -142,33 +162,6 @@ void World::GenerateVegetation(std::vector<std::vector<float>> heightMap, std::v
             }
         }
     }
-    /*for(int x = 0; x < config::CHUNK_SIZE * config::WORLD_SIZE; x++){
-        for(int z = 0; z < config::CHUNK_SIZE * config::WORLD_SIZE; z++){
-            int y = heightMap[x][z] * config::CHUNK_HEIGHT_TO_GENERATE + 1;
-            int chunkX = x / config::CHUNK_SIZE;
-            int chunkZ = z / config::CHUNK_SIZE;
-            std::shared_ptr<Chunk> chunk = GetChunk(chunkX, chunkZ);
-
-            if(y > config::WATER_LEVEL){
-                if(biomeMap[x][z] < 0.3 && chunk->GetBlock(x % config::CHUNK_SIZE, y - 1, z % config::CHUNK_SIZE).GetType() == Block::SAND) {
-                    if (rand() % 100 < 1) {
-                        World::GenerateCactus(chunk, x, y, z);
-                    }
-                }
-                else if(biomeMap[x][z] > 0.8 && heightMap[x][z] > 0.8){
-                    // mountains
-                }
-                else if(chunk->GetBlock(chunkX, y - 1, chunkZ).GetType() == Block::GRASS){
-                    if (rand() % 1000 < 10000) {
-                        if(chunkX >= 2 && chunkX <= 13 && chunkZ >= 2 && chunkZ <= 13){
-                            World::GenerateTree(chunk, chunkX, y, chunkZ);
-                            chunk->SetBlock(chunkX, y - 1, chunkZ, Block(Block::DIRT));
-                        }
-                    }
-                }
-            }
-        }
-    }*/
 }
 
 void World::GenerateCactus(const std::shared_ptr<Chunk>& chunk, int x, int y, int z) {
@@ -247,12 +240,27 @@ void World::GenerateTree(const std::shared_ptr<Chunk>& chunk, int x, int y, int 
     }
 }
 
+void updateMesh(const std::shared_ptr<Chunk>& chunk){
+    chunk->UpdateMesh();
+}
+
 World::World() : perlinHeight(static_cast<unsigned int>(std::time(nullptr))), perlinBiome(std::rand()) {
     std::vector<std::vector<float>> heightMap = GenerateHeightMap(config::NOISE_WIDTH, config::NOISE_HEIGHT);
     std::vector<std::vector<float>> biomeMap = GenerateBiomeMap(config::NOISE_WIDTH, config::NOISE_HEIGHT, config::BIOME_OCTAVE);
 
     GenerateTerrain(heightMap, biomeMap);
     GenerateVegetation(heightMap, biomeMap);
+
+    /*std::vector<std::thread> threads;
+
+    for(const auto& pair : chunks){
+        std::shared_ptr<Chunk> chunk = pair.second;
+        threads.emplace_back(updateMesh, chunk);
+    }
+
+    for (auto& thread : threads) {
+        thread.join();
+    }*/
 
     for(const auto& pair : chunks){
         std::shared_ptr<Chunk> chunk = pair.second;
