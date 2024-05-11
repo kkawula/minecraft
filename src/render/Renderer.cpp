@@ -1,18 +1,12 @@
 #include "Renderer.h"
-#include "config.h"
+#include "../config.h"
 
-Renderer::Renderer(const std::string& vertexPath, const std::string& fragmentPath, const std::string& texturePath)
+Renderer::Renderer(World& world, const std::string& vertexPath, const std::string& fragmentPath, const std::string& texturePath)
         : shader(vertexPath, fragmentPath), texture(texturePath) {
-    SetupMesh();
+    this->world = &world;
 }
 
-Renderer::~Renderer() {
-}
-
-void Renderer::SetupMesh() {
-}
-
-void Renderer::Render(World &world, Camera& camera) {
+void Renderer::Render(Camera& camera) {
     shader.Use();
     texture.Bind();
 
@@ -32,7 +26,7 @@ void Renderer::Render(World &world, Camera& camera) {
 
     for (int i = 0; i < config::WORLD_SIZE; ++i) {
         for (int j = 0; j < config::WORLD_SIZE; ++j) {
-            std::shared_ptr<Chunk> chunk = world.GetChunk(i, j);
+            auto chunk = world->GetChunk(i, j);
             glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(i * config::CHUNK_SIZE, 1, j * config::CHUNK_SIZE));
 
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));

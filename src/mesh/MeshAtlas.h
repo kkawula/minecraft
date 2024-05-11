@@ -1,0 +1,10 @@
+#ifndef MINECRAFT_MESHATLAS_H
+#define MINECRAFT_MESHATLAS_H
+
+
+class MeshAtlas {
+
+};
+
+
+#endif //MINECRAFT_MESHATLAS_H

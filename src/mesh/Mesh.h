@@ -3,10 +3,10 @@
 
 #include <GL/glew.h>
 #include <vector>
-#include "Block.h"
+#include "../world/Block.h"
 #include <glm/glm.hpp>
 #include <iostream>
-#include "config.h"
+#include "../config.h"
 
 class Mesh {
 public:
@@ -20,14 +20,12 @@ public:
         glDeleteBuffers(1, &VBO);
     }
 
-    void BuildMesh(const Block blocks[config::CHUNK_SIZE][config::CHUNK_HEIGHT][config::CHUNK_SIZE]);
     void Draw() const;
 
-    void addFaceVertices(std::vector<float>& vertices, int x, int y, int z, const Block& block, int face);
 
-    std::vector<float> vertices;
     unsigned int VAO, VBO;
-    void setupMesh();
+    unsigned int vertexCount = 0;
+    void setupMesh(const std::vector<float>& vert);
 };
 
 #endif //MINECRAFT_MESH_H

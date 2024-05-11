@@ -2,8 +2,7 @@
 #include <ctime>
 #include <algorithm>
 #include <memory>
-#include "config.h"
-#include <iostream>
+#include "../config.h"
 
 std::vector<std::vector<float>> World::GenerateHeightMap(int width, int height) {
     std::vector<std::vector<float>> noiseValues(width, std::vector<float>(height, 0.0f));
@@ -256,6 +255,6 @@ World::World() : perlinHeight(static_cast<unsigned int>(std::time(nullptr))), pe
 
     for(const auto& pair : chunks){
         std::shared_ptr<Chunk> chunk = pair.second;
-        chunk->UpdateMesh();
+//        chunk->UpdateMesh();
     }
 }

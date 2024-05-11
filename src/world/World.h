@@ -5,7 +5,7 @@
 #include <memory>
 
 #include "Chunk.h"
-#include "libs/PerlinNoise.hpp"
+#include "../libs/PerlinNoise.hpp"
 
 
 class World

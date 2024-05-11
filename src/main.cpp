@@ -5,14 +5,15 @@
 #include <GLFW/glfw3.h>
 
 // GL includes
-#include "Shader.h"
+#include "utils/Shader.h"
 #include "Camera.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Window.h"
-#include "Renderer.h"
+#include "render/Renderer.h"
 #include "config.h"
+#include "mesh/ChunkMeshGenerator.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -74,10 +75,11 @@ int main(int argc, char *argv[])
     fs::path vertShaderPath = shaderDir / "vert.glsl";
     fs::path fragShaderPath = shaderDir / "frag.glsl";
     fs::path texturePath = textureDir / "blockPack.png";
-
-    Renderer renderer(vertShaderPath.string(), fragShaderPath.string(), texturePath.string());
-
     World world;
+
+    Renderer renderer(world, vertShaderPath.string(), fragShaderPath.string(), texturePath.string());
+    ChunkMeshGenerator chunkMeshGenerator(world);
+    chunkMeshGenerator.setupMeshes();
     // Game loop
     while (!window.ShouldClose()) {
         GLfloat currentFrame = glfwGetTime();
@@ -90,7 +92,7 @@ int main(int argc, char *argv[])
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        renderer.Render(world, camera);
+        renderer.Render(camera);
 
         // Swap buffers
         window.swapBuffers();

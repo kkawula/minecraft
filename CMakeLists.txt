@@ -27,21 +27,28 @@ find_package(GLEW REQUIRED)
 set(SOURCE_FILES
         src/main.cpp
         src/libs/stb_image.h
-        src/Texture.cpp
-        src/VertexArray.h
-        src/VertexBuffer.h
+        src/utils/Texture.cpp
+        src/utils/VertexArray.h
+        src/utils/VertexBuffer.h
         src/Window.cpp
         src/Window.h
-        src/Renderer.cpp
-        src/Renderer.h
-        src/World.cpp
-        src/World.h
-        src/Block.cpp
-        src/Block.h
-        src/Chunk.cpp
-        src/Chunk.h
-        src/Mesh.cpp
+        src/render/Renderer.cpp
+        src/render/Renderer.h
+        src/world/World.cpp
+        src/world/World.h
+        src/world/Block.cpp
+        src/world/Block.h
+        src/world/Chunk.h
+        src/mesh/Mesh.cpp
         src/config.h
+        src/render/ChunkRenderer.cpp
+        src/render/ChunkRenderer.h
+        src/mesh/ChunkMeshGenerator.cpp
+        src/mesh/ChunkMeshGenerator.h
+        src/mesh/MeshAtlas.cpp
+        src/mesh/MeshAtlas.h
+        src/mesh/ChunkMesh.cpp
+        src/mesh/ChunkMesh.h
 
 )
 
