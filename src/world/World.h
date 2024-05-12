@@ -36,11 +36,11 @@ public:
     }
 
 private:
-    void GenerateTerrain(std::vector<std::vector<float>> heightMap, std::vector<std::vector<float>> biomeMap);
-    void GenerateVegetation(std::vector<std::vector<float>> heightMap, std::vector<std::vector<float>> biomeMap);
+    void GenerateTerrain();
+    void GenerateVegetation();
 
-    std::vector<std::vector<float>> GenerateHeightMap(int width, int height);
-    std::vector<std::vector<float>> GenerateBiomeMap(int width, int height, int octave);
+    float GetHeightValue(int x, int z);
+    float GetBiomeValue(int x, int z);
 
     static void GenerateCactus(const std::shared_ptr<Chunk>& chunk, int x, int y, int z);
     static void GenerateTree(const std::shared_ptr<Chunk>& chunk, int x, int y, int z);

@@ -2,77 +2,28 @@
 #include <ctime>
 #include <algorithm>
 #include <memory>
-#include "../config.h"
-#include <iostream>
-#include <thread>
 
-std::vector<std::vector<float>> World::GenerateHeightMap(int width, int height) {
-    std::vector<std::vector<float>> noiseValues(width, std::vector<float>(height, 0.0f));
+float World::GetHeightValue(int x, int z) {
     float frequency = 0.008;
+    int octaves[4] = {3, 6, 12, 24};
+    float multipliers[4] = {1.0f, .5f, .25f, .125f};
+    float res = 0.0f;
 
-    float minNoise = std::numeric_limits<float>::max();
-    float maxNoise = std::numeric_limits<float>::min();
-
-    auto generateColumn = [&](int start, int end) {
-        for (int x = start; x < end; ++x) {
-            for (int y = 0; y < height; ++y) {
-                int octaves[4] = {3, 6, 12, 24};
-                float multipliers[4] = {1.0f, .5f, .25f, .125f};
-                noiseValues[x][y] = 0;
-
-                for(int i = 0; i < 4; i++){
-                    auto noise = static_cast<float>(perlinHeight.octave2D_01((x * frequency), (y * frequency), octaves[i]));
-                    noiseValues[x][y] += noise * multipliers[i];
-
-                    minNoise = std::min(minNoise, noiseValues[x][y]);
-                    maxNoise = std::max(maxNoise, noiseValues[x][y]);
-                }
-            }
-        }
-    };
-
-    int numThreads = std::thread::hardware_concurrency();
-    std::vector<std::thread> threads;
-
-    int chunkSize = width / numThreads;
-    int start = 0;
-    int end = 0;
-
-    for (int i = 0; i < numThreads; ++i) {
-        start = i * chunkSize;
-        end = (i == numThreads - 1) ? width : (i + 1) * chunkSize;
-        threads.emplace_back(generateColumn, start, end);
+    for(int i = 0; i < 4; i++){
+        auto noise = static_cast<float>(perlinHeight.octave2D_01((x * frequency), (z * frequency), octaves[i]));
+        res += noise * multipliers[i];
     }
 
-    for (auto& thread : threads) {
-        thread.join();
-    }
-
-    float range = maxNoise - minNoise;
-    for (int x = 0; x < width; ++x) {
-        for (int y = 0; y < height; ++y) {
-            noiseValues[x][y] = (noiseValues[x][y] - minNoise) / range;
-        }
-    }
-
-    return noiseValues;
+    return res * 0.5f;
 }
 
-std::vector<std::vector<float>> World::GenerateBiomeMap(int width, int height, int octave) {
-    std::vector<std::vector<float>> biomeValues(width, std::vector<float>(height, 0.0f));
+float World::GetBiomeValue(int x, int z) {
     float frequency = 0.005;
 
-    for (int x = 0; x < width; ++x) {
-        for (int y = 0; y < height; ++y) {
-            auto noise = static_cast<float>(perlinBiome.octave2D_01((x * frequency), (y * frequency), octave));
-            biomeValues[x][y] = noise;
-        }
-    }
-
-    return biomeValues;
+    return static_cast<float>(perlinBiome.octave2D_01((x * frequency), (z * frequency), config::BIOME_OCTAVE));
 }
 
-void World::GenerateTerrain(std::vector<std::vector<float>> heightMap, std::vector<std::vector<float>> biomeMap) {
+void World::GenerateTerrain() {
     for (int i = 0; i < config::WORLD_SIZE; ++i) {
         for (int j = 0; j < config::WORLD_SIZE; ++j) {
             std::pair<int, int> chunkPosition = std::make_pair(i, j);
@@ -82,7 +33,11 @@ void World::GenerateTerrain(std::vector<std::vector<float>> heightMap, std::vect
                 for (int z = 0; z < config::CHUNK_SIZE; ++z) {
                     int globalX = i * config::CHUNK_SIZE + x;
                     int globalZ = j * config::CHUNK_SIZE + z;
-                    int height = heightMap[globalX][globalZ] * config::CHUNK_HEIGHT_TO_GENERATE;
+
+                    float heightValue = GetHeightValue(globalX, globalZ);
+                    float biomeValue = GetBiomeValue(globalX, globalZ);
+
+                    int height = heightValue * config::CHUNK_HEIGHT_TO_GENERATE;
 
                     for (int y = 0; y < config::CHUNK_HEIGHT; ++y) {
                         Block block;
@@ -90,16 +45,16 @@ void World::GenerateTerrain(std::vector<std::vector<float>> heightMap, std::vect
                         if (y <= height) {
                             int dirtAppearingHeight = 1;
                             int rockAppearingHeight = 3;
-                            if (y <= config::WATER_LEVEL + 3 * biomeMap[globalX][globalZ]) {
+                            if (y <= config::WATER_LEVEL + 3 * biomeValue) {
                                 block = Block(Block::SAND);
                                 dirtAppearingHeight = 3;
                                 rockAppearingHeight = 5;
                             } else {
-                                if (biomeMap[globalX][globalZ] < 0.3) {
+                                if (biomeValue < 0.3) {
                                     block = Block(Block::SAND);
                                     dirtAppearingHeight = 3;
                                     rockAppearingHeight = 5;
-                                } else if (biomeMap[globalX][globalZ] > 0.8 && heightMap[globalX][globalZ] > 0.8) {
+                                } else if (biomeValue > 0.8 && heightValue > 0.8) {
                                     block = Block(Block::ROCK);
                                     dirtAppearingHeight = config::CHUNK_HEIGHT; // so that it doesn't appear
                                     rockAppearingHeight = 1;
@@ -129,7 +84,7 @@ void World::GenerateTerrain(std::vector<std::vector<float>> heightMap, std::vect
     }
 }
 
-void World::GenerateVegetation(std::vector<std::vector<float>> heightMap, std::vector<std::vector<float>> biomeMap) {
+void World::GenerateVegetation() {
     for (int i = 0; i < config::WORLD_SIZE; ++i) {
         for (int j = 0; j < config::WORLD_SIZE; ++j) {
             std::shared_ptr<Chunk> chunk = GetChunk(i, j);
@@ -138,15 +93,19 @@ void World::GenerateVegetation(std::vector<std::vector<float>> heightMap, std::v
                 for (int z = 0; z < config::CHUNK_SIZE; ++z) {
                     int globalX = i * config::CHUNK_SIZE + x;
                     int globalZ = j * config::CHUNK_SIZE + z;
-                    int y = heightMap[globalX][globalZ] * config::CHUNK_HEIGHT_TO_GENERATE + 1;
+
+                    float heightValue = GetHeightValue(globalX, globalZ);
+                    float biomeValue = GetBiomeValue(globalX, globalZ);
+
+                    int y = heightValue * config::CHUNK_HEIGHT_TO_GENERATE + 1;
 
                     if(y > config::WATER_LEVEL){
-                        if(biomeMap[globalX][globalZ] < 0.3 && chunk->GetBlock(x, y - 1, z).GetType() == Block::SAND) {
+                        if(biomeValue < 0.3 && chunk->GetBlock(x, y - 1, z).GetType() == Block::SAND) {
                             if (rand() % 100 < 1) {
                                 World::GenerateCactus(chunk, x, y, z);
                             }
                         }
-                        else if(biomeMap[globalX][globalZ] > 0.8 && heightMap[globalX][globalZ] > 0.8){
+                        else if(biomeValue > 0.8 && heightValue > 0.8){
                             // mountains
                         }
                         else if(chunk->GetBlock(x, y - 1, z).GetType() == Block::GRASS){
@@ -211,7 +170,7 @@ void World::GenerateTree(const std::shared_ptr<Chunk>& chunk, int x, int y, int 
         for(const auto& offset : leafOffsets1){
             int xoff = offset.first;
             int zoff = offset.second;
-            Block block = Block(Block::LEAF);
+            auto block = Block(Block::LEAF);
             if(chunk->GetBlock(x + xoff, Y, z + zoff).GetType() == Block::AIR){
                 chunk->SetBlock(x + xoff, Y, z + zoff, block);
             }
@@ -222,7 +181,7 @@ void World::GenerateTree(const std::shared_ptr<Chunk>& chunk, int x, int y, int 
     for(const auto& offset : leafOffsets2){
         int xoff = offset.first;
         int zoff = offset.second;
-        Block block = Block(Block::LEAF);
+        auto block = Block(Block::LEAF);
         if(chunk->GetBlock(x + xoff, Y, z + zoff).GetType() == Block::AIR){
             chunk->SetBlock(x + xoff, Y, z + zoff, block);
         }
@@ -233,7 +192,7 @@ void World::GenerateTree(const std::shared_ptr<Chunk>& chunk, int x, int y, int 
     for(const auto& offset : leafOffsets3){
         int xoff = offset.first;
         int zoff = offset.second;
-        Block block = Block(Block::LEAF);
+        auto block = Block(Block::LEAF);
         if(chunk->GetBlock(x + xoff, Y, z + zoff).GetType() == Block::AIR){
             chunk->SetBlock(x + xoff, Y, z + zoff, block);
         }
@@ -241,10 +200,6 @@ void World::GenerateTree(const std::shared_ptr<Chunk>& chunk, int x, int y, int 
 }
 
 World::World() : perlinHeight(static_cast<unsigned int>(std::time(nullptr))), perlinBiome(std::rand()) {
-    std::vector<std::vector<float>> heightMap = GenerateHeightMap(config::NOISE_WIDTH, config::NOISE_HEIGHT);
-    std::vector<std::vector<float>> biomeMap = GenerateBiomeMap(config::NOISE_WIDTH, config::NOISE_HEIGHT, config::BIOME_OCTAVE);
-
-    GenerateTerrain(heightMap, biomeMap);
-    GenerateVegetation(heightMap, biomeMap);
-
+    GenerateTerrain();
+    GenerateVegetation();
 }
