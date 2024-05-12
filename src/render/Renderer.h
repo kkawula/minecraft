@@ -22,13 +22,12 @@ class Renderer {
 private:
     Shader shader;
     Texture texture;
-    World* world;
     MeshAtlas* atlas;
 
     std::unique_ptr<ChunkRenderer> chunkRenderer;
 
 public:
-    Renderer(MeshAtlas& atlas, World& world, const std::string& vertexPath, const std::string& fragmentPath, const std::string& texturePath);
+    Renderer(MeshAtlas& atlas, const std::string& vertexPath, const std::string& fragmentPath, const std::string& texturePath);
 
     void Render(Camera& camera);
 };

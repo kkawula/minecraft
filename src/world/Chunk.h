@@ -18,21 +18,12 @@ public:
         blocks[x][y][z] = block;
     }
 
-    void DrawMesh() const {
-        mesh.Draw();
-    }
-
     Block (&GetBlocks())[config::CHUNK_SIZE][config::CHUNK_HEIGHT][config::CHUNK_SIZE] {
         return blocks;
     }
 
-    void setupMesh(const std::vector<float>& vert) {
-        mesh.setupMesh(vert);
-    }
-
 private:
     Block blocks[config::CHUNK_SIZE][config::CHUNK_HEIGHT][config::CHUNK_SIZE];
-    Mesh mesh;
 };
 
 

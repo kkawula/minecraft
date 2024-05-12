@@ -35,7 +35,6 @@ void ChunkMeshGenerator::setupMeshes() {
                     }
                 }
             }
-//            chunk.get()->setupMesh(vert);
             atlas->chunkMeshes[std::make_pair(i, j)].get()->setupMesh(vert);
         }
     }

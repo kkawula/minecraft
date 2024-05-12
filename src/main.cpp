@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
     ChunkMeshGenerator chunkMeshGenerator(world, meshAtlas);
     chunkMeshGenerator.setupMeshes();
 
-    Renderer renderer(meshAtlas, world, vertShaderPath.string(), fragShaderPath.string(), texturePath.string());
+    Renderer renderer(meshAtlas, vertShaderPath.string(), fragShaderPath.string(), texturePath.string());
 
     // Game loop
     while (!window.ShouldClose()) {
