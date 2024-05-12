@@ -45,10 +45,9 @@ set(SOURCE_FILES
         src/render/ChunkRenderer.h
         src/mesh/ChunkMeshGenerator.cpp
         src/mesh/ChunkMeshGenerator.h
-        src/mesh/MeshAtlas.cpp
         src/mesh/MeshAtlas.h
-        src/mesh/ChunkMesh.cpp
-        src/mesh/ChunkMesh.h
+        src/utils/FileSystem.cpp
+        src/utils/FileSystem.h
 
 )
 

@@ -15,6 +15,7 @@
 #include "config.h"
 #include "mesh/ChunkMeshGenerator.h"
 #include "mesh/MeshAtlas.h"
+#include "utils/FileSystem.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -43,6 +44,8 @@ GLfloat lastFrame = 0.0f;
 int main(int argc, char *argv[])
 {
     Window window(config::WINDOW_WIDTH, config::WINDOW_HEIGHT, "Minecraft");
+    FileSystem::initialize(argv[0]);
+
 
     // Set the required callback functions
     window.setCursorPosCallback(MouseCallback);
@@ -69,13 +72,7 @@ int main(int argc, char *argv[])
     // enable alpha support
     glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-    fs::path basePath = fs::absolute(argv[0]).parent_path();
-    fs::path shaderDir = basePath / "res" / "shaders";
-    fs::path textureDir = basePath / "res" / "images";
 
-    fs::path vertShaderPath = shaderDir / "vert.glsl";
-    fs::path fragShaderPath = shaderDir / "frag.glsl";
-    fs::path texturePath = textureDir / "blockPack.png";
     World world;
 
     MeshAtlas meshAtlas;
@@ -83,7 +80,7 @@ int main(int argc, char *argv[])
     ChunkMeshGenerator chunkMeshGenerator(world, meshAtlas);
     chunkMeshGenerator.setupMeshes();
 
-    Renderer renderer(meshAtlas, vertShaderPath.string(), fragShaderPath.string(), texturePath.string());
+    Renderer renderer(meshAtlas);
 
     // Game loop
     while (!window.ShouldClose()) {
