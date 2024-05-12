@@ -2,7 +2,7 @@
 #include <ctime>
 #include <algorithm>
 #include <memory>
-#include "config.h"
+#include "../config.h"
 #include <iostream>
 #include <thread>
 
@@ -240,10 +240,6 @@ void World::GenerateTree(const std::shared_ptr<Chunk>& chunk, int x, int y, int 
     }
 }
 
-void updateMesh(const std::shared_ptr<Chunk>& chunk){
-    chunk->UpdateMesh();
-}
-
 World::World() : perlinHeight(static_cast<unsigned int>(std::time(nullptr))), perlinBiome(std::rand()) {
     std::vector<std::vector<float>> heightMap = GenerateHeightMap(config::NOISE_WIDTH, config::NOISE_HEIGHT);
     std::vector<std::vector<float>> biomeMap = GenerateBiomeMap(config::NOISE_WIDTH, config::NOISE_HEIGHT, config::BIOME_OCTAVE);
@@ -251,19 +247,4 @@ World::World() : perlinHeight(static_cast<unsigned int>(std::time(nullptr))), pe
     GenerateTerrain(heightMap, biomeMap);
     GenerateVegetation(heightMap, biomeMap);
 
-    /*std::vector<std::thread> threads;
-
-    for(const auto& pair : chunks){
-        std::shared_ptr<Chunk> chunk = pair.second;
-        threads.emplace_back(updateMesh, chunk);
-    }
-
-    for (auto& thread : threads) {
-        thread.join();
-    }*/
-
-    for(const auto& pair : chunks){
-        std::shared_ptr<Chunk> chunk = pair.second;
-        chunk->UpdateMesh();
-    }
 }

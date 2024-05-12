@@ -2,19 +2,15 @@
 #define MINECRAFT_CHUNK_H
 
 #include "Block.h"
-#include "Mesh.h"
+#include "../mesh/Mesh.h"
 #include <utility>
 #include <iostream>
-#include "config.h"
+#include "../config.h"
 
 class Chunk {
 public:
 
-    Chunk() {
-        //mesh.setupMesh();
-    }
-
-    const Block& GetBlock(int x, int y, int z) const {
+    const Block& GetBlock(int x, int y, int z) {
         return blocks[x][y][z];
     }
 
@@ -22,18 +18,12 @@ public:
         blocks[x][y][z] = block;
     }
 
-    void UpdateMesh() {
-        mesh.BuildMesh(blocks);
-        std::cout<< "Mesh updated" << std::endl;
-    }
-
-    void DrawMesh() const {
-        mesh.Draw();
+    Block (&GetBlocks())[config::CHUNK_SIZE][config::CHUNK_HEIGHT][config::CHUNK_SIZE] {
+        return blocks;
     }
 
 private:
     Block blocks[config::CHUNK_SIZE][config::CHUNK_HEIGHT][config::CHUNK_SIZE];
-    Mesh mesh;
 };
 
 
