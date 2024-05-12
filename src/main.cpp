@@ -14,6 +14,7 @@
 #include "render/Renderer.h"
 #include "config.h"
 #include "mesh/ChunkMeshGenerator.h"
+#include "mesh/MeshAtlas.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -77,9 +78,13 @@ int main(int argc, char *argv[])
     fs::path texturePath = textureDir / "blockPack.png";
     World world;
 
-    Renderer renderer(world, vertShaderPath.string(), fragShaderPath.string(), texturePath.string());
-    ChunkMeshGenerator chunkMeshGenerator(world);
+    MeshAtlas meshAtlas;
+
+    ChunkMeshGenerator chunkMeshGenerator(world, meshAtlas);
     chunkMeshGenerator.setupMeshes();
+
+    Renderer renderer(meshAtlas, world, vertShaderPath.string(), fragShaderPath.string(), texturePath.string());
+
     // Game loop
     while (!window.ShouldClose()) {
         GLfloat currentFrame = glfwGetTime();
@@ -89,7 +94,7 @@ int main(int argc, char *argv[])
         glfwPollEvents();
         DoMovement();
 
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.43f, 0.69f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         renderer.Render(camera);

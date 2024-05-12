@@ -2,8 +2,9 @@
 
 #include "../config.h"
 
-ChunkMeshGenerator::ChunkMeshGenerator(World& world) {
+ChunkMeshGenerator::ChunkMeshGenerator(World& world, MeshAtlas& atlas) {
     this->world = &world;
+    this->atlas = &atlas;
 }
 
 void ChunkMeshGenerator::setupMeshes() {
@@ -34,7 +35,8 @@ void ChunkMeshGenerator::setupMeshes() {
                     }
                 }
             }
-            chunk.get()->setupMesh(vert);
+//            chunk.get()->setupMesh(vert);
+            atlas->chunkMeshes[std::make_pair(i, j)].get()->setupMesh(vert);
         }
     }
 }

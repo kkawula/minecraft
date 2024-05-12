@@ -253,8 +253,4 @@ World::World() : perlinHeight(static_cast<unsigned int>(std::time(nullptr))), pe
     GenerateTerrain(heightMap, biomeMap);
     GenerateVegetation(heightMap, biomeMap);
 
-    for(const auto& pair : chunks){
-        std::shared_ptr<Chunk> chunk = pair.second;
-//        chunk->UpdateMesh();
-    }
 }

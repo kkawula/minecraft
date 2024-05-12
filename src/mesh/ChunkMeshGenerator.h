@@ -3,10 +3,11 @@
 
 #include "../world/World.h"
 #include <vector>
+#include "MeshAtlas.h"
 
 class ChunkMeshGenerator {
 public:
-    ChunkMeshGenerator(World& world);
+    ChunkMeshGenerator(World& world, MeshAtlas& atlas);
 
     void setupMeshes();
     void addFaceVertices(std::vector<float>& vertices, int x, int y, int z, const Block& block, int face);
@@ -14,6 +15,7 @@ public:
     std::vector<float> vert;
 private:
     World* world;
+    MeshAtlas* atlas;
 
 };
 

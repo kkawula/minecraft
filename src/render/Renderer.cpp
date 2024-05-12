@@ -1,9 +1,10 @@
 #include "Renderer.h"
 #include "../config.h"
 
-Renderer::Renderer(World& world, const std::string& vertexPath, const std::string& fragmentPath, const std::string& texturePath)
+Renderer::Renderer(MeshAtlas& atlas, World& world, const std::string& vertexPath, const std::string& fragmentPath, const std::string& texturePath)
         : shader(vertexPath, fragmentPath), texture(texturePath) {
     this->world = &world;
+    this->atlas = &atlas;
 }
 
 void Renderer::Render(Camera& camera) {
@@ -31,7 +32,8 @@ void Renderer::Render(Camera& camera) {
 
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-            chunk.get()->DrawMesh();
+//            chunk.get()->DrawMesh();
+            atlas->chunkMeshes[std::make_pair(i, j)].get()->Draw();
         }
     }
 

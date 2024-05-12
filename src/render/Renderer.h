@@ -12,6 +12,7 @@
 #include "../utils/Texture.h"
 #include "../world/World.h"
 #include "../Camera.h"
+#include "../mesh/MeshAtlas.h"
 
 #include "ChunkRenderer.h"
 
@@ -22,11 +23,12 @@ private:
     Shader shader;
     Texture texture;
     World* world;
+    MeshAtlas* atlas;
 
     std::unique_ptr<ChunkRenderer> chunkRenderer;
 
 public:
-    Renderer(World& world, const std::string& vertexPath, const std::string& fragmentPath, const std::string& texturePath);
+    Renderer(MeshAtlas& atlas, World& world, const std::string& vertexPath, const std::string& fragmentPath, const std::string& texturePath);
 
     void Render(Camera& camera);
 };
