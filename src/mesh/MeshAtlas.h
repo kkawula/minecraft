@@ -8,8 +8,8 @@
 class MeshAtlas {
 public:
     MeshAtlas() {
-        for (int x = config::WORLD_MIN_X; x < config::WORLD_MAX_X; x++) {
-            for (int z = config::WORLD_MIN_Z; z < config::WORLD_MAX_Z; z++) {
+        for (int x = config::WORLD_MIN_X; x <= config::WORLD_MAX_X; x++) {
+            for (int z = config::WORLD_MIN_Z; z <= config::WORLD_MAX_Z; z++) {
                 chunkMeshes[std::make_pair(x, z)] = std::make_shared<Mesh>();
             }
         }

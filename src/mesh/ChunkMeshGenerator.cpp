@@ -1,17 +1,15 @@
 #include "ChunkMeshGenerator.h"
 
-#include "../config.h"
-
 ChunkMeshGenerator::ChunkMeshGenerator(World& world, MeshAtlas& atlas) {
     this->world = &world;
     this->atlas = &atlas;
 }
 
 void ChunkMeshGenerator::setupMeshes() {
-    for (int i = config::WORLD_MIN_X; i < config::WORLD_MAX_X; ++i) {
-        for (int j = config::WORLD_MIN_Z; j < config::WORLD_MAX_Z; ++j) {
+    for (int i = config::WORLD_MIN_X; i <= config::WORLD_MAX_X; ++i) {
+        for (int j = config::WORLD_MIN_Z; j <= config::WORLD_MAX_Z; ++j) {
             auto chunk = world->GetChunk(i, j);
-            auto blocks = chunk.get()->GetBlocks();
+            auto blocks = chunk->GetBlocks();
             vert.clear();
             for (int x = 0; x < config::CHUNK_SIZE; ++x) {
                 for (int y = 0; y < config::CHUNK_HEIGHT; ++y) {
@@ -67,6 +65,7 @@ void ChunkMeshGenerator::checkAndAddFace(int chunkX, int chunkZ, int x, int y, i
     if (!neighbor->IsSolid()) {
         addFaceVertices(vert, x, y, z, blocks[x][y][z], face);
     }
+
 }
 
 void ChunkMeshGenerator::addFaceVertices(std::vector<float>& vertices, int x, int y, int z, const Block& block, int face) {

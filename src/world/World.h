@@ -21,11 +21,15 @@ public:
     auto getChunks() const {
         return chunks;
     }
-    Block air = Block(0, 0, 1);
+    Block air = Block(0, false, true);
 
     Block& getBlock(int x, int y, int z) {
-        auto chunkX = x / config::CHUNK_SIZE;
-        auto chunkZ = z / config::CHUNK_SIZE;
+        int X = x;
+        int Z = z;
+        if(x < 0) X++;
+        if(z < 0) Z++;
+        auto chunkX = X / config::CHUNK_SIZE;
+        auto chunkZ = Z / config::CHUNK_SIZE;
         if (x < 0) chunkX--;
         if (z < 0) chunkZ--;
         auto chunk = GetChunk(chunkX, chunkZ);

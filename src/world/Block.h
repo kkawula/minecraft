@@ -3,6 +3,7 @@
 
 #include <array>
 #include <unordered_map>
+#include <iostream>
 
 class Block {
 private:

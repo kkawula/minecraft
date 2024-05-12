@@ -23,9 +23,8 @@ void ChunkRenderer::Render(Camera& camera) {
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-
-    for (int i = 0; i < config::WORLD_SIZE; ++i) {
-        for (int j = 0; j < config::WORLD_SIZE; ++j) {
+    for (int i = config::WORLD_MIN_X; i <= config::WORLD_MAX_X; ++i) {
+        for (int j = config::WORLD_MIN_Z; j <= config::WORLD_MAX_Z; ++j) {
             glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(i * config::CHUNK_SIZE, 1, j * config::CHUNK_SIZE));
 
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
