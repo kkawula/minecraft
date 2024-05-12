@@ -20,12 +20,12 @@ void ChunkMeshGenerator::setupMeshes() {
                         if (block.GetType() == Block::AIR) continue;
 
                         if (block.IsSolid()) {
-                            checkAndAddFace(i, j, x, y, z, blocks, vert, -1, 0, 0, 0);  // Check bottom face
-                            checkAndAddFace(i, j, x, y, z, blocks, vert, 1, 0, 0, 1);   // Check top face
-                            checkAndAddFace(i, j, x, y, z, blocks, vert, 0, -1, 0, 2);  // Check left face
-                            checkAndAddFace(i, j, x, y, z, blocks, vert, 0, 1, 0, 3);   // Check right face
-                            checkAndAddFace(i, j, x, y, z, blocks, vert, 0, 0, -1, 4);  // Check front face
-                            checkAndAddFace(i, j, x, y, z, blocks, vert, 0, 0, 1, 5);   // Check back face
+                            checkAndAddFace(i, j, x, y, z, blocks, vert,  0);
+                            checkAndAddFace(i, j, x, y, z, blocks, vert,  1);
+                            checkAndAddFace(i, j, x, y, z, blocks, vert, 2);
+                            checkAndAddFace(i, j, x, y, z, blocks, vert,  3);
+                            checkAndAddFace(i, j, x, y, z, blocks, vert, 4);
+                            checkAndAddFace(i, j, x, y, z, blocks, vert,5);
                     }
                         else{ //WATER
                             if(y == config::CHUNK_HEIGHT - 1 || !blocks[x][y + 1][z].IsTransparent() || blocks[x][y + 1][z].GetType() == Block::AIR){
@@ -40,7 +40,19 @@ void ChunkMeshGenerator::setupMeshes() {
     }
 }
 
-void ChunkMeshGenerator::checkAndAddFace(int chunkX, int chunkZ, int x, int y, int z, const Block blocks[config::CHUNK_SIZE][config::CHUNK_HEIGHT][config::CHUNK_SIZE], std::vector<float>& vert, int dx, int dy, int dz, int face) {
+void ChunkMeshGenerator::checkAndAddFace(int chunkX, int chunkZ, int x, int y, int z, const Block blocks[config::CHUNK_SIZE][config::CHUNK_HEIGHT][config::CHUNK_SIZE], std::vector<float>& vert, int face) {
+    int vectors[6][3] = {
+            {-1, 0, 0}, // Left face
+            {1, 0, 0}, // Right face
+            {0, -1, 0}, // Bottom face
+            {0, 1, 0}, // Top face
+            {0, 0, -1}, // Back face
+            {0, 0, 1}  // Front face
+    };
+    int dx = vectors[face][0];
+    int dy = vectors[face][1];
+    int dz = vectors[face][2];
+
     int nx = x + dx;
     int ny = y + dy;
     int nz = z + dz;
