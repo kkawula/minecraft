@@ -21,6 +21,19 @@ public:
     auto getChunks() const {
         return chunks;
     }
+    Block air = Block(0, 0, 1);
+
+    Block& getBlock(int x, int y, int z) {
+        auto chunkX = x / config::CHUNK_SIZE;
+        auto chunkZ = z / config::CHUNK_SIZE;
+        if (x < 0) chunkX--;
+        if (z < 0) chunkZ--;
+        auto chunk = GetChunk(chunkX, chunkZ);
+        if (chunk == nullptr || y < 0 || y >= config::CHUNK_HEIGHT) {
+            return air;
+        }
+        return const_cast<Block &>(chunk->GetBlock(x % config::CHUNK_SIZE, y, z % config::CHUNK_SIZE));
+    }
 
 private:
     void GenerateTerrain(std::vector<std::vector<float>> heightMap, std::vector<std::vector<float>> biomeMap);

@@ -18,33 +18,14 @@ void ChunkMeshGenerator::setupMeshes() {
                         const Block& block = blocks[x][y][z];
                         if (block.GetType() == Block::AIR) continue;
 
-                        if(block.IsSolid()) {
-                            if (x == 0 || !blocks[x - 1][y][z].IsSolid() ||
-                                (blocks[x - 1][y][z].IsSolid() && blocks[x - 1][y][z].IsTransparent())) {
-                                addFaceVertices(vert, x, y, z, block, 0);
-                            }
-                            if (x == config::CHUNK_SIZE - 1 || !blocks[x + 1][y][z].IsSolid() ||
-                                (blocks[x + 1][y][z].IsSolid() && blocks[x + 1][y][z].IsTransparent())) {
-                                addFaceVertices(vert, x, y, z, block, 1);
-                            }
-                            if (y == 0 || !blocks[x][y - 1][z].IsSolid() ||
-                                (blocks[x][y - 1][z].IsSolid() && blocks[x][y - 1][z].IsTransparent())) {
-                                addFaceVertices(vert, x, y, z, block, 2);
-                            }
-                            if (y == config::CHUNK_HEIGHT - 1 || !blocks[x][y + 1][z].IsSolid() ||
-                                (blocks[x][y + 1][z].IsSolid() && blocks[x][y + 1][z].IsTransparent())) {
-                                addFaceVertices(vert, x, y, z, block, 3);
-                            }
-                            if (z == 0 || !blocks[x][y][z - 1].IsSolid() ||
-                                (blocks[x][y][z - 1].IsSolid() && blocks[x][y][z - 1].IsTransparent())) {
-                                addFaceVertices(vert, x, y, z, block, 4);
-                            }
-                            if (z == config::CHUNK_SIZE - 1 || !blocks[x][y][z + 1].IsSolid() ||
-                                (blocks[x][y][z + 1].IsSolid() && blocks[x][y][z + 1].IsTransparent())) {
-                                addFaceVertices(vert, x, y, z, block, 5);
-                            }
-                        }
-
+                        if (block.IsSolid()) {
+                            checkAndAddFace(i, j, x, y, z, blocks, vert, -1, 0, 0, 0);  // Check bottom face
+                            checkAndAddFace(i, j, x, y, z, blocks, vert, 1, 0, 0, 1);   // Check top face
+                            checkAndAddFace(i, j, x, y, z, blocks, vert, 0, -1, 0, 2);  // Check left face
+                            checkAndAddFace(i, j, x, y, z, blocks, vert, 0, 1, 0, 3);   // Check right face
+                            checkAndAddFace(i, j, x, y, z, blocks, vert, 0, 0, -1, 4);  // Check front face
+                            checkAndAddFace(i, j, x, y, z, blocks, vert, 0, 0, 1, 5);   // Check back face
+                    }
                         else{ //WATER
                             if(y == config::CHUNK_HEIGHT - 1 || !blocks[x][y + 1][z].IsTransparent() || blocks[x][y + 1][z].GetType() == Block::AIR){
                                 addFaceVertices(vert, x, y, z, block, 3);
@@ -53,9 +34,25 @@ void ChunkMeshGenerator::setupMeshes() {
                     }
                 }
             }
-            std::cout << "Mesh updated "<< vert.size() << std::endl;
             chunk.get()->setupMesh(vert);
         }
+    }
+}
+
+void ChunkMeshGenerator::checkAndAddFace(int chunkX, int chunkZ, int x, int y, int z, const Block blocks[config::CHUNK_SIZE][config::CHUNK_HEIGHT][config::CHUNK_SIZE], std::vector<float>& vert, int dx, int dy, int dz, int face) {
+    int nx = x + dx;
+    int ny = y + dy;
+    int nz = z + dz;
+    const Block* neighbor;
+
+    if (nx >= 0 && nx < config::CHUNK_SIZE && ny >= 0 && ny < config::CHUNK_HEIGHT && nz >= 0 && nz < config::CHUNK_SIZE) {
+        neighbor = &blocks[nx][ny][nz];
+    } else {
+        neighbor = &world->getBlock(chunkX * config::CHUNK_SIZE + nx, ny, chunkZ * config::CHUNK_SIZE + nz);
+    }
+
+    if (!neighbor->IsSolid()) {
+        addFaceVertices(vert, x, y, z, blocks[x][y][z], face);
     }
 }
 

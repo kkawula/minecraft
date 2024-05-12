@@ -10,7 +10,7 @@
 class Chunk {
 public:
 
-    const Block& GetBlock(int x, int y, int z) const {
+    const Block& GetBlock(int x, int y, int z) {
         return blocks[x][y][z];
     }
 
