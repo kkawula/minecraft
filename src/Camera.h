@@ -33,7 +33,7 @@ class Camera
 {
 public:
     // Constructor with vectors
-    Camera( glm::vec3 position = glm::vec3( 0.0f, 0.0f, 0.0f ), glm::vec3 up = glm::vec3( 0.0f, 1.0f, 0.0f ), GLfloat yaw = YAW, GLfloat pitch = PITCH ) : front( glm::vec3( 0.0f, 0.0f, -1.0f ) ), movementSpeed( SPEED ), mouseSensitivity(SENSITIVITY ), zoom(ZOOM )
+    Camera( glm::vec3 position = glm::vec3( 0.0f, 0.0f, 0.0f ), glm::vec3 up = glm::vec3( 0.0f, 1.0f, 0.0f ), GLfloat yaw = YAW, GLfloat pitch = PITCH ) : front( glm::vec3( 0.0f, 0.0f, 1.0f ) ), movementSpeed( SPEED ), mouseSensitivity(SENSITIVITY ), zoom(ZOOM )
     {
         this->position = position;
         this->worldUp = up;
@@ -149,6 +149,10 @@ public:
     void switchShift()
     {
         this->shiftPressed = !this->shiftPressed;
+    }
+
+    glm::vec3 getPosition(){
+        return position;
     }
     
 private:

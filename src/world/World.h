@@ -37,9 +37,9 @@ public:
             return air;
         }
 
-        int xoff = x < 0 ? config::CHUNK_SIZE : 0;
-        int zoff = z < 0 ? config::CHUNK_SIZE : 0;
-        return chunk->GetBlock_(x % config::CHUNK_SIZE + xoff, y, z % config::CHUNK_SIZE + zoff);
+        int xoff = x < 0 ? config::CHUNK_SIZE - 1 : 0;
+        int zoff = z < 0 ? config::CHUNK_SIZE - 1 : 0;
+        return chunk->GetBlock_(X % config::CHUNK_SIZE + xoff, y, Z % config::CHUNK_SIZE + zoff);
     }
 
 private:
