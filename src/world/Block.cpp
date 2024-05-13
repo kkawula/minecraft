@@ -8,7 +8,9 @@ std::unordered_map<int, std::array<int, 6>> Block::blockTextureIndices = {
         {Block::WATER, {7,7,7,7,7,7}},
         {Block::WOOD,  {16,16,17,17,16,16}},
         {Block::LEAF,  {24,24,24,24,24,24}},
-        {Block::CACTUS,{9,9,8,8,9,9,}}
+        {Block::CACTUS,{9,9,8,8,9,9,}},
+        {Block::SNOW,  {55,55,52,3,55,55}},
+        {Block::FULL_SNOW, {3,3,3,3,3,3}}
 };
 
 std::array<int, 6> Block::GetTextureIndices(int blockType) {

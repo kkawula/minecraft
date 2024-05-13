@@ -4,9 +4,9 @@
 #include <memory>
 
 float World::GetHeightValue(int x, int z) {
-    float frequency = 0.008;
-    int octaves[4] = {3, 6, 12, 24};
-    float multipliers[4] = {1.0f, .5f, .25f, .125f};
+    float frequency = 0.004;
+    int octaves[4] = {3, 6, 9, 12};
+    float multipliers[4] = {.8f, .5f, .25f, .125f};
     float res = 0.0f;
 
     for(int i = 0; i < 4; i++){
@@ -14,11 +14,14 @@ float World::GetHeightValue(int x, int z) {
         res += noise * multipliers[i];
     }
 
-    return res * 0.5f;
+    res *= 0.5;
+    res = pow(res, 3);
+
+    return res;
 }
 
 float World::GetBiomeValue(int x, int z) {
-    float frequency = 0.005;
+    float frequency = 0.001;
 
     return static_cast<float>(perlinBiome.octave2D_01((x * frequency), (z * frequency), config::BIOME_OCTAVE));
 }
@@ -45,7 +48,7 @@ void World::GenerateTerrain() {
                         if (y <= height) {
                             int dirtAppearingHeight = 1;
                             int rockAppearingHeight = 3;
-                            if (y <= config::WATER_LEVEL + 3 * biomeValue) {
+                            if (y <= config::WATER_LEVEL + 2 * biomeValue) {
                                 block = Block(Block::SAND);
                                 dirtAppearingHeight = 3;
                                 rockAppearingHeight = 5;
@@ -54,10 +57,12 @@ void World::GenerateTerrain() {
                                     block = Block(Block::SAND);
                                     dirtAppearingHeight = 3;
                                     rockAppearingHeight = 5;
-                                } else if (biomeValue > 0.8 && heightValue > 0.8) {
+                                } else if (biomeValue > 0.6 && heightValue > 0.4) {
                                     block = Block(Block::ROCK);
                                     dirtAppearingHeight = config::CHUNK_HEIGHT; // so that it doesn't appear
-                                    rockAppearingHeight = 1;
+                                    rockAppearingHeight = 5;
+                                    if(heightValue > 0.48) block = Block(Block::FULL_SNOW);
+                                    else if(heightValue >= 0.45 && y == height) block = Block(Block::SNOW);
                                 } else {
                                     block = Block(Block::GRASS);
                                 }

@@ -22,6 +22,8 @@ public:
     static constexpr int WOOD = 6;
     static constexpr int LEAF = 7;
     static constexpr int CACTUS = 8;
+    static constexpr int SNOW = 9;
+    static constexpr int FULL_SNOW = 10;
 
 
     Block(int type = 0, bool solid = true, bool transparent = false) : type(type), isSolid(solid), isTransparent(transparent) {}

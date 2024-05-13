@@ -1,5 +1,4 @@
 #include "Renderer.h"
-#include "../config.h"
 
 Renderer::Renderer(MeshAtlas& atlas)
     : chunkRenderer(atlas) {
