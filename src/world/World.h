@@ -36,7 +36,10 @@ public:
         if (chunk == nullptr || y < 0 || y >= config::CHUNK_HEIGHT) {
             return air;
         }
-        return const_cast<Block &>(chunk->GetBlock(x % config::CHUNK_SIZE, y, z % config::CHUNK_SIZE));
+
+        int xoff = x < 0 ? config::CHUNK_SIZE : 0;
+        int zoff = z < 0 ? config::CHUNK_SIZE : 0;
+        return chunk->GetBlock_(x % config::CHUNK_SIZE + xoff, y, z % config::CHUNK_SIZE + zoff);
     }
 
 private:

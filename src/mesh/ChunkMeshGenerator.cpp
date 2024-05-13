@@ -24,7 +24,7 @@ void ChunkMeshGenerator::setupMeshes() {
                             checkAndAddFace(i, j, x, y, z, blocks, vert,  3);
                             checkAndAddFace(i, j, x, y, z, blocks, vert, 4);
                             checkAndAddFace(i, j, x, y, z, blocks, vert,5);
-                    }
+                        }
                         else{ //WATER
                             if(y == config::CHUNK_HEIGHT - 1 || !blocks[x][y + 1][z].IsTransparent() || blocks[x][y + 1][z].GetType() == Block::AIR){
                                 addFaceVertices(vert, x, y, z, block, 3);
@@ -38,7 +38,7 @@ void ChunkMeshGenerator::setupMeshes() {
     }
 }
 
-void ChunkMeshGenerator::checkAndAddFace(int chunkX, int chunkZ, int x, int y, int z, const Block blocks[config::CHUNK_SIZE][config::CHUNK_HEIGHT][config::CHUNK_SIZE], std::vector<float>& vert, int face) {
+void ChunkMeshGenerator::checkAndAddFace(int chunkX, int chunkZ, int x, int y, int z, Block blocks[config::CHUNK_SIZE][config::CHUNK_HEIGHT][config::CHUNK_SIZE], std::vector<float>& vert, int face) {
     int vectors[6][3] = {
             {-1, 0, 0}, // Left face
             {1, 0, 0}, // Right face
@@ -54,7 +54,7 @@ void ChunkMeshGenerator::checkAndAddFace(int chunkX, int chunkZ, int x, int y, i
     int nx = x + dx;
     int ny = y + dy;
     int nz = z + dz;
-    const Block* neighbor;
+    Block* neighbor = nullptr;
 
     if (nx >= 0 && nx < config::CHUNK_SIZE && ny >= 0 && ny < config::CHUNK_HEIGHT && nz >= 0 && nz < config::CHUNK_SIZE) {
         neighbor = &blocks[nx][ny][nz];

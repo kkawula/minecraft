@@ -31,7 +31,7 @@ void MouseCallback( GLFWwindow *window, double xPos, double yPos );
 void DoMovement( );
 
 // Camera
-Camera  camera(glm::vec3( 10.0f, 15.0f, 30.0f ) );
+Camera  camera(glm::vec3( -0.0f, 100.0f, 0.0f ) );
 GLfloat lastX = WIDTH / 2.0;
 GLfloat lastY = HEIGHT / 2.0;
 bool keys[1024];
@@ -94,6 +94,7 @@ int main(int argc, char *argv[])
         glClearColor(0.43f, 0.69f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         renderer.Render(camera);
+
 
         // Swap buffers
         window.swapBuffers();

@@ -14,6 +14,10 @@ public:
         return blocks[x][y][z];
     }
 
+    Block& GetBlock_(int x, int y, int z) {
+        return blocks[x][y][z];
+    }
+
     void SetBlock(int x, int y, int z, const Block& block) {
         blocks[x][y][z] = block;
     }
