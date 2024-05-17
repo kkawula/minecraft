@@ -12,7 +12,7 @@ const GLfloat PLAYER_SENSITIVITY = 0.25f;
 class Player : public Entity {
 public:
     explicit Player(const glm::vec3 &pos);
-    void handleInput(Keyboard keyboard, Camera &camera, GLfloat deltaTime);
+    void handleInput(Keyboard keyboard, Camera &camera, World &world, GLfloat deltaTime);
     void handleMouseMovement(Camera &camera, GLfloat xOffset, GLfloat yOffset);
     void handleMouseScroll(Camera &camera, GLfloat yOffset);
 
@@ -23,6 +23,8 @@ private:
     glm::vec3 acceleration;
     GLfloat movementSpeed = PLAYER_SPEED;
     GLfloat mouseSensitivity = PLAYER_SENSITIVITY;
+
+    bool CheckCollision(World &world, glm::vec3 newPosition);
 };
 
 #endif // PLAYER_H_INCLUDED
