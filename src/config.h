@@ -9,7 +9,6 @@ namespace config {
     static constexpr int WORLD_MIN_Z = -5;
     static constexpr int WORLD_MAX_X = 5;
     static constexpr int WORLD_MAX_Z = 5;
-    static constexpr int WORLD_SIZE = WORLD_MAX_X - WORLD_MIN_X + 1;
 
     static constexpr int BIOME_OCTAVE = 3;
     static constexpr int WATER_LEVEL = 10;

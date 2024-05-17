@@ -53,6 +53,8 @@ set(SOURCE_FILES
         src/Entity.h
         src/player/Player.cpp
         src/player/Player.h
+        src/input/Keyboard.cpp
+        src/input/Keyboard.h
 
 )
 

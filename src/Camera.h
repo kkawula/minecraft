@@ -8,6 +8,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "input/Keyboard.h"
 
 // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
 enum Camera_Movement
@@ -59,37 +60,37 @@ public:
     }
     
     // Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
-    void ProcessKeyboard( Camera_Movement direction, GLfloat deltaTime )
+    void handleInput(Keyboard keyboard, GLfloat deltaTime)
     {
-        GLfloat speedMultiplier = this->shiftPressed ? 2.0f : 1.0f;
+        GLfloat speedMultiplier = keyboard.isKeyDown(GLFW_KEY_LEFT_SHIFT) ? 2.0f : 1.0f;
         GLfloat velocity = this->movementSpeed * deltaTime * speedMultiplier;
-        
-        if ( direction == FORWARD )
+
+        if(keyboard.isKeyDown(GLFW_KEY_W))
         {
             this->position += this->front * velocity;
         }
         
-        if ( direction == BACKWARD )
+        if(keyboard.isKeyDown(GLFW_KEY_S))
         {
             this->position -= this->front * velocity;
         }
-        
-        if ( direction == LEFT )
+
+        if(keyboard.isKeyDown(GLFW_KEY_A))
         {
             this->position -= this->right * velocity;
         }
         
-        if ( direction == RIGHT )
+        if(keyboard.isKeyDown(GLFW_KEY_D))
         {
             this->position += this->right * velocity;
         }
 
-        if (direction == UP)
+        if(keyboard.isKeyDown(GLFW_KEY_SPACE))
         {
             position += worldUp * velocity;
         }
 
-        if (direction == DOWN)
+        if(keyboard.isKeyDown(GLFW_KEY_LEFT_CONTROL))
         {
             position -= worldUp * velocity;
         }
@@ -118,7 +119,7 @@ public:
             }
         }
         
-        // Update Front, Right and Up Vectors using the updated Eular angles
+        // Update Front, Right and Up Vectors using the updated Euler angles
         this->updateCameraVectors( );
     }
     
@@ -146,11 +147,6 @@ public:
         return this->zoom;
     }
 
-    void switchShift()
-    {
-        this->shiftPressed = !this->shiftPressed;
-    }
-
     glm::vec3 getPosition(){
         return position;
     }
@@ -162,18 +158,16 @@ private:
     glm::vec3 up;
     glm::vec3 right;
     glm::vec3 worldUp;
-    
+
     // Euler Angles
     GLfloat yaw;
     GLfloat pitch;
-    
+
     // Camera options
     GLfloat movementSpeed;
     GLfloat mouseSensitivity;
     GLfloat zoom;
 
-    bool shiftPressed;
-    
     // Calculates the front vector from the Camera's (updated) Euler Angles
     void updateCameraVectors( )
     {

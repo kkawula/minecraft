@@ -3,22 +3,16 @@
 
 #include "../Entity.h"
 #include "../world/World.h"
+#include "../Camera.h"
 
 class Player : public Entity {
 public:
-    Player(const glm::vec3 &pos);
-
-    void handleInput(bool keys[1024]);
-    void update(float dt, World &world);
-    void collide(World &world, const glm::vec3 &vel, float dt);
-    void changeFlightMode();
+    explicit Player(const glm::vec3 &pos);
+    void updatePosition(Camera camera);
 
 private:
-    void jump();
     bool isOnGround = false;
-    bool isFlying = false;
-
-    void keyboardInput(const bool keys[1024]);
+    bool isFlying = true;
 
     glm::vec3 acceleration;
 };
