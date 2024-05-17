@@ -52,7 +52,7 @@ public:
         this->updateCameraVectors( );
     }
     
-    // Returns the view matrix calculated using Eular Angles and the LookAt Matrix
+    // Returns the view matrix calculated using Euler Angles and the LookAt Matrix
     glm::mat4 GetViewMatrix( )
     {
         return glm::lookAt( this->position, this->position + this->front, this->up );
@@ -163,7 +163,7 @@ private:
     glm::vec3 right;
     glm::vec3 worldUp;
     
-    // Eular Angles
+    // Euler Angles
     GLfloat yaw;
     GLfloat pitch;
     
@@ -174,7 +174,7 @@ private:
 
     bool shiftPressed;
     
-    // Calculates the front vector from the Camera's (updated) Eular Angles
+    // Calculates the front vector from the Camera's (updated) Euler Angles
     void updateCameraVectors( )
     {
         // Calculate the new Front vector

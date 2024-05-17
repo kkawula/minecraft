@@ -16,6 +16,7 @@
 #include "mesh/ChunkMeshGenerator.h"
 #include "mesh/MeshAtlas.h"
 #include "utils/FileSystem.h"
+#include "player/Player.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -28,10 +29,11 @@ int SCREEN_WIDTH, SCREEN_HEIGHT;
 void KeyCallback( GLFWwindow *window, int key, int scancode, int action, int mode );
 void ScrollCallback( GLFWwindow *window, double xOffset, double yOffset );
 void MouseCallback( GLFWwindow *window, double xPos, double yPos );
-void DoMovement( );
+void DoMovement(World world);
 
 // Camera
-Camera  camera(glm::vec3( -0.0f, 100.0f, 0.0f ) );
+glm::vec3 startingPosition = glm::vec3( -0.0f, 100.0f, 0.0f );
+Camera camera(startingPosition);
 GLfloat lastX = WIDTH / 2.0;
 GLfloat lastY = HEIGHT / 2.0;
 bool keys[1024];
@@ -39,6 +41,8 @@ bool firstMouse = true;
 
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
+
+Player player(startingPosition);
 
 // The MAIN function, from here we start our application and run our Game loop
 int main(int argc, char *argv[])
@@ -89,12 +93,11 @@ int main(int argc, char *argv[])
         lastFrame = currentFrame;
 
         glfwPollEvents();
-        DoMovement();
+        DoMovement(world);
 
         glClearColor(0.43f, 0.69f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         renderer.Render(camera);
-
 
         // Swap buffers
         window.swapBuffers();
@@ -106,8 +109,10 @@ int main(int argc, char *argv[])
 }
 
 // Moves/alters the camera positions based on user input
-void DoMovement( )
+void DoMovement(World world)
 {
+    player.handleInput(keys);
+    //player.update(deltaTime, world);
     // Camera controls
     if( keys[GLFW_KEY_W] || keys[GLFW_KEY_UP] )
     {
@@ -137,6 +142,11 @@ void DoMovement( )
     if (keys[GLFW_KEY_LEFT_CONTROL])
     {
         camera.ProcessKeyboard(DOWN, deltaTime);
+    }
+
+    if(keys[GLFW_KEY_F])
+    {
+        player.changeFlightMode();
     }
 }
 
