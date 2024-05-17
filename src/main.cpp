@@ -33,7 +33,7 @@ Keyboard keyboard = Keyboard();
 void KeyCallback( GLFWwindow *window, int key, int scancode, int action, int mode );
 void ScrollCallback( GLFWwindow *window, double xOffset, double yOffset );
 void MouseCallback( GLFWwindow *window, double xPos, double yPos );
-void DoMovement(World world);
+void DoMovement();
 
 // Camera
 glm::vec3 startingPosition = glm::vec3( -0.0f, 100.0f, 0.0f );
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
         lastFrame = currentFrame;
 
         glfwPollEvents();
-        DoMovement(world);
+        DoMovement();
 
         glClearColor(0.43f, 0.69f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -111,11 +111,9 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-void DoMovement(World world)
+void DoMovement()
 {
-    camera.handleInput(keyboard, deltaTime);
-    player.updatePosition(camera);
-    std::cout << camera.getPosition().x << " " << camera.getPosition().y << " " << camera.getPosition().z << "\t" << player.position.x << " " << player.position.y << " " << player.position.z << "\n";
+    player.handleInput(keyboard, camera, deltaTime);
 }
 
 // Is called whenever a key is pressed/released via GLFW
@@ -139,11 +137,11 @@ void MouseCallback( GLFWwindow *window, double xPos, double yPos )
     lastX = xPos;
     lastY = yPos;
     
-    camera.ProcessMouseMovement( xOffset, yOffset );
+    player.handleMouseMovement(camera, xOffset, yOffset);
 }
 
 
 void ScrollCallback( GLFWwindow *window, double xOffset, double yOffset )
 {
-    camera.ProcessMouseScroll( yOffset );
+    player.handleMouseScroll(camera, yOffset);
 }
