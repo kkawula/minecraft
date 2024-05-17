@@ -18,9 +18,11 @@ public:
         return chunks[key];
     }
 
-    auto getChunks() const {
-        return chunks;
-    }
+    bool isChunkGenerated(int x, int z) {
+        auto key = std::make_pair(x, z);
+        return chunks[key] != nullptr;
+     }
+
     Block air = Block(0, false, true);
 
     Block& getBlock(int x, int y, int z) {

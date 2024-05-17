@@ -29,6 +29,8 @@ float World::GetBiomeValue(int x, int z) {
 void World::GenerateTerrain() {
     for (int i = config::WORLD_MIN_X; i <= config::WORLD_MAX_X; ++i) {
         for (int j = config::WORLD_MIN_Z; j <= config::WORLD_MAX_Z; ++j) {
+            std::cout<<i<<" "<<j<<"\n";
+
             std::pair<int, int> chunkPosition = std::make_pair(i, j);
             std::shared_ptr<Chunk> chunk = std::make_shared<Chunk>();
 

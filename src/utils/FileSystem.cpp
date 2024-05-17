@@ -11,15 +11,12 @@ void FileSystem::initialize(const std::filesystem::path& execPath) {
     textureDir = basePath / "res" / "images";
 }
 
-std::string FileSystem::getVertexShaderPath() {
-    return (shaderDir / "vert.glsl").string();
+std::string FileSystem::getShaderPath(std::string name) {
+    return (shaderDir / (name + ".glsl")).string();
 }
 
-std::string FileSystem::getFragmentShaderPath() {
-    return (shaderDir / "frag.glsl").string();
-}
 
-std::string FileSystem::getTexturePath() {
-    return (textureDir / "blockPack.png").string();
+std::string FileSystem::getTexturePath(std::string name) {
+    return (textureDir / (name + ".png")).string();
 }
 

@@ -5,35 +5,41 @@ ChunkMeshGenerator::ChunkMeshGenerator(World& world, MeshAtlas& atlas) {
     this->atlas = &atlas;
 }
 
-void ChunkMeshGenerator::setupMeshes() {
-    for (int i = config::WORLD_MIN_X; i <= config::WORLD_MAX_X; ++i) {
-        for (int j = config::WORLD_MIN_Z; j <= config::WORLD_MAX_Z; ++j) {
-            auto chunk = world->GetChunk(i, j);
-            auto blocks = chunk->GetBlocks();
-            vert.clear();
-            for (int x = 0; x < config::CHUNK_SIZE; ++x) {
-                for (int y = 0; y < config::CHUNK_HEIGHT; ++y) {
-                    for (int z = 0; z < config::CHUNK_SIZE; ++z) {
-                        const Block& block = blocks[x][y][z];
-                        if (block.GetType() == Block::AIR) continue;
+void ChunkMeshGenerator::setupMesh(int chunkX, int chunkZ) {
+    int i = chunkX;
+    int j = chunkZ;
+    auto chunk = world->GetChunk(i, j);
+    auto blocks = chunk->GetBlocks();
+    vert.clear();
+    for (int x = 0; x < config::CHUNK_SIZE; ++x) {
+        for (int y = 0; y < config::CHUNK_HEIGHT; ++y) {
+            for (int z = 0; z < config::CHUNK_SIZE; ++z) {
+                const Block& block = blocks[x][y][z];
+                if (block.GetType() == Block::AIR) continue;
 
-                        if (block.IsSolid()) {
-                            checkAndAddFace(i, j, x, y, z, blocks, vert,  0);
-                            checkAndAddFace(i, j, x, y, z, blocks, vert,  1);
-                            checkAndAddFace(i, j, x, y, z, blocks, vert, 2);
-                            checkAndAddFace(i, j, x, y, z, blocks, vert,  3);
-                            checkAndAddFace(i, j, x, y, z, blocks, vert, 4);
-                            checkAndAddFace(i, j, x, y, z, blocks, vert,5);
-                        }
-                        else{ //WATER
-                            if(y == config::CHUNK_HEIGHT - 1 || !blocks[x][y + 1][z].IsTransparent() || blocks[x][y + 1][z].GetType() == Block::AIR){
-                                addFaceVertices(vert, x, y, z, block, 3);
-                            }
-                        }
+                if (block.IsSolid()) {
+                    checkAndAddFace(i, j, x, y, z, blocks, vert,  0);
+                    checkAndAddFace(i, j, x, y, z, blocks, vert,  1);
+                    checkAndAddFace(i, j, x, y, z, blocks, vert, 2);
+                    checkAndAddFace(i, j, x, y, z, blocks, vert,  3);
+                    checkAndAddFace(i, j, x, y, z, blocks, vert, 4);
+                    checkAndAddFace(i, j, x, y, z, blocks, vert,5);
+                }
+                else{ //WATER
+                    if(y == config::CHUNK_HEIGHT - 1 || !blocks[x][y + 1][z].IsTransparent() || blocks[x][y + 1][z].GetType() == Block::AIR){
+                        addFaceVertices(vert, x, y, z, block, 3);
                     }
                 }
             }
-            atlas->chunkMeshes[std::make_pair(i, j)].get()->setupMesh(vert);
+        }
+    }
+    atlas->chunkMeshes[std::make_pair(i, j)].get()->setupMesh(vert);
+}
+
+void ChunkMeshGenerator::setupMeshes() {
+    for (int i = config::WORLD_MIN_X; i <= config::WORLD_MAX_X; ++i) {
+        for (int j = config::WORLD_MIN_Z; j <= config::WORLD_MAX_Z; ++j) {
+            setupMesh(i, j);
         }
     }
 }
