@@ -16,6 +16,8 @@
 #include "mesh/ChunkMeshGenerator.h"
 #include "mesh/MeshAtlas.h"
 #include "utils/FileSystem.h"
+#include "player/Player.h"
+#include "input/Keyboard.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -24,21 +26,26 @@ namespace fs = std::filesystem;
 const GLuint WIDTH = 800, HEIGHT = 600;
 int SCREEN_WIDTH, SCREEN_HEIGHT;
 
+//Keyboard
+Keyboard keyboard = Keyboard();
+
 // Function prototypes
 void KeyCallback( GLFWwindow *window, int key, int scancode, int action, int mode );
 void ScrollCallback( GLFWwindow *window, double xOffset, double yOffset );
 void MouseCallback( GLFWwindow *window, double xPos, double yPos );
-void DoMovement( );
+void DoMovement(World world);
 
 // Camera
-Camera  camera(glm::vec3( -0.0f, 100.0f, 0.0f ) );
+glm::vec3 startingPosition = glm::vec3( -0.0f, 100.0f, 0.0f );
+Camera camera(startingPosition);
 GLfloat lastX = WIDTH / 2.0;
 GLfloat lastY = HEIGHT / 2.0;
-bool keys[1024];
 bool firstMouse = true;
 
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
+
+Player player(startingPosition);
 
 // The MAIN function, from here we start our application and run our Game loop
 int main(int argc, char *argv[])
@@ -89,12 +96,11 @@ int main(int argc, char *argv[])
         lastFrame = currentFrame;
 
         glfwPollEvents();
-        DoMovement();
+        DoMovement(world);
 
         glClearColor(0.43f, 0.69f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         renderer.Render(camera);
-
 
         // Swap buffers
         window.swapBuffers();
@@ -105,77 +111,15 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-// Moves/alters the camera positions based on user input
-void DoMovement( )
+void DoMovement(World world)
 {
-    // Camera controls
-    if( keys[GLFW_KEY_W] || keys[GLFW_KEY_UP] )
-    {
-        camera.ProcessKeyboard( FORWARD, deltaTime );
-    }
-    
-    if( keys[GLFW_KEY_S] || keys[GLFW_KEY_DOWN] )
-    {
-        camera.ProcessKeyboard( BACKWARD, deltaTime );
-    }
-    
-    if( keys[GLFW_KEY_A] || keys[GLFW_KEY_LEFT] )
-    {
-        camera.ProcessKeyboard( LEFT, deltaTime );
-    }
-    
-    if( keys[GLFW_KEY_D] || keys[GLFW_KEY_RIGHT] )
-    {
-        camera.ProcessKeyboard( RIGHT, deltaTime );
-    }
-
-    if (keys[GLFW_KEY_SPACE])
-    {
-        camera.ProcessKeyboard(UP, deltaTime);
-    }
-
-    if (keys[GLFW_KEY_LEFT_CONTROL])
-    {
-        camera.ProcessKeyboard(DOWN, deltaTime);
-    }
+    player.update(keyboard, camera, world, deltaTime);
 }
 
 // Is called whenever a key is pressed/released via GLFW
 void KeyCallback( GLFWwindow *window, int key, int scancode, int action, int mode )
 {
-    if( key == GLFW_KEY_ESCAPE && action == GLFW_PRESS )
-    {
-        glfwSetWindowShouldClose(window, GL_TRUE);
-    }
-
-    if(key == GLFW_KEY_LEFT_SHIFT)
-    {
-        camera.switchShift();
-    }
-
-    if(key == GLFW_KEY_SPACE || key == GLFW_KEY_LEFT_CONTROL)
-    {
-        if( action == GLFW_PRESS )
-        {
-            keys[key] = true;
-        }
-        else if( action == GLFW_RELEASE )
-        {
-            keys[key] = false;
-        }
-    }
-    
-    if ( key >= 0 && key < 1024 )
-    {
-        if( action == GLFW_PRESS )
-        {
-            keys[key] = true;
-        }
-        else if( action == GLFW_RELEASE )
-        {
-            keys[key] = false;
-        }
-    }
+    keyboard.KeyCallback(window, key, scancode, action, mode);
 }
 
 void MouseCallback( GLFWwindow *window, double xPos, double yPos )
@@ -193,11 +137,11 @@ void MouseCallback( GLFWwindow *window, double xPos, double yPos )
     lastX = xPos;
     lastY = yPos;
     
-    camera.ProcessMouseMovement( xOffset, yOffset );
-}	
+    player.handleMouseMovement(camera, xOffset, yOffset);
+}
 
 
 void ScrollCallback( GLFWwindow *window, double xOffset, double yOffset )
 {
-    camera.ProcessMouseScroll( yOffset );
+    player.handleMouseScroll(camera, yOffset);
 }

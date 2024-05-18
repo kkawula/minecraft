@@ -48,6 +48,13 @@ set(SOURCE_FILES
         src/mesh/MeshAtlas.h
         src/utils/FileSystem.cpp
         src/utils/FileSystem.h
+        src/physics/AABB.h
+        src/physics/AABB.h
+        src/Entity.h
+        src/player/Player.cpp
+        src/player/Player.h
+        src/input/Keyboard.cpp
+        src/input/Keyboard.h
 
 )
 
