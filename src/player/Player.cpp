@@ -49,11 +49,11 @@ void Player::update(Keyboard keyboard, Camera &camera, World &world, GLfloat del
 
     box.update(position);
 
-    velocity.x *= .995f;
+    velocity.x *= .9f;
     if (isFlying) {
-        velocity.y *= 0.995f;
+        velocity.y *= 0.9f;
     }
-    velocity.z *= .995f;
+    velocity.z *= .9f;
 }
 
 void Player::collide(World &world, const glm::vec3 &vel){
