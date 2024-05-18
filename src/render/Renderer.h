@@ -8,12 +8,10 @@
 class Renderer {
 private:
     MeshAtlas* atlas;
-
     ChunkRenderer chunkRenderer;
 
 public:
     Renderer(MeshAtlas& atlas);
-
     void Render(Camera& camera);
 };
 

@@ -80,8 +80,6 @@ int main(int argc, char *argv[])
 
     MeshAtlas meshAtlas;
 
-    ChunkMeshGenerator chunkMeshGenerator(world, meshAtlas);
-//    chunkMeshGenerator.setupMeshes();
     ChunkManager chunkManager(meshAtlas, camera, world);
 
     Renderer renderer(meshAtlas);

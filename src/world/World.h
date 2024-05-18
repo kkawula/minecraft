@@ -43,10 +43,13 @@ public:
         int zoff = z < 0 ? config::CHUNK_SIZE - 1 : 0;
         return chunk->GetBlock_(X % config::CHUNK_SIZE + xoff, y, Z % config::CHUNK_SIZE + zoff);
     }
+    void generateChunk(int x, int z);
+
 
 private:
-    void GenerateTerrain();
-    void GenerateVegetation();
+
+    void GenerateTerrain(int i, int j);
+    void GenerateVegetation(int i, int j);
 
     float GetHeightValue(int x, int z);
     float GetBiomeValue(int x, int z);
