@@ -1,7 +1,7 @@
 #ifndef ENTITY_H_INCLUDED
 #define ENTITY_H_INCLUDED
 
-#include "Physics/AABB.h"
+#include "physics/AABB.h"
 
 struct Entity {
     Entity()
