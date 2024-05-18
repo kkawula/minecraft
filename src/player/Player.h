@@ -6,7 +6,7 @@
 #include "../Camera.h"
 #include "../input/Keyboard.h"
 
-const GLfloat PLAYER_SPEED = 200.0f;
+const GLfloat PLAYER_SPEED = 150.0f;
 const GLfloat PLAYER_SENSITIVITY = 0.25f;
 
 class Player : public Entity {

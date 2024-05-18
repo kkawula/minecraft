@@ -1,8 +1,9 @@
 #include "Player.h"
 #include "GLFW/glfw3.h"
 
-const float GRAVITY = 100.0f;
-const float JUMP_ACCELERATION  = 20.0f;
+const float GRAVITY = 50.0f;
+const float JUMP_ACCELERATION  = 12.0f;
+const float DAMPING_FACTOR = 25.0f;
 
 Player::Player(const glm::vec3 &pos)
         : Entity({pos}, {0.f, 0.f, 0.f}, {0.3f, 1.f, 0.3f})
@@ -49,11 +50,12 @@ void Player::update(Keyboard keyboard, Camera &camera, World &world, GLfloat del
 
     box.update(position);
 
-    velocity.x *= .995f;
+    float damping = std::exp(-DAMPING_FACTOR * deltaTime);
+    velocity.x *= damping;
     if (isFlying) {
-        velocity.y *= 0.995f;
+        velocity.y *= damping;
     }
-    velocity.z *= .995f;
+    velocity.z *= damping;
 }
 
 void Player::collide(World &world, const glm::vec3 &vel){
