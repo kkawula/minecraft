@@ -37,13 +37,13 @@ void Player::update(Keyboard keyboard, Camera &camera, World &world, GLfloat del
     }
 
     position.x += velocity.x * deltaTime;
-    collide(world, {velocity.x, 0, 0});
+    if(!isFlying) collide(world, {velocity.x, 0, 0});
 
     position.y += velocity.y * deltaTime;
-    collide(world, {0, velocity.y, 0});
+    if(!isFlying) collide(world, {0, velocity.y, 0});
 
     position.z += velocity.z * deltaTime;
-    collide(world, {0, 0, velocity.z});
+    if(!isFlying) collide(world, {0, 0, velocity.z});
 
     glm::vec3 cameraPosition = {position.x - .5, position.y + box.dimensions.y, position.z - .5};
     camera.setPosition(cameraPosition);
