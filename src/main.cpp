@@ -16,6 +16,8 @@
 #include "mesh/ChunkMeshGenerator.h"
 #include "mesh/MeshAtlas.h"
 #include "utils/FileSystem.h"
+#include "ChunkManager.h"
+
 #include "player/Player.h"
 #include "input/Keyboard.h"
 
@@ -23,7 +25,6 @@
 namespace fs = std::filesystem;
 
 // Properties
-const GLuint WIDTH = 800, HEIGHT = 600;
 int SCREEN_WIDTH, SCREEN_HEIGHT;
 
 //Keyboard
@@ -33,18 +34,24 @@ Keyboard keyboard = Keyboard();
 void KeyCallback( GLFWwindow *window, int key, int scancode, int action, int mode );
 void ScrollCallback( GLFWwindow *window, double xOffset, double yOffset );
 void MouseCallback( GLFWwindow *window, double xPos, double yPos );
+
+bool doesChunkChanged();
+GLfloat lastX = config::WINDOW_WIDTH / 2.0;
+GLfloat lastY = config::WINDOW_HEIGHT / 2.0;
+
 void DoMovement(World world);
 
 // Camera
 glm::vec3 startingPosition = glm::vec3( -0.0f, 100.0f, 0.0f );
 Camera camera(startingPosition);
-GLfloat lastX = WIDTH / 2.0;
-GLfloat lastY = HEIGHT / 2.0;
+
 bool firstMouse = true;
 
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
 
+int cordX = 0;
+int cordZ = 0;
 Player player(startingPosition);
 
 // The MAIN function, from here we start our application and run our Game loop
@@ -84,8 +91,7 @@ int main(int argc, char *argv[])
 
     MeshAtlas meshAtlas;
 
-    ChunkMeshGenerator chunkMeshGenerator(world, meshAtlas);
-    chunkMeshGenerator.setupMeshes();
+    ChunkManager chunkManager(meshAtlas, camera, world);
 
     Renderer renderer(meshAtlas);
 
@@ -97,6 +103,11 @@ int main(int argc, char *argv[])
 
         glfwPollEvents();
         DoMovement(world);
+
+        if (doesChunkChanged()) {
+            chunkManager.updateCords(cordX, cordZ);
+        }
+
 
         glClearColor(0.43f, 0.69f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -110,6 +121,30 @@ int main(int argc, char *argv[])
     
     return EXIT_SUCCESS;
 }
+
+bool doesChunkChanged() {
+    int x = camera.getPosition().x;
+    int z = camera.getPosition().z;
+
+    int X = x;
+    int Z = z;
+    if(x < 0) X++;
+    if(z < 0) Z++;
+    auto chunkX = X / config::CHUNK_SIZE;
+    auto chunkZ = Z / config::CHUNK_SIZE;
+    if (x < 0) chunkX--;
+    if (z < 0) chunkZ--;
+
+    if (chunkX != cordX || chunkZ != cordZ) {
+        cordX = chunkX;
+        cordZ = chunkZ;
+        return true;
+    }
+    return false;
+
+}
+
+// Moves/alters the camera positions based on user input
 
 void DoMovement(World world)
 {

@@ -18,9 +18,11 @@ public:
         return chunks[key];
     }
 
-    auto getChunks() const {
-        return chunks;
-    }
+    bool isChunkGenerated(int x, int z) {
+        auto key = std::make_pair(x, z);
+        return chunks[key] != nullptr;
+     }
+
     Block air = Block(0, false, true);
 
     Block& getBlock(int x, int y, int z) {
@@ -41,10 +43,13 @@ public:
         int zoff = z < 0 ? config::CHUNK_SIZE - 1 : 0;
         return chunk->GetBlock_(X % config::CHUNK_SIZE + xoff, y, Z % config::CHUNK_SIZE + zoff);
     }
+    void generateChunk(int x, int z);
+
 
 private:
-    void GenerateTerrain();
-    void GenerateVegetation();
+
+    void GenerateTerrain(int i, int j);
+    void GenerateVegetation(int i, int j);
 
     float GetHeightValue(int x, int z);
     float GetBiomeValue(int x, int z);

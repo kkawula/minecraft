@@ -12,11 +12,8 @@ private:
 public:
     static void initialize(const std::filesystem::path& execPath);
 
-    static std::string getVertexShaderPath();
-
-    static std::string getFragmentShaderPath();
-
-    static std::string getTexturePath();
+    static std::string getShaderPath(std::string name);
+    static std::string getTexturePath(std::string name);
 };
 
 

@@ -23,7 +23,6 @@ private:
 
 public:
     ChunkRenderer(MeshAtlas& atlas);
-
     void Render(Camera& camera);
 };
 
