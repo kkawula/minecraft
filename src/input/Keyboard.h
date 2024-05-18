@@ -8,14 +8,13 @@ class Keyboard {
 public:
     Keyboard();
 
-    void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mode);
-
-    bool isKeyDown(int key) const;
-    bool keyReleased(int key) const;
+    static void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mode);
+    bool isKeyDown(int key) ;
+    bool isKeyPressed(int key);
 
 private:
-    std::array<bool, 1024> keys;
-    int recentlyReleased;
+    static std::array<bool, 1024> keys;
+    static std::array<bool, 1024> keysPressed;
 };
 
 #endif //MINECRAFT_KEYBOARD_H

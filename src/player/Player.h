@@ -6,15 +6,15 @@
 #include "../Camera.h"
 #include "../input/Keyboard.h"
 
-const GLfloat PLAYER_SPEED = 500.0f;
+const GLfloat PLAYER_SPEED = 200.0f;
 const GLfloat PLAYER_SENSITIVITY = 0.25f;
 
 class Player : public Entity {
 public:
     explicit Player(const glm::vec3 &pos);
-    void handleInput(Keyboard keyboard, Camera &camera, World &world, GLfloat deltaTime);
-    void handleMouseMovement(Camera &camera, GLfloat xOffset, GLfloat yOffset);
-    void handleMouseScroll(Camera &camera, GLfloat yOffset);
+    void update(Keyboard keyboard, Camera &camera, World &world, GLfloat deltaTime);
+    static void handleMouseMovement(Camera &camera, GLfloat xOffset, GLfloat yOffset);
+    static void handleMouseScroll(Camera &camera, GLfloat yOffset);
 
 private:
     bool isOnGround = false;
@@ -22,9 +22,14 @@ private:
 
     glm::vec3 acceleration;
     GLfloat movementSpeed = PLAYER_SPEED;
+    GLfloat speedMultiplier = 1.0f;
     GLfloat mouseSensitivity = PLAYER_SENSITIVITY;
 
     void collide(World &world, const glm::vec3 &vel);
+
+    void keyboardInput(Keyboard &keyboard, Camera &camera);
+
+    void jump();
 };
 
 #endif // PLAYER_H_INCLUDED

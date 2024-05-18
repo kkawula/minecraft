@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
 
 void DoMovement(World world)
 {
-    player.handleInput(keyboard, camera, world, deltaTime);
+    player.update(keyboard, camera, world, deltaTime);
 }
 
 // Is called whenever a key is pressed/released via GLFW

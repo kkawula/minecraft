@@ -7,8 +7,8 @@ namespace config {
     static constexpr int CHUNK_HEIGHT_TO_GENERATE = 200;
     static constexpr int WORLD_MIN_X = 1;
     static constexpr int WORLD_MIN_Z = 1;
-    static constexpr int WORLD_MAX_X = 3;
-    static constexpr int WORLD_MAX_Z = 3;
+    static constexpr int WORLD_MAX_X = 4;
+    static constexpr int WORLD_MAX_Z = 4;
 
     static constexpr int BIOME_OCTAVE = 3;
     static constexpr int WATER_LEVEL = 10;
