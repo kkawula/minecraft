@@ -9,6 +9,7 @@ class Block {
 private:
     bool isSolid;
     bool isTransparent;
+    bool isCollidable;
     int type;
     static std::unordered_map<int, std::array<int, 6>> blockTextureIndices;
 
@@ -26,7 +27,8 @@ public:
     static constexpr int FULL_SNOW = 10;
 
 
-    Block(int type = 0, bool solid = true, bool transparent = false) : type(type), isSolid(solid), isTransparent(transparent) {}
+    Block(int type = 0, bool solid = true, bool transparent = false, bool collidable = true) :
+        type(type), isSolid(solid), isTransparent(transparent), isCollidable(collidable) {}
 
     bool IsSolid() const {
         return isSolid;
@@ -38,6 +40,10 @@ public:
 
     int GetType() const {
         return type;
+    }
+
+    bool IsCollidable() const {
+        return isCollidable;
     }
 
     static std::array<int, 6> GetTextureIndices(int blockType);

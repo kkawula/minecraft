@@ -49,6 +49,13 @@ set(SOURCE_FILES
         src/utils/FileSystem.h
         src/ChunkManager.cpp
         src/ChunkManager.h
+        src/physics/AABB.h
+        src/physics/AABB.h
+        src/Entity.h
+        src/player/Player.cpp
+        src/player/Player.h
+        src/input/Keyboard.cpp
+        src/input/Keyboard.h
 
 )
 
