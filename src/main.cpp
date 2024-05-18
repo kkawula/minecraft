@@ -35,7 +35,7 @@ void KeyCallback( GLFWwindow *window, int key, int scancode, int action, int mod
 void ScrollCallback( GLFWwindow *window, double xOffset, double yOffset );
 void MouseCallback( GLFWwindow *window, double xPos, double yPos );
 
-bool doesChunkChanged();
+bool hasChunkCordsChanged();
 GLfloat lastX = config::WINDOW_WIDTH / 2.0;
 GLfloat lastY = config::WINDOW_HEIGHT / 2.0;
 
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
         glfwPollEvents();
         DoMovement(world);
 
-        if (doesChunkChanged()) {
+        if (hasChunkCordsChanged()) {
             chunkManager.updateCords(cordX, cordZ);
         }
 
@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-bool doesChunkChanged() {
+bool hasChunkCordsChanged() {
     int x = camera.getPosition().x;
     int z = camera.getPosition().z;
 

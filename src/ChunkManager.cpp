@@ -31,9 +31,10 @@ ChunkManager::ChunkManager(MeshAtlas &atlas, Camera &camera, World &world) : m_c
 
 void ChunkManager::updateCords(int x, int z) {
     auto cords = atlas->cords();
-    cords->clear();
+//    cords->clear();
     for (int i = -config::VIEW_RADIUS + x; i <= config::VIEW_RADIUS + x; i++) {
         for (int j = -config::VIEW_RADIUS + z; j <= config::VIEW_RADIUS + z; j++) {
+            if (i < 1 || j < 1) continue; // TODO delete
 
             if (not world->isChunkGenerated(i, j)) {
                 world->generateChunk(i, j);

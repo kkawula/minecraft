@@ -8,8 +8,8 @@ namespace config {
   
     static constexpr int WORLD_MIN_X = -15;
     static constexpr int WORLD_MIN_Z = -15;
-    static constexpr int WORLD_MAX_X = 15;
-    static constexpr int WORLD_MAX_Z = 15;
+    static constexpr int WORLD_MAX_X = 30;
+    static constexpr int WORLD_MAX_Z = 30;
 
     static constexpr int VIEW_RADIUS = 10;
 
