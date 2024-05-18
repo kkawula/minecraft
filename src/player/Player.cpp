@@ -9,50 +9,56 @@ Player::Player(const glm::vec3 &pos)
 
 void Player::handleInput(Keyboard keyboard, Camera &camera, World &world, GLfloat deltaTime) {
     GLfloat speedMultiplier = keyboard.isKeyDown(GLFW_KEY_LEFT_SHIFT) ? 2.0f : 1.0f;
-    GLfloat velocity = this->movementSpeed * deltaTime * speedMultiplier;
 
     glm::vec3 front = camera.getFront();
     glm::vec3 right = camera.getRight();
     glm::vec3 worldUp = camera.getWorldUp();
 
-    glm::vec3 move = glm::vec3(0.0f);
+    this->acceleration = glm::vec3(0.0f);
 
     if (keyboard.isKeyDown(GLFW_KEY_W))
-        move += front * velocity;
+        acceleration += front;
 
     if (keyboard.isKeyDown(GLFW_KEY_S))
-        move -= front * velocity;
+        acceleration -= front;
 
     if (keyboard.isKeyDown(GLFW_KEY_A))
-        move -= right * velocity;
+        acceleration -= right;
 
     if (keyboard.isKeyDown(GLFW_KEY_D))
-        move += right * velocity;
+        acceleration += right;
 
     if (keyboard.isKeyDown(GLFW_KEY_SPACE))
-        move += worldUp * velocity;
+        acceleration += worldUp;
 
     if (keyboard.isKeyDown(GLFW_KEY_LEFT_CONTROL))
-        move -= worldUp * velocity;
+        acceleration -= worldUp;
 
-    glm::vec3 newPosition = this->position + move;
-    auto [collision, collisionNormal] = CheckCollision(world, newPosition);
+    if (glm::length(acceleration) > 0)
+        acceleration = glm::normalize(acceleration);
 
-    if (collision) {
-        // Adjust the movement vector along the collision normal direction
-        move = glm::reflect(move, collisionNormal); // Reflect the movement vector along the collision normal
-        newPosition = this->position + move;
+    this->velocity += acceleration * this->movementSpeed * deltaTime * speedMultiplier;
 
-        // Check if the player is still colliding with other blocks
-        std::tie(collision, collisionNormal) = CheckCollision(world, newPosition);
-        if (collision) {
-            // Stop movement if still colliding
-            newPosition = this->position;
-        }
+    float maxSpeed = PLAYER_SPEED * 3;
+    if (glm::length(this->velocity) > maxSpeed) {
+        this->velocity = glm::normalize(this->velocity) * maxSpeed;
     }
 
-    this->position = newPosition;
-    camera.setPosition(this->position); // Aktualizacja pozycji kamery na pozycji gracza
+    position.x += velocity.x * deltaTime;
+    collide(world, {velocity.x, 0, 0});
+
+    position.y += velocity.y * deltaTime;
+    collide(world, {0, velocity.y, 0});
+
+    position.z += velocity.z * deltaTime;
+    collide(world, {0, 0, velocity.z});
+    
+    glm::vec3 cameraPosition = {position.x - .5, position.y + box.dimensions.y, position.z - .5};
+    camera.setPosition(cameraPosition);
+
+    velocity.x *= .995f;
+    velocity.y *= .995f;
+    velocity.z *= .995f;
 }
 
 void Player::handleMouseMovement(Camera &camera, GLfloat xOffset, GLfloat yOffset)
@@ -65,91 +71,38 @@ void Player::handleMouseScroll(Camera &camera, GLfloat yOffset)
     camera.ProcessMouseScroll(yOffset);
 }
 
-std::tuple<bool, glm::vec3> Player::CheckCollision(World &world, glm::vec3 newPosition) {
-    // Player dimensions
-    float width = 0.3f;
-    float height = 2.0f;
-    float depth = 0.3f;
+void Player::collide(World &world, const glm::vec3 &vel){
+    for (int x = position.x - box.dimensions.x;
+         x < position.x + box.dimensions.x; x++)
+        for (int y = position.y - box.dimensions.y; y < position.y + 0.7; y++)
+            for (int z = position.z - box.dimensions.z;
+                 z < position.z + box.dimensions.z; z++) {
+                auto block = world.getBlock(x, y, z);
 
-    // Player vertices
-    glm::vec3 vertices[8] = {
-            newPosition + glm::vec3(-width, -height, -depth), // Front-left-bottom
-            newPosition + glm::vec3(-width, -height, depth),  // Front-left-top
-            newPosition + glm::vec3(-width, height, -depth),  // Front-right-bottom
-            newPosition + glm::vec3(-width, height, depth),   // Front-right-top
-            newPosition + glm::vec3(width, -height, -depth),  // Back-left-bottom
-            newPosition + glm::vec3(width, -height, depth),   // Back-left-top
-            newPosition + glm::vec3(width, height, -depth),   // Back-right-bottom
-            newPosition + glm::vec3(width, height, depth)     // Back-right-top
-    };
+                if (block.IsSolid()) {
+                    if (vel.y > 0) {
+                        position.y = y - box.dimensions.y + .29; //should be .3 but something is messed up
+                        velocity.y = 0;
+                    }
+                    else if (vel.y < 0) {
+                        isOnGround = true;
+                        position.y = y + box.dimensions.y + 1;
+                        velocity.y = 0;
+                    }
 
-    // Player edges
-    glm::vec3 edges[12] = {
-            vertices[0] - vertices[1], // Front-left
-            vertices[0] - vertices[2], // Front-bottom
-            vertices[0] - vertices[4], // Left-bottom
-            vertices[1] - vertices[3], // Front-top
-            vertices[1] - vertices[5], // Left-top
-            vertices[2] - vertices[3], // Bottom-right
-            vertices[2] - vertices[6], // Front-right
-            vertices[3] - vertices[7], // Right-top
-            vertices[4] - vertices[5], // Back-left
-            vertices[4] - vertices[6], // Back-bottom
-            vertices[5] - vertices[7], // Left-back
-            vertices[6] - vertices[7]  // Right-back
-    };
+                    if (vel.x > 0) {
+                        position.x = x - box.dimensions.x;
+                    }
+                    else if (vel.x < 0) {
+                        position.x = x + box.dimensions.x + 1;
+                    }
 
-    bool collision = false;
-    glm::vec3 collisionNormal = glm::vec3(0.0f);
-
-    // Check collision at each vertex and edge of the player
-    for (int i = 0; i < 8; ++i) {
-        glm::vec3 vertex = vertices[i];
-        if (world.getBlock(vertex.x, vertex.y, vertex.z).IsSolid()) {
-            // Calculate collision normal as the vector from the vertex to the new player position
-            collisionNormal += newPosition - vertex;
-            collision = true;
-        }
-    }
-
-    // Check collision along each edge of the player
-    for (int i = 0; i < 12; ++i) {
-        glm::vec3 edge = edges[i];
-        glm::vec3 edgeCenter = (vertices[i / 2] + vertices[i / 2 + 1]) * 0.5f; // Center of the edge
-        if (world.getBlock(edgeCenter.x, edgeCenter.y, edgeCenter.z).IsSolid()) {
-            // Calculate collision normal as the vector from the edge center to the new player position
-            collisionNormal += newPosition - edgeCenter;
-            collision = true;
-        }
-    }
-
-    // Check collision along each face of the player
-    glm::vec3 faceCenters[6] = {
-            (vertices[0] + vertices[1] + vertices[2] + vertices[3]) * 0.25f, // Front face center
-            (vertices[4] + vertices[5] + vertices[6] + vertices[7]) * 0.25f, // Back face center
-            (vertices[0] + vertices[1] + vertices[4] + vertices[5]) * 0.25f, // Left face center
-            (vertices[2] + vertices[3] + vertices[6] + vertices[7]) * 0.25f, // Right face center
-            (vertices[1] + vertices[3] + vertices[5] + vertices[7]) * 0.25f, // Top face center
-            (vertices[0] + vertices[2] + vertices[4] + vertices[6]) * 0.25f  // Bottom face center
-    };
-
-    for (int i = 0; i < 6; ++i) {
-        glm::vec3 faceCenter = faceCenters[i];
-        if (world.getBlock(faceCenter.x, faceCenter.y, faceCenter.z).IsSolid()) {
-            // Calculate collision normal as the vector from the face center to the new player position
-            collisionNormal += newPosition - faceCenter;
-            collision = true;
-        }
-    }
-
-    if (collision) {
-        collisionNormal = glm::normalize(collisionNormal);
-    }
-
-    return std::make_tuple(collision, collisionNormal);
-}
-
-glm::vec3 Player::ResolveCollision(glm::vec3 desiredMove, glm::vec3 collisionNormal) {
-    // Przesuń gracza w kierunku przeciwnym do normalnej kolizji
-    return desiredMove - glm::dot(desiredMove, collisionNormal) * collisionNormal;
+                    if (vel.z > 0) {
+                        position.z = z - box.dimensions.z;
+                    }
+                    else if (vel.z < 0) {
+                        position.z = z + box.dimensions.z + 1;
+                    }
+                }
+            }
 }

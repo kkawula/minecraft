@@ -6,7 +6,7 @@
 #include "../Camera.h"
 #include "../input/Keyboard.h"
 
-const GLfloat PLAYER_SPEED = 10.0f;
+const GLfloat PLAYER_SPEED = 500.0f;
 const GLfloat PLAYER_SENSITIVITY = 0.25f;
 
 class Player : public Entity {
@@ -24,8 +24,7 @@ private:
     GLfloat movementSpeed = PLAYER_SPEED;
     GLfloat mouseSensitivity = PLAYER_SENSITIVITY;
 
-    std::tuple<bool, glm::vec3> CheckCollision(World &world, glm::vec3 newPosition);
-    glm::vec3 ResolveCollision(glm::vec3 desiredMove, glm::vec3 collisionNormal);
+    void collide(World &world, const glm::vec3 &vel);
 };
 
 #endif // PLAYER_H_INCLUDED
