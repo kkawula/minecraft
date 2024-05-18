@@ -36,13 +36,6 @@ void ChunkMeshGenerator::setupMesh(int chunkX, int chunkZ) {
     atlas->chunkMeshes[std::make_pair(i, j)].get()->setupMesh(vert);
 }
 
-void ChunkMeshGenerator::setupMeshes() {
-    for (int i = config::WORLD_MIN_X; i <= config::WORLD_MAX_X; ++i) {
-        for (int j = config::WORLD_MIN_Z; j <= config::WORLD_MAX_Z; ++j) {
-            setupMesh(i, j);
-        }
-    }
-}
 
 void ChunkMeshGenerator::checkAndAddFace(int chunkX, int chunkZ, int x, int y, int z, Block blocks[config::CHUNK_SIZE][config::CHUNK_HEIGHT][config::CHUNK_SIZE], std::vector<float>& vert, int face) {
     int vectors[6][3] = {
