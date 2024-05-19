@@ -4,10 +4,16 @@ project(${project_name})
 
 
 set(VCPKG_ROOT_DIR "./vcpkg")
-# Below variable should determine the target platform by itself, but it doesn't work sometimes, so choose yours.
-set(VCPKG_TARGET_TRIPLET "x64-osx")
-#set(VCPKG_TARGET_TRIPLET "x64-windows")
-#set(VCPKG_TARGET_TRIPLET "x64-linux")
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set(VCPKG_TARGET_TRIPLET "x64-windows")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    set(VCPKG_TARGET_TRIPLET "x64-linux")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    set(VCPKG_TARGET_TRIPLET "x64-osx")
+else()
+    message(FATAL_ERROR "Unsupported operating system: ${CMAKE_SYSTEM_NAME}")
+endif()
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_PREFIX_PATH "${VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}/share/glm")
