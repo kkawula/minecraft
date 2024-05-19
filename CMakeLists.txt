@@ -91,8 +91,18 @@ add_custom_command(
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${SHADER_DIR} "${RESOURCE_OUTPUT_DIR}/shaders"
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${TEXTURE_DIR} "${RESOURCE_OUTPUT_DIR}/images"
         COMMENT "Copying resources to build directory"
-
 )
 
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set(ADDITIONAL_LIB_1_SRC "${CMAKE_SOURCE_DIR}/vcpkg/installed/x64-windows/debug/bin/glfw3.dll")
+    set(ADDITIONAL_LIB_2_SRC "${CMAKE_SOURCE_DIR}/vcpkg/installed/x64-windows/debug/bin/glew32d.dll")
+    set(ADDITIONAL_FILE_DST "${CMAKE_BINARY_DIR}")
 
+    add_custom_command(
+            TARGET ${project_name} PRE_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy ${ADDITIONAL_LIB_1_SRC} ${ADDITIONAL_FILE_DST}
+            COMMAND ${CMAKE_COMMAND} -E copy ${ADDITIONAL_LIB_2_SRC} ${ADDITIONAL_FILE_DST}
+            COMMENT "Copying additional file for Windows"
+    )
+endif()
