@@ -59,39 +59,37 @@ void Player::update(Keyboard keyboard, Camera &camera, World &world, GLfloat del
 }
 
 void Player::collide(World &world, const glm::vec3 &vel){
-    for (int x = position.x - box.dimensions.x;
-         x < position.x + box.dimensions.x; x++)
-        for (int y = position.y - box.dimensions.y; y < position.y + 0.7; y++)
-            for (int z = position.z - box.dimensions.z;
-                 z < position.z + box.dimensions.z; z++) {
+    for (int x = floor(position.x - box.dimensions.x); x < position.x + box.dimensions.x; x++) {
+        for (int y = position.y - box.dimensions.y; y < position.y + 0.7; y++) {
+            for (int z = floor(position.z - box.dimensions.z); z < position.z + box.dimensions.z; z++) {
                 auto block = world.getBlock(x, y, z);
 
                 if (block.IsSolid()) {
+                    //@TODO remove this tricky solution (adjusting the numbers), don't know why is it not working without that
                     if (vel.y > 0) {
-                        position.y = y - box.dimensions.y + .29; //should be .3 but something is messed up
+                        position.y = y - box.dimensions.y + .2999;
                         velocity.y = 0;
-                    }
-                    else if (vel.y < 0) {
+                    } else if (vel.y < 0) {
                         isOnGround = true;
                         position.y = y + box.dimensions.y + 1;
                         velocity.y = 0;
                     }
 
                     if (vel.x > 0) {
-                        position.x = x - box.dimensions.x;
-                    }
-                    else if (vel.x < 0) {
-                        position.x = x + box.dimensions.x + 1;
+                        position.x = x - box.dimensions.x - 0.0001;
+                    } else if (vel.x < 0) {
+                        position.x = x + box.dimensions.x + 1.0001;
                     }
 
                     if (vel.z > 0) {
-                        position.z = z - box.dimensions.z;
-                    }
-                    else if (vel.z < 0) {
-                        position.z = z + box.dimensions.z + 1;
+                        position.z = z - box.dimensions.z - 0.0001;
+                    } else if (vel.z < 0) {
+                        position.z = z + box.dimensions.z + 1.0001;
                     }
                 }
             }
+        }
+    }
 }
 
 void Player::handleMouseMovement(Camera &camera, GLfloat xOffset, GLfloat yOffset)
