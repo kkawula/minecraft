@@ -66,6 +66,7 @@ void Player::collide(World &world, const glm::vec3 &vel){
 
                 if (block.IsSolid()) {
                     //@TODO remove this tricky solution (adjusting the numbers), don't know why is it not working without that
+                    //Only bugging on chunk edges
                     if (vel.y > 0) {
                         position.y = y - box.dimensions.y + .2999;
                         velocity.y = 0;
