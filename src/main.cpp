@@ -20,6 +20,7 @@
 
 #include "player/Player.h"
 #include "input/Keyboard.h"
+#include "input/Mouse.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -27,13 +28,15 @@ namespace fs = std::filesystem;
 // Properties
 int SCREEN_WIDTH, SCREEN_HEIGHT;
 
-//Keyboard
+//Input devices
 Keyboard keyboard = Keyboard();
+Mouse mouse = Mouse();
 
 // Function prototypes
 void KeyCallback( GLFWwindow *window, int key, int scancode, int action, int mode );
 void ScrollCallback( GLFWwindow *window, double xOffset, double yOffset );
 void MouseCallback( GLFWwindow *window, double xPos, double yPos );
+void MouseButtonCallback( GLFWwindow *window, int button, int action, int mods );
 
 bool hasChunkCordsChanged();
 GLfloat lastX = config::WINDOW_WIDTH / 2.0;
@@ -65,6 +68,7 @@ int main(int argc, char *argv[])
     window.setCursorPosCallback(MouseCallback);
     window.setKeyCallback(KeyCallback);
     window.setScrollCallback(ScrollCallback);
+    window.setMouseButtonCallback(MouseButtonCallback);
 
     // Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions
     glewExperimental = GL_TRUE;
@@ -148,13 +152,18 @@ bool hasChunkCordsChanged() {
 
 void DoMovement(World world)
 {
-    player.update(keyboard, camera, world, deltaTime);
+    player.update(keyboard, mouse, camera, world, deltaTime);
 }
 
 // Is called whenever a key is pressed/released via GLFW
 void KeyCallback( GLFWwindow *window, int key, int scancode, int action, int mode )
 {
     keyboard.KeyCallback(window, key, scancode, action, mode);
+}
+
+void MouseButtonCallback( GLFWwindow *window, int button, int action, int mods )
+{
+    mouse.buttonCallback(window, button, action, mods);
 }
 
 void MouseCallback( GLFWwindow *window, double xPos, double yPos )

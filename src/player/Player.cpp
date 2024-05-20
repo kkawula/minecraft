@@ -11,9 +11,10 @@ Player::Player(const glm::vec3 &pos)
 {
 }
 
-void Player::update(Keyboard keyboard, Camera &camera, World &world, GLfloat deltaTime) {
+void Player::update(Keyboard keyboard, Mouse mouse, Camera &camera, World &world, GLfloat deltaTime) {
     this->acceleration = glm::vec3(0.0f);
-    keyboardInput(keyboard, camera);
+    keyboardInput(keyboard, camera, world);
+    mouseInput(mouse, camera, world);
 
     if (!isFlying) {
         if (!isOnGround) {
@@ -103,7 +104,7 @@ void Player::handleMouseScroll(Camera &camera, GLfloat yOffset)
     camera.ProcessMouseScroll(yOffset);
 }
 
-void Player::keyboardInput(Keyboard &keyboard, Camera &camera)
+void Player::keyboardInput(Keyboard &keyboard, Camera &camera, World &world)
 {
     glm::vec3 front = camera.getFront();
     glm::vec3 right = camera.getRight();
@@ -161,6 +162,20 @@ void Player::keyboardInput(Keyboard &keyboard, Camera &camera)
     }
 }
 
+void Player::mouseInput(Mouse mouse, Camera &camera, World &world)
+{
+    if(mouse.isButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
+    {
+        dig(world, camera);
+        std::cout << camera.getPosition().x << " " << camera.getPosition().y << " " << camera.getPosition().z << "\n";
+    }
+
+    if(mouse.isButtonPressed(GLFW_MOUSE_BUTTON_RIGHT))
+    {
+        placeBlock(world, camera);
+    }
+}
+
 void Player::jump()
 {
     if (isOnGround)
@@ -168,4 +183,83 @@ void Player::jump()
         isOnGround = false;
         velocity.y += JUMP_ACCELERATION;
     }
+}
+
+void Player::dig(World &world, Camera &camera)
+{
+    glm::vec3 front = camera.getFront();
+    glm::vec3 rayStep = {front.x * 0.05, front.y * 0.05, front.z * 0.05};
+    for(auto rayPos = glm::vec3(0); glm::length(rayPos) < 4; rayPos += rayStep)
+    {
+        int x = floor(position.x + rayPos.x);
+        int y = floor(position.y + rayPos.y);
+        int z = floor(position.z + rayPos.z);
+        auto block = world.getBlock(x, y, z);
+
+        if(block.GetType() != Block::AIR && block.GetType() != Block::WATER)
+        {
+            Block newBlock = Block(Block::AIR, false, true, false);
+            world.setBlock(x, y, z, newBlock);
+            break;
+        }
+    }
+}
+
+glm::vec3 getPlacedBlockPosition(GLfloat x, GLfloat y, GLfloat z);
+
+void Player::placeBlock(World &world, Camera &camera)
+{
+    glm::vec3 front = camera.getFront();
+    glm::vec3 rayStep = {front.x * 0.05, front.y * 0.05, front.z * 0.05};
+    for(auto rayPos = glm::vec3(0); glm::length(rayPos) < 4; rayPos += rayStep)
+    {
+        int x = floor(position.x + rayPos.x);
+        int y = floor(position.y + rayPos.y);
+        int z = floor(position.z + rayPos.z);
+        auto block = world.getBlock(x, y, z);
+
+        if(block.GetType() != Block::AIR && block.GetType() != Block::WATER)
+        {
+            glm::vec3 positionCorrection = getPlacedBlockPosition(position.x + rayPos.x, position.y + rayPos.y, position.z + rayPos.z);
+            glm::vec3 newBlockPosition=  {x + positionCorrection.x, y + positionCorrection.y, z + positionCorrection.z};
+            Block newBlock = Block(Block::GRASS, true, false, true);
+            world.setBlock(newBlockPosition.x, newBlockPosition.y, newBlockPosition.z, newBlock);
+            std::cout << newBlockPosition.x << " " << newBlockPosition.y << " " << newBlockPosition.z << "\n";
+            break;
+        }
+    }
+}
+
+glm::vec3 getPlacedBlockPosition(GLfloat x, GLfloat y, GLfloat z)
+{
+    x = std::modf(x, nullptr);
+    y = std::modf(y, nullptr);
+    z = std::modf(z, nullptr);
+
+    int vectors[6][3] = {
+            {-1, 0, 0}, // Left face
+            {1, 0, 0}, // Right face
+            {0, -1, 0}, // Bottom face
+            {0, 1, 0}, // Top face
+            {0, 0, -1}, // Back face
+            {0, 0, 1}  // Front face
+    };
+
+    std::pair leftFace = std::make_pair(x, 0);
+    std::pair rightFace = std::make_pair(1 - x, 1);
+    std::pair bottomFace = std::make_pair(y, 2);
+    std::pair topFace = std::make_pair(1 - y, 3);
+    std::pair backFace = std::make_pair(z, 4);
+    std::pair frontFace = std::make_pair(1 - z, 5);
+
+    std::vector<std::pair<GLfloat, int>> faces = {leftFace, rightFace, bottomFace, topFace, backFace, frontFace};
+
+    auto minFace = std::min_element(faces.begin(), faces.end(),
+                                    [](const std::pair<GLfloat, int>& a, const std::pair<GLfloat, int>& b) {
+                                        return a.first < b.first;
+                                    });
+
+    int minFaceIndex = minFace->second;
+
+    return glm::vec3(vectors[minFaceIndex][0], vectors[minFaceIndex][1], vectors[minFaceIndex][2]);
 }

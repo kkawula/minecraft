@@ -18,9 +18,7 @@ public:
     void setKeyCallback(GLFWkeyfun callback);
     void setCursorPosCallback(GLFWcursorposfun callback);
     void setScrollCallback(GLFWscrollfun callback);
-
-
-
+    void setMouseButtonCallback(GLFWmousebuttonfun callback);
 };
 
 

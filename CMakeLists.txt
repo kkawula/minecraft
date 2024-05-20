@@ -62,6 +62,8 @@ set(SOURCE_FILES
         src/player/Player.h
         src/input/Keyboard.cpp
         src/input/Keyboard.h
+        src/input/Mouse.cpp
+        src/input/Mouse.h
 
 )
 

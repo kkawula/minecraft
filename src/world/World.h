@@ -43,6 +43,26 @@ public:
         int zoff = z < 0 ? config::CHUNK_SIZE - 1 : 0;
         return chunk->GetBlock_(X % config::CHUNK_SIZE + xoff, y, Z % config::CHUNK_SIZE + zoff);
     }
+
+    void setBlock(int x, int y, int z, Block block){
+        int X = x;
+        int Z = z;
+        if(x < 0) X++;
+        if(z < 0) Z++;
+        auto chunkX = X / config::CHUNK_SIZE;
+        auto chunkZ = Z / config::CHUNK_SIZE;
+        if (x < 0) chunkX--;
+        if (z < 0) chunkZ--;
+        auto chunk = GetChunk(chunkX, chunkZ);
+        if (chunk == nullptr || y < 0 || y >= config::CHUNK_HEIGHT) {
+            return;
+        }
+
+        int xoff = x < 0 ? config::CHUNK_SIZE - 1 : 0;
+        int zoff = z < 0 ? config::CHUNK_SIZE - 1 : 0;
+        chunk->SetBlock(X % config::CHUNK_SIZE + xoff, y, Z % config::CHUNK_SIZE + zoff, block);
+    }
+
     void generateChunk(int x, int z);
 
 
