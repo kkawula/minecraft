@@ -167,7 +167,6 @@ void Player::mouseInput(Mouse mouse, Camera &camera, World &world)
     if(mouse.isButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
     {
         dig(world, camera);
-        std::cout << position.x << " " << position.y << " " << position.z << "\n";
     }
 
     if(mouse.isButtonPressed(GLFW_MOUSE_BUTTON_RIGHT))
