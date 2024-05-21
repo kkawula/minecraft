@@ -12,7 +12,7 @@ class ChunkManager {
 public:
     ChunkManager(MeshAtlas& atlas, Camera &camera, World &world);
     void updateCords(int x, int z);
-
+    void updateChunkMesh(int x, int z);
 
 private:
     MeshAtlas *atlas;

@@ -83,7 +83,6 @@ void World::GenerateTerrain(int i, int j) {
         }
     }
     chunks[chunkPosition] = chunk;
-
 }
 
 void World::GenerateVegetation(int i, int j) {

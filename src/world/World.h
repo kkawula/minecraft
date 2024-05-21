@@ -18,6 +18,19 @@ public:
         return chunks[key];
     }
 
+    static std::pair<int, int> GetChunkCords(int globalX, int globalZ) {
+        int X = globalX;
+        int Z = globalZ;
+        if(globalX < 0) X++;
+        if(globalZ < 0) Z++;
+        auto chunkX = X / config::CHUNK_SIZE;
+        auto chunkZ = Z / config::CHUNK_SIZE;
+        if (globalX < 0) chunkX--;
+        if (globalZ < 0) chunkZ--;
+
+        return std::make_pair(chunkX, chunkZ);
+    }
+
     bool isChunkGenerated(int x, int z) {
         auto key = std::make_pair(x, z);
         return chunks[key] != nullptr;
@@ -65,9 +78,22 @@ public:
 
     void generateChunk(int x, int z);
 
+    void addChunkCordsToUpdate(int x, int z)
+    {
+        chunkCordsToUpdate.push_back(std::make_pair(x, z));
+    }
+
+    void clearChunkCordsToUpdate()
+    {
+        chunkCordsToUpdate.clear();
+    }
+
+    std::vector<std::pair<int, int>> getChunkCordsToUpdate()
+    {
+        return chunkCordsToUpdate;
+    }
 
 private:
-
     void GenerateTerrain(int i, int j);
     void GenerateVegetation(int i, int j);
 
@@ -81,6 +107,8 @@ private:
 
     siv::PerlinNoise perlinHeight;
     siv::PerlinNoise perlinBiome;
+
+    std::vector<std::pair<int, int>> chunkCordsToUpdate = {};
 };
 
 

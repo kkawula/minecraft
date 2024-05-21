@@ -57,6 +57,9 @@ void ChunkManager::updateCords(int x, int z) {
 
         }
     }
-
 }
 
+void ChunkManager::updateChunkMesh(int x, int z)
+{
+    m_chunkMeshGenerator.setupMesh(x, z);
+}

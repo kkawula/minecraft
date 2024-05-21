@@ -42,7 +42,7 @@ bool hasChunkCordsChanged();
 GLfloat lastX = config::WINDOW_WIDTH / 2.0;
 GLfloat lastY = config::WINDOW_HEIGHT / 2.0;
 
-void DoMovement(World world);
+void DoMovement(World &world);
 
 // Camera
 glm::vec3 startingPosition = glm::vec3( -0.0f, 100.0f, 0.0f );
@@ -112,6 +112,15 @@ int main(int argc, char *argv[])
             chunkManager.updateCords(cordX, cordZ);
         }
 
+        std::vector<std::pair<int, int>> chunkCordsToUpdate = world.getChunkCordsToUpdate();
+        if(!chunkCordsToUpdate.empty())
+        {
+            for(std::pair<int, int> cords : chunkCordsToUpdate)
+            {
+                chunkManager.updateChunkMesh(cords.first, cords.second);
+            }
+            world.clearChunkCordsToUpdate();
+        }
 
         glClearColor(0.43f, 0.69f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -150,7 +159,7 @@ bool hasChunkCordsChanged() {
 
 // Moves/alters the camera positions based on user input
 
-void DoMovement(World world)
+void DoMovement(World &world)
 {
     player.update(keyboard, mouse, camera, world, deltaTime);
 }
