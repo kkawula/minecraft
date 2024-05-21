@@ -31,6 +31,22 @@ public:
         return std::make_pair(chunkX, chunkZ);
     }
 
+    //Gets 'in-chunk' cords
+    static std::pair<int, int> GetLocalCords(int globalX, int globalZ) {
+        int X = globalX;
+        int Z = globalZ;
+        if(globalX < 0) X++;
+        if(globalZ < 0) Z++;
+        auto chunkX = X / config::CHUNK_SIZE;
+        auto chunkZ = Z / config::CHUNK_SIZE;
+        if (globalX < 0) chunkX--;
+        if (globalZ < 0) chunkZ--;
+
+        int xoff = globalX < 0 ? config::CHUNK_SIZE - 1 : 0;
+        int zoff = globalZ < 0 ? config::CHUNK_SIZE - 1 : 0;
+        return std::make_pair(X % config::CHUNK_SIZE + xoff, Z % config::CHUNK_SIZE + zoff);
+     }
+
     bool isChunkGenerated(int x, int z) {
         auto key = std::make_pair(x, z);
         return chunks[key] != nullptr;
@@ -78,19 +94,19 @@ public:
 
     void generateChunk(int x, int z);
 
-    void addChunkCordsToUpdate(int x, int z)
+    void addCordsToUpdate(int x, int z)
     {
-        chunkCordsToUpdate.push_back(std::make_pair(x, z));
+        cordsToUpdate.push_back(std::make_pair(x, z));
     }
 
-    void clearChunkCordsToUpdate()
+    void clearCordsToUpdate()
     {
-        chunkCordsToUpdate.clear();
+        cordsToUpdate.clear();
     }
 
-    std::vector<std::pair<int, int>> getChunkCordsToUpdate()
+    std::vector<std::pair<int, int>> getCordsToUpdate()
     {
-        return chunkCordsToUpdate;
+        return cordsToUpdate;
     }
 
 private:
@@ -108,7 +124,7 @@ private:
     siv::PerlinNoise perlinHeight;
     siv::PerlinNoise perlinBiome;
 
-    std::vector<std::pair<int, int>> chunkCordsToUpdate = {};
+    std::vector<std::pair<int, int>> cordsToUpdate = {};
 };
 
 

@@ -8,7 +8,6 @@
 #include "../input/Mouse.h"
 
 const GLfloat PLAYER_SPEED = 150.0f;
-const GLfloat PLAYER_SENSITIVITY = 0.25f;
 
 class Player : public Entity {
 public:
@@ -24,7 +23,6 @@ private:
     glm::vec3 acceleration;
     GLfloat movementSpeed = PLAYER_SPEED;
     GLfloat speedMultiplier = 1.0f;
-    GLfloat mouseSensitivity = PLAYER_SENSITIVITY;
 
     void collide(World &world, const glm::vec3 &vel);
 

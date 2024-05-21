@@ -39,6 +39,7 @@ void MouseCallback( GLFWwindow *window, double xPos, double yPos );
 void MouseButtonCallback( GLFWwindow *window, int button, int action, int mods );
 
 bool hasChunkCordsChanged();
+void updateMeshes(World &world, ChunkManager &chunkManager);
 GLfloat lastX = config::WINDOW_WIDTH / 2.0;
 GLfloat lastY = config::WINDOW_HEIGHT / 2.0;
 
@@ -112,14 +113,8 @@ int main(int argc, char *argv[])
             chunkManager.updateCords(cordX, cordZ);
         }
 
-        std::vector<std::pair<int, int>> chunkCordsToUpdate = world.getChunkCordsToUpdate();
-        if(!chunkCordsToUpdate.empty())
-        {
-            for(std::pair<int, int> cords : chunkCordsToUpdate)
-            {
-                chunkManager.updateChunkMesh(cords.first, cords.second);
-            }
-            world.clearChunkCordsToUpdate();
+        if(!world.getCordsToUpdate().empty()){
+            updateMeshes(world, chunkManager);
         }
 
         glClearColor(0.43f, 0.69f, 1.0f, 1.0f);
@@ -154,11 +149,34 @@ bool hasChunkCordsChanged() {
         return true;
     }
     return false;
+}
 
+void updateMeshes(World &world, ChunkManager &chunkManager){
+    std::vector<std::pair<int, int>> chunkCordsToUpdate = world.getCordsToUpdate();
+    if(!chunkCordsToUpdate.empty())
+    {
+        for(std::pair<int, int> cords : chunkCordsToUpdate)
+        {
+            int globalX = cords.first;
+            int globalZ = cords.second;
+            std::pair<int, int> chunkCords = World::GetChunkCords(globalX, globalZ);
+            chunkManager.updateChunkMesh(chunkCords.first, chunkCords.second);
+
+            std::pair<int, int> localCords = World::GetLocalCords(globalX, globalZ);
+            if(localCords.first == 0)
+                chunkManager.updateChunkMesh(chunkCords.first - 1, chunkCords.second);
+            else if(localCords.first == 15)
+                chunkManager.updateChunkMesh(chunkCords.first + 1, chunkCords.second);
+            if(localCords.second == 0)
+                chunkManager.updateChunkMesh(chunkCords.first, chunkCords.second - 1);
+            else if(localCords.second == 15)
+                chunkManager.updateChunkMesh(chunkCords.first, chunkCords.second + 1);
+        }
+        world.clearCordsToUpdate();
+    }
 }
 
 // Moves/alters the camera positions based on user input
-
 void DoMovement(World &world)
 {
     player.update(keyboard, mouse, camera, world, deltaTime);

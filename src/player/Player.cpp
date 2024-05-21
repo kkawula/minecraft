@@ -167,12 +167,13 @@ void Player::mouseInput(Mouse mouse, Camera &camera, World &world)
     if(mouse.isButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
     {
         dig(world, camera);
-        //std::cout << camera.getPosition().x << " " << camera.getPosition().y << " " << camera.getPosition().z << "\n";
+        std::cout << "Camera:    " << camera.getPosition().x << " " << camera.getPosition().y << " " << camera.getPosition().z << "\n";
     }
 
     if(mouse.isButtonPressed(GLFW_MOUSE_BUTTON_RIGHT))
     {
         placeBlock(world, camera);
+        std::cout << "Player:    " << position.x << " " << position.y << " " << position.z << "\n";
     }
 }
 
@@ -191,17 +192,16 @@ void Player::dig(World &world, Camera &camera)
     glm::vec3 rayStep = {front.x * 0.05, front.y * 0.05, front.z * 0.05};
     for(auto rayPos = glm::vec3(0); glm::length(rayPos) < 4; rayPos += rayStep)
     {
-        int x = floor(camera.getPosition().x + rayPos.x);
-        int y = floor(camera.getPosition().y + rayPos.y);
-        int z = floor(camera.getPosition().z + rayPos.z);
+        int x = floor(position.x + rayPos.x);
+        int y = floor(position.y + .5 + rayPos.y);
+        int z = floor(position.z + rayPos.z);
         auto block = world.getBlock(x, y, z);
 
         if(block.GetType() != Block::AIR && block.GetType() != Block::WATER)
         {
             Block newBlock = Block(Block::AIR, false, true, false);
             world.setBlock(x, y, z, newBlock);
-            std::pair<int, int> chunkCords = World::GetChunkCords(x, z);
-            world.addChunkCordsToUpdate(chunkCords.first, chunkCords.second);
+            world.addCordsToUpdate(x, z);
             break;
         }
     }
@@ -215,18 +215,18 @@ void Player::placeBlock(World &world, Camera &camera)
     glm::vec3 rayStep = {front.x * 0.05, front.y * 0.05, front.z * 0.05};
     for(auto rayPos = glm::vec3(0); glm::length(rayPos) < 4; rayPos += rayStep)
     {
-        int x = floor(camera.getPosition().x + rayPos.x);
-        int y = floor(camera.getPosition().y + rayPos.y);
-        int z = floor(camera.getPosition().z + rayPos.z);
+        int x = floor(position.x + rayPos.x);
+        int y = floor(position.y + .5 + rayPos.y);
+        int z = floor(position.z + rayPos.z);
         auto block = world.getBlock(x, y, z);
 
         if(block.GetType() != Block::AIR && block.GetType() != Block::WATER)
         {
-            glm::vec3 positionCorrection = getPlacedBlockPosition(camera.getPosition().x + rayPos.x, camera.getPosition().y + rayPos.y, camera.getPosition().z + rayPos.z);
+            glm::vec3 positionCorrection = getPlacedBlockPosition(position.x + rayPos.x, position.y + .5 + rayPos.y, position.z + rayPos.z);
             glm::vec3 newBlockPosition=  {x + positionCorrection.x, y + positionCorrection.y, z + positionCorrection.z};
             Block newBlock = Block(Block::GRASS, true, false, true);
             world.setBlock(newBlockPosition.x, newBlockPosition.y, newBlockPosition.z, newBlock);
-            //std::cout << newBlockPosition.x << " " << newBlockPosition.y << " " << newBlockPosition.z << "\n";
+            world.addCordsToUpdate(newBlockPosition.x, newBlockPosition.z);
             break;
         }
     }
@@ -237,6 +237,9 @@ glm::vec3 getPlacedBlockPosition(GLfloat x, GLfloat y, GLfloat z)
     x = std::modf(x, nullptr);
     y = std::modf(y, nullptr);
     z = std::modf(z, nullptr);
+
+    if(x < 0) x++;
+    if(z < 0) z++;
 
     int vectors[6][3] = {
             {-1, 0, 0}, // Left face
@@ -263,5 +266,5 @@ glm::vec3 getPlacedBlockPosition(GLfloat x, GLfloat y, GLfloat z)
 
     int minFaceIndex = minFace->second;
 
-    return glm::vec3(vectors[minFaceIndex][0], vectors[minFaceIndex][1], vectors[minFaceIndex][2]);
+    return {vectors[minFaceIndex][0], vectors[minFaceIndex][1], vectors[minFaceIndex][2]};
 }
