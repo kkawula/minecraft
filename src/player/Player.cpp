@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "GLFW/glfw3.h"
+#include <cmath>
 
 const float GRAVITY = 50.0f;
 const float JUMP_ACCELERATION  = 12.0f;
@@ -250,9 +251,10 @@ bool Player::isCollidingWithPlayer(const glm::vec3 &blockPosition) {
 
 glm::vec3 getPlacedBlockPosition(GLfloat x, GLfloat y, GLfloat z)
 {
-    x = std::modf(x, nullptr);
-    y = std::modf(y, nullptr);
-    z = std::modf(z, nullptr);
+    double intpart;
+    x = std::modf(x, &intpart);
+    y = std::modf(y, &intpart);
+    z = std::modf(z, &intpart);
 
     if(x < 0) x++;
     if(z < 0) z++;
