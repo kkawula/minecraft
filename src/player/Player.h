@@ -32,6 +32,8 @@ private:
     void jump();
     void placeBlock(World &world, Camera &camera);
     void dig(World &world, Camera &camera);
+
+    bool isCollidingWithPlayer(const glm::vec3 &blockPosition);
 };
 
 #endif // PLAYER_H_INCLUDED

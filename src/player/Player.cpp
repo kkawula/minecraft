@@ -118,7 +118,7 @@ void Player::keyboardInput(Keyboard &keyboard, Camera &camera, World &world)
 
     if(isFlying)
     {
-        speedMultiplier = keyboard.isKeyDown(GLFW_KEY_LEFT_SHIFT) ? 20.0f : 10.0f;
+        speedMultiplier = keyboard.isKeyDown(GLFW_KEY_LEFT_SHIFT) ? 20.0f : 2.0f;
         if (keyboard.isKeyDown(GLFW_KEY_W))
             acceleration += front;
 
@@ -167,13 +167,12 @@ void Player::mouseInput(Mouse mouse, Camera &camera, World &world)
     if(mouse.isButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
     {
         dig(world, camera);
-        std::cout << "Camera:    " << camera.getPosition().x << " " << camera.getPosition().y << " " << camera.getPosition().z << "\n";
+        std::cout << position.x << " " << position.y << " " << position.z << "\n";
     }
 
     if(mouse.isButtonPressed(GLFW_MOUSE_BUTTON_RIGHT))
     {
         placeBlock(world, camera);
-        std::cout << "Player:    " << position.x << " " << position.y << " " << position.z << "\n";
     }
 }
 
@@ -224,13 +223,31 @@ void Player::placeBlock(World &world, Camera &camera)
         {
             glm::vec3 positionCorrection = getPlacedBlockPosition(position.x + rayPos.x, position.y + .5 + rayPos.y, position.z + rayPos.z);
             glm::vec3 newBlockPosition=  {x + positionCorrection.x, y + positionCorrection.y, z + positionCorrection.z};
-            Block newBlock = Block(Block::GRASS, true, false, true);
-            world.setBlock(newBlockPosition.x, newBlockPosition.y, newBlockPosition.z, newBlock);
-            world.addCordsToUpdate(newBlockPosition.x, newBlockPosition.z);
+            if(!isCollidingWithPlayer(newBlockPosition))
+            {
+                Block newBlock = Block(Block::GRASS, true, false, true);
+                world.setBlock(newBlockPosition.x, newBlockPosition.y, newBlockPosition.z, newBlock);
+                world.addCordsToUpdate(newBlockPosition.x, newBlockPosition.z);
+            }
             break;
         }
     }
 }
+
+bool Player::isCollidingWithPlayer(const glm::vec3 &blockPosition) {
+    glm::vec3 playerMinCorner = position - box.dimensions;
+    glm::vec3 playerMaxCorner = position + glm::vec3{box.dimensions.x, 0.5, box.dimensions.z};
+
+    glm::vec3 blockMinCorner = blockPosition;
+    glm::vec3 blockMaxCorner = blockPosition + glm::vec3{1,1,1};
+
+    bool xOverlap = playerMinCorner.x < blockMaxCorner.x && playerMaxCorner.x > blockMinCorner.x;
+    bool yOverlap = playerMinCorner.y < blockMaxCorner.y && playerMaxCorner.y > blockMinCorner.y;
+    bool zOverlap = playerMinCorner.z < blockMaxCorner.z && playerMaxCorner.z > blockMinCorner.z;
+
+    return xOverlap && yOverlap && zOverlap;
+}
+
 
 glm::vec3 getPlacedBlockPosition(GLfloat x, GLfloat y, GLfloat z)
 {
