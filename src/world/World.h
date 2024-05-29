@@ -52,8 +52,6 @@ public:
         return chunks[key] != nullptr;
      }
 
-    Block air = Block(0, false, true);
-
     Block& getBlock(int x, int y, int z) {
         int X = x;
         int Z = z;
@@ -66,6 +64,7 @@ public:
         auto chunk = GetChunk(chunkX, chunkZ);
         if (chunk == nullptr || y < 0 || y >= config::CHUNK_HEIGHT) {
             return air;
+            throw "Block out of bounds";
         }
 
         int xoff = x < 0 ? config::CHUNK_SIZE - 1 : 0;
@@ -93,6 +92,22 @@ public:
     }
 
     void generateChunk(int x, int z);
+
+    bool isChunkGenerated(int x, int y, int z) {
+        int X = x;
+        int Z = z;
+        if(x < 0) X++;
+        if(z < 0) Z++;
+        auto chunkX = X / config::CHUNK_SIZE;
+        auto chunkZ = Z / config::CHUNK_SIZE;
+        if (x < 0) chunkX--;
+        if (z < 0) chunkZ--;
+        auto chunk = GetChunk(chunkX, chunkZ);
+        if (chunk == nullptr) {
+            return false;
+        }
+        return true;
+    }
 
     void addCordsToUpdate(int x, int z)
     {

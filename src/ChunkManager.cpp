@@ -19,14 +19,19 @@ ChunkManager::ChunkManager(MeshAtlas &atlas, Camera &camera, World &world) : m_c
                 world.generateChunk(i, j);
             }
 
+        }
+    }
+
+    for (int i = -config::VIEW_RADIUS; i <= config::VIEW_RADIUS; i++) {
+        for (int j = -config::VIEW_RADIUS; j <= config::VIEW_RADIUS; j++) {
             if (not atlas.isMeshGenerated(i, j)) {
                 atlas.createEntry(i, j);
                 m_chunkMeshGenerator.setupMesh(i, j);
             }
             cords->insert(std::make_pair(i, j));
-
         }
     }
+
 }
 
 void ChunkManager::updateCords(int x, int z) {

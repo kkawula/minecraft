@@ -164,7 +164,7 @@ void World::GenerateTree(const std::shared_ptr<Chunk>& chunk, int x, int y, int 
     };
 
 
-    for(int i = 0; i < 2; i++){
+    for (int i = 0; i < 2; i++){
         for(const auto& offset : leafOffsets1){
             int xoff = offset.first;
             int zoff = offset.second;
@@ -176,7 +176,7 @@ void World::GenerateTree(const std::shared_ptr<Chunk>& chunk, int x, int y, int 
         Y++;
     }
 
-    for(const auto& offset : leafOffsets2){
+    for (const auto& offset : leafOffsets2) {
         int xoff = offset.first;
         int zoff = offset.second;
         auto block = Block(Block::LEAF);
@@ -187,7 +187,7 @@ void World::GenerateTree(const std::shared_ptr<Chunk>& chunk, int x, int y, int 
 
     Y++;
 
-    for(const auto& offset : leafOffsets3){
+    for (const auto& offset : leafOffsets3){
         int xoff = offset.first;
         int zoff = offset.second;
         auto block = Block(Block::LEAF);

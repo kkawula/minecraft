@@ -13,7 +13,6 @@
 #include "Window.h"
 #include "render/Renderer.h"
 #include "config.h"
-#include "mesh/ChunkMeshGenerator.h"
 #include "mesh/MeshAtlas.h"
 #include "utils/FileSystem.h"
 #include "ChunkManager.h"

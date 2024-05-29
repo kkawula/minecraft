@@ -8,8 +8,8 @@ namespace config {
 
     static constexpr int WORLD_MIN_X = -5;
     static constexpr int WORLD_MIN_Z = -5;
-    static constexpr int WORLD_MAX_X = 5;
-    static constexpr int WORLD_MAX_Z = 5;
+    static constexpr int WORLD_MAX_X = 50;
+    static constexpr int WORLD_MAX_Z = 50;
 
     static constexpr int VIEW_RADIUS = 10;
 
@@ -17,8 +17,8 @@ namespace config {
     static constexpr int BIOME_OCTAVE = 3;
     static constexpr int WATER_LEVEL = 10;
 
-    static constexpr int WINDOW_WIDTH = 800;
-    static constexpr int WINDOW_HEIGHT = 600;
+    static constexpr int WINDOW_WIDTH = 1000;
+    static constexpr int WINDOW_HEIGHT = 750;
 }
 
 #endif //MINECRAFT_CONFIG_H
