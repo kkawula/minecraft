@@ -1,50 +1,49 @@
 #include "ChunkManager.h"
 #include <iostream>
+#include <chrono>
 ChunkManager::ChunkManager(MeshAtlas &atlas, Camera &camera, World &world) : m_chunkMeshGenerator(world, atlas) {
     this->atlas = &atlas;
     this->camera = &camera;
     this->world = &world;
 
-    startChunkGenerationThread();
-
-//    updateCords(0, 0);
-
+    startChunkGenerationDeamon();
 }
 
 ChunkManager::~ChunkManager() {
     chunkGenerationThread.join();
 }
 
-void ChunkManager::fillQueue() {
+void ChunkManager::fillQueue(int currX, int currZ) {
     std::lock_guard<std::mutex> lock(queueUpdateMutex);
     while (not chunksToUpdate.empty()) {
         chunksToUpdate.pop();
     }
-    chunksToUpdate.push(currentCenterChunkPos);
+    chunksToUpdate.emplace(currX, currZ);
 
-    int currX = currentCenterChunkPos.first - 1;
-    int currZ = currentCenterChunkPos.second + 1;
     int currLength = 3;
-    std::cout << "staring from" << currX << " " << currZ << std::endl;
 
     for (int i = 1; i <= config::VIEW_RADIUS; i++) {
         for (int j = 0; j < currLength - 1; j++) {
-            chunksToUpdate.emplace(currX, currZ);
+            if (not world->isChunkGenerated(currX, currZ))
+                chunksToUpdate.emplace(currX, currZ);
             currX++;
         }
 
         for (int j = 0; j < currLength - 1; j++) {
-            chunksToUpdate.emplace(currX, currZ);
+            if (not world->isChunkGenerated(currX, currZ))
+                chunksToUpdate.emplace(currX, currZ);
             currZ--;
         }
 
         for (int j = 0; j < currLength - 1; j++) {
-            chunksToUpdate.emplace(currX, currZ);
+            if (not world->isChunkGenerated(currX, currZ))
+                chunksToUpdate.emplace(currX, currZ);
             currX--;
         }
 
         for (int j = 0; j < currLength - 1; j++) {
-            chunksToUpdate.emplace(currX, currZ);
+            if (not world->isChunkGenerated(currX, currZ))
+                chunksToUpdate.emplace(currX, currZ);
             currZ++;
         }
 
@@ -55,29 +54,53 @@ void ChunkManager::fillQueue() {
 }
 
 void ChunkManager::updateCords(int x, int z) {
+    fillQueue(x, z);
+}
+
+void ChunkManager::addChunksToRendering() {
     auto cords = atlas->cords();
-    currentCenterChunkPos = std::make_pair(x, z);
-    fillQueue();
 
     {
         std::lock_guard<std::mutex> lock(queueRenderMutex);
-        std::cout << "Rendering size: " << chunksToRender.size() << std::endl;
         while (not chunksToRender.empty()) {
             auto chunk = chunksToRender.front();
+            chunksToRender.pop();
             int i = chunk.first;
             int j = chunk.second;
-            chunksToRender.pop();
+
+            bool flag = false;
+            for (int k = -1; k <= 1; k++) {
+                for (int n = -1; n <= 1; n++) {
+                    if (k == 0 && n == 0) {
+                        continue;
+                    }
+                    auto cords = atlas->cords();
+                    if (not world->isChunkGenerated(chunk.first + k, chunk.second + n)) {
+                        flag = true;
+                        break;
+                    }
+
+                }
+                if (flag) {
+                    break;
+                }
+            }
+            if (flag) {
+                chunksToRender.emplace(i, j);
+                break;
+            }
+
             atlas->createEntry(i, j);
             m_chunkMeshGenerator.setupMesh(i, j);
             cords->insert(std::make_pair(i, j));
-            std::cout << "Rendering chunk: " << i << " " << j << std::endl;
+
         }
     }
 
 }
-void ChunkManager::startChunkGenerationThread() {
+void ChunkManager::startChunkGenerationDeamon() {
     chunkGenerationThread = std::thread([this]() {
-        while (true) {
+        while (running) {
             std::pair<int, int> chunk;
             {
                 std::lock_guard<std::mutex> lock(queueUpdateMutex);
@@ -98,8 +121,9 @@ void ChunkManager::startChunkGenerationThread() {
             {
                 std::lock_guard<std::mutex> lock(queueRenderMutex);
                 chunksToRender.emplace(i, j);
-                std:: cout << "Generating chunk: " << i << " " << j << std::endl;
             }
+            std::this_thread::sleep_for(std::chrono::milliseconds (5));
+
         }
     });
 }

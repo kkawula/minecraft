@@ -48,8 +48,9 @@ public:
      }
 
     bool isChunkGenerated(int x, int z) {
-        auto key = std::make_pair(x, z);
-        return chunks[key] != nullptr;
+         std::lock_guard<std::mutex> lock(worldMutex);
+         auto key = std::make_pair(x, z);
+         return chunks[key] != nullptr;
      }
 
     Block& getBlock(int x, int y, int z) {

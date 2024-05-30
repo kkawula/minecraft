@@ -16,7 +16,11 @@ public:
     ~ChunkManager();
     void updateCords(int x, int z);
     void updateChunkMesh(int x, int z);
-    void startChunkGenerationThread();
+    void addChunksToRendering();
+    void startChunkGenerationDeamon();
+    void exit() {
+        running = false;
+    }
 
 
 private:
@@ -33,8 +37,10 @@ private:
     std::mutex queueRenderMutex;
 
     std::thread chunkGenerationThread;
+    std::thread meshGenerationThread;
+    bool running = true;
 
-    void fillQueue();
+    void fillQueue(int currX, int currZ);
 };
 
 

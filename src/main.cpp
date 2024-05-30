@@ -116,6 +116,8 @@ int main(int argc, char *argv[])
             updateMeshes(world, chunkManager);
         }
 
+        chunkManager.addChunksToRendering();
+
         glClearColor(0.43f, 0.69f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         renderer.Render(camera);
@@ -123,6 +125,8 @@ int main(int argc, char *argv[])
         // Swap buffers
         window.swapBuffers();
     }
+
+    chunkManager.exit();
 
     glfwTerminate( );
     
