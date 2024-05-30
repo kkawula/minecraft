@@ -8,22 +8,33 @@
 #include "mesh/ChunkMeshGenerator.h"
 #include <set>
 #include <queue>
+#include <thread>
 
 class ChunkManager {
 public:
     ChunkManager(MeshAtlas& atlas, Camera &camera, World &world);
+    ~ChunkManager();
     void updateCords(int x, int z);
     void updateChunkMesh(int x, int z);
+    void startChunkGenerationThread();
+
 
 private:
     MeshAtlas *atlas;
     Camera *camera;
     World *world;
 
+    ChunkMeshGenerator m_chunkMeshGenerator;
+
     std::pair<int, int> currentCenterChunkPos = {0, 0};
     std::queue<std::pair<int, int>> chunksToUpdate;
+    std::queue<std::pair<int, int>> chunksToRender;
+    std::mutex queueUpdateMutex;
+    std::mutex queueRenderMutex;
 
-    ChunkMeshGenerator m_chunkMeshGenerator;
+    std::thread chunkGenerationThread;
+
+    void fillQueue();
 };
 
 

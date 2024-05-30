@@ -11,7 +11,7 @@ namespace config {
     static constexpr int WORLD_MAX_X = 50;
     static constexpr int WORLD_MAX_Z = 50;
 
-    static constexpr int VIEW_RADIUS = 10;
+    static constexpr int VIEW_RADIUS = 4;
 
 
     static constexpr int BIOME_OCTAVE = 3;

@@ -198,15 +198,11 @@ void World::GenerateTree(const std::shared_ptr<Chunk>& chunk, int x, int y, int 
 }
 
 void World::generateChunk(int x, int z) {
+    std::lock_guard<std::mutex> lock(worldMutex);
     GenerateTerrain(x, z);
     GenerateVegetation(x, z);
 }
 
 
 World::World() : perlinHeight(static_cast<unsigned int>(std::time(nullptr))), perlinBiome(std::rand()) {
-    for (int x = config::WORLD_MIN_X; x <= config::WORLD_MAX_X; ++x) {
-        for (int z = config::WORLD_MIN_Z; z <= config::WORLD_MAX_Z; ++z) {
-            generateChunk(x, z);
-        }
-    }
 }

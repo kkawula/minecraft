@@ -63,7 +63,7 @@ public:
         if (z < 0) chunkZ--;
         auto chunk = GetChunk(chunkX, chunkZ);
         if (chunk == nullptr || y < 0 || y >= config::CHUNK_HEIGHT) {
-            return air;
+            std::cout << x << " " << y << " " << z << std::endl;
             throw "Block out of bounds";
         }
 
@@ -140,6 +140,8 @@ private:
     siv::PerlinNoise perlinBiome;
 
     std::vector<std::pair<int, int>> cordsToUpdate = {};
+
+    std::mutex worldMutex;
 };
 
 
