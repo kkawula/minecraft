@@ -1,6 +1,8 @@
 #include "ChunkManager.h"
+
 #include <iostream>
 #include <chrono>
+
 ChunkManager::ChunkManager(MeshAtlas &atlas, Camera &camera, World &world) : m_chunkMeshGenerator(world, atlas) {
     this->atlas = &atlas;
     this->camera = &camera;

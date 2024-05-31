@@ -1,5 +1,6 @@
 #ifndef MINECRAFT_WINDOW_H
 #define MINECRAFT_WINDOW_H
+
 #include <GLFW/glfw3.h>
 
 

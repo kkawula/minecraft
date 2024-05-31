@@ -1,14 +1,14 @@
 #ifndef MINECRAFT_CHUNKMANAGER_H
 #define MINECRAFT_CHUNKMANAGER_H
 
+#include <set>
+#include <queue>
+#include <thread>
 
 #include "mesh/MeshAtlas.h"
 #include "Camera.h"
 #include "world/World.h"
 #include "mesh/ChunkMeshGenerator.h"
-#include <set>
-#include <queue>
-#include <thread>
 
 class ChunkManager {
 public:
