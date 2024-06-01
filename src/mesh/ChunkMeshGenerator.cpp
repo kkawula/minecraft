@@ -1,5 +1,7 @@
 #include "ChunkMeshGenerator.h"
 
+#include <glm/glm.hpp>
+
 ChunkMeshGenerator::ChunkMeshGenerator(World& world, MeshAtlas& atlas) {
     this->world = &world;
     this->atlas = &atlas;

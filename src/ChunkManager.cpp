@@ -15,14 +15,17 @@ ChunkManager::~ChunkManager() {
     chunkGenerationThread.join();
 }
 
-void ChunkManager::fillQueue(int currX, int currZ) {
+void ChunkManager::fillQueue(int x, int z) {
     std::lock_guard<std::mutex> lock(queueUpdateMutex);
     while (not chunksToUpdate.empty()) {
         chunksToUpdate.pop();
     }
-    chunksToUpdate.emplace(currX, currZ);
+    chunksToUpdate.emplace(x, z);
 
     int currLength = 3;
+
+    int currX = x;
+    int currZ = z;
 
     for (int i = 1; i <= config::VIEW_RADIUS; i++) {
         for (int j = 0; j < currLength - 1; j++) {
@@ -50,16 +53,17 @@ void ChunkManager::fillQueue(int currX, int currZ) {
         }
 
         currLength += 2;
-        currX = currentCenterChunkPos.first - i - 1;
-        currZ = currentCenterChunkPos.second + i + 1;
+        currX = x - i - 1;
+        currZ = z + i + 1;
     }
 }
 
 void ChunkManager::updateCords(int x, int z) {
     fillQueue(x, z);
+    // TODO: Clear [cords] and fill with new cords based on current position
 }
 
-void ChunkManager::addChunksToRendering() {
+void ChunkManager::addChunksToRender() {
     auto cords = atlas->cords();
 
     {
@@ -101,12 +105,21 @@ void ChunkManager::addChunksToRendering() {
 
 }
 void ChunkManager::startChunkGenerationDeamon() {
+    {
+        std::lock_guard<std::mutex> lock(queueUpdateMutex);
+        for (int i = -2; i <= 2; i++) {
+            for (int j = -2; j <= 2; j++) {
+                chunksToUpdate.emplace(i, j);
+            }
+        }
+    }
     chunkGenerationThread = std::thread([this]() {
         while (running) {
             std::pair<int, int> chunk;
             {
                 std::lock_guard<std::mutex> lock(queueUpdateMutex);
                 if (chunksToUpdate.empty()) {
+                    std::this_thread::sleep_for(std::chrono::milliseconds (100));
                     continue;
                 }
                 chunk = chunksToUpdate.front();

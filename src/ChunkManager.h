@@ -16,7 +16,7 @@ public:
     ~ChunkManager();
     void updateCords(int x, int z);
     void updateChunkMesh(int x, int z);
-    void addChunksToRendering();
+    void addChunksToRender();
     void startChunkGenerationDeamon();
     void exit() {
         running = false;
@@ -30,7 +30,6 @@ private:
 
     ChunkMeshGenerator m_chunkMeshGenerator;
 
-    std::pair<int, int> currentCenterChunkPos = {0, 0};
     std::queue<std::pair<int, int>> chunksToUpdate;
     std::queue<std::pair<int, int>> chunksToRender;
     std::mutex queueUpdateMutex;

@@ -57,12 +57,10 @@ int cordX = 0;
 int cordZ = 0;
 Player player(startingPosition);
 
-// The MAIN function, from here we start our application and run our Game loop
 int main(int argc, char *argv[])
 {
     Window window(config::WINDOW_WIDTH, config::WINDOW_HEIGHT, "Minecraft");
     FileSystem::initialize(argv[0]);
-
 
     // Set the required callback functions
     window.setCursorPosCallback(MouseCallback);
@@ -84,19 +82,10 @@ int main(int argc, char *argv[])
     // Define the viewport dimensions
     glViewport( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT );
 
-    // Setup some OpenGL options
-    glEnable( GL_DEPTH_TEST );
-    
-    // enable alpha support
-    glEnable( GL_BLEND );
-    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
     World world;
-
     MeshAtlas meshAtlas;
-
     ChunkManager chunkManager(meshAtlas, camera, world);
-
     Renderer renderer(meshAtlas);
 
     // Game loop
@@ -116,7 +105,7 @@ int main(int argc, char *argv[])
             updateMeshes(world, chunkManager);
         }
 
-        chunkManager.addChunksToRendering();
+        chunkManager.addChunksToRender();
 
         glClearColor(0.43f, 0.69f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -137,18 +126,11 @@ bool hasChunkCordsChanged() {
     int x = camera.getPosition().x;
     int z = camera.getPosition().z;
 
-    int X = x;
-    int Z = z;
-    if(x < 0) X++;
-    if(z < 0) Z++;
-    auto chunkX = X / config::CHUNK_SIZE;
-    auto chunkZ = Z / config::CHUNK_SIZE;
-    if (x < 0) chunkX--;
-    if (z < 0) chunkZ--;
+    auto chunkCords = World::GetChunkCords(x, z);
 
-    if (chunkX != cordX || chunkZ != cordZ) {
-        cordX = chunkX;
-        cordZ = chunkZ;
+    if (chunkCords.first != cordX || chunkCords.second != cordZ) {
+        cordX = chunkCords.first;
+        cordZ = chunkCords.second;
         return true;
     }
     return false;
@@ -179,34 +161,27 @@ void updateMeshes(World &world, ChunkManager &chunkManager){
     }
 }
 
-// Moves/alters the camera positions based on user input
-void DoMovement(World &world)
-{
+void DoMovement(World &world) {
     player.update(keyboard, mouse, camera, world, deltaTime);
 }
 
-// Is called whenever a key is pressed/released via GLFW
-void KeyCallback( GLFWwindow *window, int key, int scancode, int action, int mode )
-{
+void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mode) {
     keyboard.KeyCallback(window, key, scancode, action, mode);
 }
 
-void MouseButtonCallback( GLFWwindow *window, int button, int action, int mods )
-{
+void MouseButtonCallback(GLFWwindow *window, int button, int action, int mods) {
     mouse.buttonCallback(window, button, action, mods);
 }
 
-void MouseCallback( GLFWwindow *window, double xPos, double yPos )
-{
-    if( firstMouse )
-    {
+void MouseCallback(GLFWwindow *window, double xPos, double yPos) {
+    if(firstMouse) {
         lastX = xPos;
         lastY = yPos;
         firstMouse = false;
     }
     
     GLfloat xOffset = xPos - lastX;
-    GLfloat yOffset = lastY - yPos;  // Reversed since y-coordinates go from bottom to left
+    GLfloat yOffset = lastY - yPos;
     
     lastX = xPos;
     lastY = yPos;
@@ -215,7 +190,6 @@ void MouseCallback( GLFWwindow *window, double xPos, double yPos )
 }
 
 
-void ScrollCallback( GLFWwindow *window, double xOffset, double yOffset )
-{
+void ScrollCallback(GLFWwindow *window, double xOffset, double yOffset) {
     player.handleMouseScroll(camera, yOffset);
 }
