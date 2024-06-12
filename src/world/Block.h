@@ -20,11 +20,23 @@ public:
     static constexpr int SAND = 3;
     static constexpr int ROCK = 4;
     static constexpr int WATER = 5;
-    static constexpr int WOOD = 6;
+    static constexpr int OAK_WOOD = 6;
     static constexpr int LEAF = 7;
     static constexpr int CACTUS = 8;
     static constexpr int SNOW = 9;
     static constexpr int FULL_SNOW = 10;
+    static constexpr int GRAVEL = 11;
+    static constexpr int BIRCH_WOOD = 12;
+    static constexpr int WATERMELON = 13;
+    static constexpr int PUMPKIN = 14;
+    static constexpr int IRON_VEIN = 15;
+    static constexpr int DIAMOND_VEIN = 16;
+    static constexpr int EMERALD_VEIN = 17;
+    static constexpr int COAL_VEIN = 18;
+    static constexpr int BEDROCK = 19;
+    static constexpr int BRICK = 20;
+
+    static constexpr int blockTypesAmount = 21;
 
 
     Block(int type = 0, bool solid = true, bool transparent = false, bool collidable = true) :

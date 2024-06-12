@@ -20,6 +20,10 @@ private:
     bool isOnGround = false;
     bool isFlying = true;
 
+    int blockID = 1;
+    bool isEnteringBlockID = false;
+    std::string enteredBlockID;
+
     glm::vec3 acceleration;
     GLfloat movementSpeed = PLAYER_SPEED;
     GLfloat speedMultiplier = 1.0f;
