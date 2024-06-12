@@ -9,13 +9,18 @@ float World::GetHeightValue(int x, int z) {
     float multipliers[4] = {.8f, .5f, .25f, .125f};
     float res = 0.0f;
 
+    float minHeightVal = 0.0f;
+    float maxHeightVal = 0.0f;
+
     for(int i = 0; i < 4; i++){
         auto noise = static_cast<float>(perlinHeight.octave2D_01((x * frequency), (z * frequency), octaves[i]));
         res += noise * multipliers[i];
+        maxHeightVal += multipliers[i];
     }
 
-    res *= 0.5;
+    maxHeightVal = pow(maxHeightVal, 3);
     res = pow(res, 3);
+    res = (res - minHeightVal) / (maxHeightVal - minHeightVal);
 
     return res;
 }
@@ -38,7 +43,7 @@ void World::GenerateTerrain(int i, int j) {
             float heightValue = GetHeightValue(globalX, globalZ);
             float biomeValue = GetBiomeValue(globalX, globalZ);
 
-            int height = heightValue * config::CHUNK_HEIGHT_TO_GENERATE;
+            int height = heightValue * config::CHUNK_HEIGHT_TO_GENERATE + config::BASE_HEIGHT;
 
             for (int y = 0; y < config::CHUNK_HEIGHT; ++y) {
                 Block block;
@@ -96,7 +101,7 @@ void World::GenerateVegetation(int i, int j) {
             float heightValue = GetHeightValue(globalX, globalZ);
             float biomeValue = GetBiomeValue(globalX, globalZ);
 
-            int y = heightValue * config::CHUNK_HEIGHT_TO_GENERATE + 1;
+            int y = heightValue * config::CHUNK_HEIGHT_TO_GENERATE + config::BASE_HEIGHT + 1;
 
             if(y > config::WATER_LEVEL){
                 if(biomeValue < 0.3 && chunk->GetBlock(x, y - 1, z).GetType() == Block::SAND) {
