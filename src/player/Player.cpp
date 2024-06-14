@@ -220,7 +220,7 @@ void Player::dig(World &world, Camera &camera)
 
         if(block.GetType() != Block::AIR && block.GetType() != Block::WATER)
         {
-            Block newBlock = Block(Block::AIR, false, true, false);
+            Block newBlock = Block(Block::AIR);
             world.setBlock(x, y, z, newBlock);
             world.addCordsToUpdate(x, z);
             break;
@@ -247,7 +247,7 @@ void Player::placeBlock(World &world, Camera &camera)
             glm::vec3 newBlockPosition=  {x + positionCorrection.x, y + positionCorrection.y, z + positionCorrection.z};
             if(!isCollidingWithPlayer(newBlockPosition) && world.getBlock(newBlockPosition.x, newBlockPosition.y, newBlockPosition.z).GetType() == Block::AIR)
             {
-                Block newBlock = Block(this->blockID, true, false, true);
+                auto newBlock = Block(this->blockID);
                 world.setBlock(newBlockPosition.x, newBlockPosition.y, newBlockPosition.z, newBlock);
                 world.addCordsToUpdate(newBlockPosition.x, newBlockPosition.z);
             }

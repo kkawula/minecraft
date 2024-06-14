@@ -23,6 +23,30 @@ std::unordered_map<int, std::array<int, 6>> Block::blockTextureIndices = {
         {Block::BRICK,          {54,54,54,54,54,54}},
 };
 
+std::unordered_map<int, Block::BlockProperties> Block::blockProperties = {
+        { AIR, { false, true, false } },
+        { DIRT, { true, false, true } },
+        { GRASS, { true, false, true } },
+        { SAND, { true, false, true } },
+        { ROCK, { true, false, true } },
+        { WATER, { false, true, false } },
+        { OAK_WOOD, { true, false, true } },
+        { LEAF, { true, false, true } },
+        { CACTUS, { true, false, true } },
+        { SNOW, { true, false, true } },
+        { FULL_SNOW, { true, false, true } },
+        { GRAVEL, { true, false, true } },
+        { BIRCH_WOOD, { true, false, true } },
+        { WATERMELON, { true, false, true } },
+        { PUMPKIN, { true, false, true } },
+        { IRON_VEIN, { true, false, true } },
+        { DIAMOND_VEIN, { true, false, true } },
+        { EMERALD_VEIN, { true, false, true } },
+        { COAL_VEIN, { true, false, true } },
+        { BEDROCK, { true, false, true } },
+        { BRICK, { true, false, true } }
+};
+
 std::array<int, 6> Block::GetTextureIndices(int blockType) {
     auto it = blockTextureIndices.find(blockType);
     if (it != blockTextureIndices.end()) {

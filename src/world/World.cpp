@@ -78,9 +78,9 @@ void World::GenerateTerrain(int i, int j) {
                         block = Block(Block::DIRT);
                     }
                 } else if(y <= config::WATER_LEVEL){
-                    block = Block(Block::WATER, false, true);
+                    block = Block(Block::WATER);
                 } else if(chunk->GetBlock(x, y, z).GetType() == Block::AIR){
-                    block = Block(Block::AIR, false, true);
+                    block = Block(Block::AIR);
                 }
 
                 chunk->SetBlock(x, y, z, block);

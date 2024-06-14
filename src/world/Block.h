@@ -11,7 +11,15 @@ private:
     bool isTransparent;
     bool isCollidable;
     int type;
+
+    struct BlockProperties {
+        bool isSolid;
+        bool isTransparent;
+        bool isCollidable;
+    };
+
     static std::unordered_map<int, std::array<int, 6>> blockTextureIndices;
+    static std::unordered_map<int, BlockProperties> blockProperties;
 
 public:
     static constexpr int AIR = 0;
@@ -38,9 +46,12 @@ public:
 
     static constexpr int blockTypesAmount = 21;
 
-
-    Block(int type = 0, bool solid = true, bool transparent = false, bool collidable = true) :
-        type(type), isSolid(solid), isTransparent(transparent), isCollidable(collidable) {}
+    Block(int type = 0, bool solid = true, bool transparent = false, bool collidable = true) : type(type) {
+        auto properties = blockProperties[type];
+        isSolid = properties.isSolid;
+        isTransparent = properties.isTransparent;
+        isCollidable = properties.isCollidable;
+    }
 
     bool IsSolid() const {
         return isSolid;
