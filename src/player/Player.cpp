@@ -245,7 +245,8 @@ void Player::placeBlock(World &world, Camera &camera)
         {
             glm::vec3 positionCorrection = getPlacedBlockPosition(position.x + rayPos.x, position.y + .5 + rayPos.y, position.z + rayPos.z, rayStep);
             glm::vec3 newBlockPosition=  {x + positionCorrection.x, y + positionCorrection.y, z + positionCorrection.z};
-            if(!isCollidingWithPlayer(newBlockPosition) && world.getBlock(newBlockPosition.x, newBlockPosition.y, newBlockPosition.z).GetType() == Block::AIR)
+            int blockTypeAtPosition = world.getBlock(newBlockPosition.x, newBlockPosition.y, newBlockPosition.z).GetType();
+            if(!isCollidingWithPlayer(newBlockPosition) && (blockTypeAtPosition == Block::AIR || blockTypeAtPosition == Block::WATER))
             {
                 auto newBlock = Block(this->blockID);
                 world.setBlock(newBlockPosition.x, newBlockPosition.y, newBlockPosition.z, newBlock);

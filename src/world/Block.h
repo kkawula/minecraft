@@ -46,7 +46,7 @@ public:
 
     static constexpr int blockTypesAmount = 21;
 
-    Block(int type = 0, bool solid = true, bool transparent = false, bool collidable = true) : type(type) {
+    Block(int type = 0) : type(type) {
         auto properties = blockProperties[type];
         isSolid = properties.isSolid;
         isTransparent = properties.isTransparent;

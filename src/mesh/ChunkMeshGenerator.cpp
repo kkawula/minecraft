@@ -15,29 +15,22 @@ void ChunkMeshGenerator::setupMesh(int chunkX, int chunkZ) {
         for (int y = 0; y < config::CHUNK_HEIGHT; ++y) {
             for (int z = 0; z < config::CHUNK_SIZE; ++z) {
                 const Block& block = blocks[x][y][z];
-                if (block.GetType() == Block::AIR) continue;
+                int selfType = block.GetType();
+                if (selfType == Block::AIR) continue;
 
-                if (block.IsSolid()) {
-                    checkAndAddFace(i, j, x, y, z, blocks, vert,  0);
-                    checkAndAddFace(i, j, x, y, z, blocks, vert,  1);
-                    checkAndAddFace(i, j, x, y, z, blocks, vert, 2);
-                    checkAndAddFace(i, j, x, y, z, blocks, vert,  3);
-                    checkAndAddFace(i, j, x, y, z, blocks, vert, 4);
-                    checkAndAddFace(i, j, x, y, z, blocks, vert,5);
-                }
-                else{ //WATER
-                    if(y == config::CHUNK_HEIGHT - 1 || !blocks[x][y + 1][z].IsTransparent() || blocks[x][y + 1][z].GetType() == Block::AIR){
-                        addFaceVertices(vert, x, y, z, block, 3);
-                    }
-                }
+                checkAndAddFace(i, j, x, y, z, blocks, vert,  0, selfType);
+                checkAndAddFace(i, j, x, y, z, blocks, vert,  1, selfType);
+                checkAndAddFace(i, j, x, y, z, blocks, vert, 2, selfType);
+                checkAndAddFace(i, j, x, y, z, blocks, vert,  3, selfType);
+                checkAndAddFace(i, j, x, y, z, blocks, vert, 4, selfType);
+                checkAndAddFace(i, j, x, y, z, blocks, vert,5, selfType);
             }
         }
     }
     atlas->chunkMeshes[std::make_pair(i, j)].get()->setupMesh(vert);
 }
 
-
-void ChunkMeshGenerator::checkAndAddFace(int chunkX, int chunkZ, int x, int y, int z, Block blocks[config::CHUNK_SIZE][config::CHUNK_HEIGHT][config::CHUNK_SIZE], std::vector<float>& vert, int face) {
+void ChunkMeshGenerator::checkAndAddFace(int chunkX, int chunkZ, int x, int y, int z, Block blocks[config::CHUNK_SIZE][config::CHUNK_HEIGHT][config::CHUNK_SIZE], std::vector<float>& vert, int face, int selfType) {
     int vectors[6][3] = {
             {-1, 0, 0}, // Left face
             {1, 0, 0}, // Right face
@@ -61,10 +54,23 @@ void ChunkMeshGenerator::checkAndAddFace(int chunkX, int chunkZ, int x, int y, i
         neighbor = &world->getBlock(chunkX * config::CHUNK_SIZE + nx, ny, chunkZ * config::CHUNK_SIZE + nz);
     }
 
-    if (!neighbor->IsSolid()) {
-        addFaceVertices(vert, x, y, z, blocks[x][y][z], face);
+    bool shouldAdd = false;
+
+    if(neighbor->IsTransparent()) {
+        if(selfType == Block::WATER) {
+            if(neighbor->GetType() != Block::WATER) {
+                shouldAdd = true;
+            } else {
+                shouldAdd = false;
+            }
+        } else {
+            shouldAdd = true;
+        }
     }
 
+    if(shouldAdd) {
+        addFaceVertices(vert, x, y, z, blocks[x][y][z], face);
+    }
 }
 
 void ChunkMeshGenerator::addFaceVertices(std::vector<float>& vertices, int x, int y, int z, const Block& block, int face) {
@@ -96,7 +102,6 @@ void ChunkMeshGenerator::addFaceVertices(std::vector<float>& vertices, int x, in
             glm::vec2(0.0f, 0.0f)
     };
 
-
     float tileSize = 1.0 / 16.0;
     int tilesPerRow = 16;
 
@@ -114,6 +119,5 @@ void ChunkMeshGenerator::addFaceVertices(std::vector<float>& vertices, int x, in
         glm::vec2 coord = textureCoords[i % 4] * tileSize + tileOffset;
         vertices.push_back(coord.x);
         vertices.push_back(coord.y);
-
     }
 }

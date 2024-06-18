@@ -52,7 +52,7 @@ public:
         return chunks[key] != nullptr;
      }
 
-    Block air = Block(0, false, true);
+    Block air = Block(Block::AIR);
 
     Block& getBlock(int x, int y, int z) {
         int X = x;
