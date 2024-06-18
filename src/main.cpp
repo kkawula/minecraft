@@ -53,8 +53,8 @@ bool firstMouse = true;
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
 
-int cordX = 0;
-int cordZ = 0;
+int cordX = 10;
+int cordZ = 10;
 Player player(startingPosition);
 
 int main(int argc, char *argv[])

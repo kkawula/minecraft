@@ -22,12 +22,12 @@ void ChunkManager::fillQueue(int x, int z) {
     }
     chunksToUpdate.emplace(x, z);
 
-    int currLength = 3;
+    int currLength = 2;
 
     int currX = x;
     int currZ = z;
 
-    for (int i = 1; i <= config::VIEW_RADIUS; i++) {
+    for (int i = 0; i <= config::VIEW_RADIUS; i++) {
         for (int j = 0; j < currLength - 1; j++) {
             if (not world->isChunkGenerated(currX, currZ))
                 chunksToUpdate.emplace(currX, currZ);
@@ -65,7 +65,6 @@ void ChunkManager::updateCords(int x, int z) {
 
 void ChunkManager::addChunksToRender() {
     auto cords = atlas->cords();
-
     {
         std::lock_guard<std::mutex> lock(queueRenderMutex);
         while (not chunksToRender.empty()) {
@@ -80,7 +79,6 @@ void ChunkManager::addChunksToRender() {
                     if (k == 0 && n == 0) {
                         continue;
                     }
-                    auto cords = atlas->cords();
                     if (not world->isChunkGenerated(chunk.first + k, chunk.second + n)) {
                         flag = true;
                         break;
@@ -105,27 +103,18 @@ void ChunkManager::addChunksToRender() {
 
 }
 void ChunkManager::startChunkGenerationDeamon() {
-    {
-        std::lock_guard<std::mutex> lock(queueUpdateMutex);
-        for (int i = -2; i <= 2; i++) {
-            for (int j = -2; j <= 2; j++) {
-                chunksToUpdate.emplace(i, j);
-            }
-        }
-    }
     chunkGenerationThread = std::thread([this]() {
         while (running) {
             std::pair<int, int> chunk;
             {
                 std::lock_guard<std::mutex> lock(queueUpdateMutex);
                 if (chunksToUpdate.empty()) {
-                    std::this_thread::sleep_for(std::chrono::milliseconds (100));
+                    std::this_thread::sleep_for(std::chrono::milliseconds (50));
                     continue;
                 }
                 chunk = chunksToUpdate.front();
                 chunksToUpdate.pop();
             }
-
             int i = chunk.first;
             int j = chunk.second;
 
