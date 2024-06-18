@@ -3,6 +3,7 @@
 
 #include <map>
 #include <memory>
+#include <mutex>
 
 #include "Chunk.h"
 #include "../libs/PerlinNoise.hpp"

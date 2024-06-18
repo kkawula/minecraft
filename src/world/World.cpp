@@ -3,6 +3,7 @@
 #include <ctime>
 #include <algorithm>
 #include <memory>
+#include <mutex>
 
 float World::GetHeightValue(int x, int z) {
     float frequency = 0.004;
