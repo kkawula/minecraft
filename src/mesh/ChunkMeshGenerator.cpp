@@ -1,5 +1,7 @@
 #include "ChunkMeshGenerator.h"
 
+#include <glm/glm.hpp>
+
 ChunkMeshGenerator::ChunkMeshGenerator(World& world, MeshAtlas& atlas) {
     this->world = &world;
     this->atlas = &atlas;
@@ -58,6 +60,9 @@ void ChunkMeshGenerator::checkAndAddFace(int chunkX, int chunkZ, int x, int y, i
     if (nx >= 0 && nx < config::CHUNK_SIZE && ny >= 0 && ny < config::CHUNK_HEIGHT && nz >= 0 && nz < config::CHUNK_SIZE) {
         neighbor = &blocks[nx][ny][nz];
     } else {
+        if (not world->isChunkGenerated(chunkX * config::CHUNK_SIZE + nx, ny, chunkZ * config::CHUNK_SIZE + nz) or ny < 0 or ny >= config::CHUNK_HEIGHT)
+            return;
+
         neighbor = &world->getBlock(chunkX * config::CHUNK_SIZE + nx, ny, chunkZ * config::CHUNK_SIZE + nz);
     }
 

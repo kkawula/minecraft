@@ -2,6 +2,7 @@
 #define MINECRAFT_CHUNKRENDERER_H
 
 #include <string>
+
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

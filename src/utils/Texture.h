@@ -2,6 +2,7 @@
 #define TEXTURE_H
 
 #include <string>
+
 #include <GL/glew.h>
 
 class Texture {

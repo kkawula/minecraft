@@ -1,6 +1,8 @@
 #include "Player.h"
-#include "GLFW/glfw3.h"
+
 #include <cmath>
+
+#include <GL/glew.h>
 
 const float GRAVITY = 50.0f;
 const float JUMP_ACCELERATION  = 12.0f;

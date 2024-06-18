@@ -1,7 +1,9 @@
 #include "World.h"
+
 #include <ctime>
 #include <algorithm>
 #include <memory>
+#include <mutex>
 
 float World::GetHeightValue(int x, int z) {
     float frequency = 0.004;
@@ -164,7 +166,7 @@ void World::GenerateTree(const std::shared_ptr<Chunk>& chunk, int x, int y, int 
     };
 
 
-    for(int i = 0; i < 2; i++){
+    for (int i = 0; i < 2; i++){
         for(const auto& offset : leafOffsets1){
             int xoff = offset.first;
             int zoff = offset.second;
@@ -176,7 +178,7 @@ void World::GenerateTree(const std::shared_ptr<Chunk>& chunk, int x, int y, int 
         Y++;
     }
 
-    for(const auto& offset : leafOffsets2){
+    for (const auto& offset : leafOffsets2) {
         int xoff = offset.first;
         int zoff = offset.second;
         auto block = Block(Block::LEAF);
@@ -187,7 +189,7 @@ void World::GenerateTree(const std::shared_ptr<Chunk>& chunk, int x, int y, int 
 
     Y++;
 
-    for(const auto& offset : leafOffsets3){
+    for (const auto& offset : leafOffsets3){
         int xoff = offset.first;
         int zoff = offset.second;
         auto block = Block(Block::LEAF);
@@ -198,15 +200,11 @@ void World::GenerateTree(const std::shared_ptr<Chunk>& chunk, int x, int y, int 
 }
 
 void World::generateChunk(int x, int z) {
+    std::lock_guard<std::mutex> lock(worldMutex);
     GenerateTerrain(x, z);
     GenerateVegetation(x, z);
 }
 
 
 World::World() : perlinHeight(static_cast<unsigned int>(std::time(nullptr))), perlinBiome(std::rand()) {
-    for (int x = config::WORLD_MIN_X; x <= config::WORLD_MAX_X; ++x) {
-        for (int z = config::WORLD_MIN_Z; z <= config::WORLD_MAX_Z; ++z) {
-            generateChunk(x, z);
-        }
-    }
 }

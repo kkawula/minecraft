@@ -2,6 +2,7 @@
 #define MINECRAFT_MOUSE_H
 
 #include <array>
+
 #include "GLFW/glfw3.h"
 
 class Mouse {
