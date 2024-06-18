@@ -132,9 +132,10 @@ void World::GenerateCactus(const std::shared_ptr<Chunk>& chunk, int x, int y, in
 }
 
 void World::GenerateTree(const std::shared_ptr<Chunk>& chunk, int x, int y, int z) {
+    int woodType = ((rand() % 6) == 0) ? Block::BIRCH_WOOD : Block::OAK_WOOD;
     int trunkHeight = 5 + rand() % 2;
     for(int i = 0; i < trunkHeight; i++){
-        auto block = Block(Block::OAK_WOOD);
+        auto block = Block(woodType);
         chunk->SetBlock(x, y + i, z, block);
     }
 
