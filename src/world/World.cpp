@@ -1,5 +1,4 @@
 #include "World.h"
-#include <ctime>
 #include <algorithm>
 #include <memory>
 
@@ -123,7 +122,6 @@ void World::GenerateVegetation(int i, int j) {
             }
         }
     }
-
 }
 
 void World::GenerateCactus(const std::shared_ptr<Chunk>& chunk, int x, int y, int z) {
@@ -202,13 +200,81 @@ void World::GenerateTree(const std::shared_ptr<Chunk>& chunk, int x, int y, int 
     }
 }
 
-void World::generateChunk(int x, int z) {
-    GenerateTerrain(x, z);
-    GenerateVegetation(x, z);
+void World::GenerateOres(int i, int j) {
+    struct oreProperties {
+        int type;
+        float frequency;
+        float threshold;
+        int minHeight;
+        int topHeight;
+    };
+
+    std::vector<oreProperties> ores;
+
+    // COAL
+    ores.push_back({Block::COAL_VEIN, 0.08f, 0.9f, 25, config::CHUNK_HEIGHT});
+
+    // IRON
+    ores.push_back({Block::IRON_VEIN, 0.06f, 0.95f,  15, config::CHUNK_HEIGHT});
+
+    // EMERALD
+    ores.push_back({Block::EMERALD_VEIN, 0.06f, 0.9999f, 0,  50});
+
+    // DIAMONDS
+    ores.push_back({Block::DIAMOND_VEIN, 0.1f, 0.9999f, 0, 20});
+
+    for (const auto& ore : ores) {
+        GenerateSpecificOre(i, j, ore.frequency, ore.threshold, ore.minHeight, ore.topHeight, ore.type);
+    }
+}
+
+void World::GenerateSpecificOre(int i, int j, float frequency, float threshold, int minHeight, int topHeight, int blockType) {
+    std::shared_ptr<Chunk> chunk = GetChunk(i, j);
+
+    for (int x = 0; x < config::CHUNK_SIZE; ++x) {
+        for (int y = 0; y < config::CHUNK_HEIGHT_TO_GENERATE; ++y) {
+            for (int z = 0; z < config::CHUNK_SIZE; ++z) {
+                int globalX = i * config::CHUNK_SIZE + x;
+                int globalY = y;
+                int globalZ = j * config::CHUNK_SIZE + z;
+
+                float noiseValue = perlinOre.octave3D_01((globalX * frequency), (globalY * frequency), (globalZ * frequency), 4);
+
+                if (noiseValue > threshold && getBlock(globalX, globalY, globalZ).GetType() == Block::ROCK &&
+                    minHeight < globalY && globalY < topHeight) {
+                    chunk->SetBlock(x, y, z, Block(blockType));
+                }
+            }
+        }
+    }
+}
+
+void World::LayBedrock(int i, int j) {
+    std::shared_ptr<Chunk> chunk = GetChunk(i, j);
+
+    for (int x = 0; x < config::CHUNK_SIZE; ++x) {
+        for (int z = 0; z < config::CHUNK_SIZE; ++z) {
+            chunk->SetBlock(x, 0, z, Block(Block::BEDROCK));
+        }
+    }
 }
 
 
-World::World() : perlinHeight(static_cast<unsigned int>(std::time(nullptr))), perlinBiome(std::rand()) {
+void World::generateChunk(int x, int z) {
+    GenerateTerrain(x, z);
+    GenerateVegetation(x, z);
+    GenerateOres(x, z);
+    LayBedrock(x, z);
+}
+
+
+World::World()
+        : rng(std::random_device{}()),
+          distribution(std::numeric_limits<std::int64_t>::min(), std::numeric_limits<std::int64_t>::max()),
+          perlinHeight(rng()),
+          perlinBiome(rng()),
+          perlinOre(rng()) {
+
     for (int x = config::WORLD_MIN_X; x <= config::WORLD_MAX_X; ++x) {
         for (int z = config::WORLD_MIN_Z; z <= config::WORLD_MAX_Z; ++z) {
             generateChunk(x, z);

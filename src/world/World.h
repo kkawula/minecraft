@@ -3,10 +3,10 @@
 
 #include <map>
 #include <memory>
+#include <random>
 
 #include "Chunk.h"
 #include "../libs/PerlinNoise.hpp"
-
 
 class World
 {
@@ -112,6 +112,9 @@ public:
 private:
     void GenerateTerrain(int i, int j);
     void GenerateVegetation(int i, int j);
+    void GenerateOres(int i, int j);
+    void GenerateSpecificOre(int i, int j, float frequency, float threshold, int minHeight, int topHeight, int blockType);
+    void LayBedrock(int i, int j);
 
     float GetHeightValue(int x, int z);
     float GetBiomeValue(int x, int z);
@@ -121,8 +124,12 @@ private:
 
     std::map<std::pair<int, int>, std::shared_ptr<Chunk>> chunks;
 
+    std::mt19937 rng;
+    std::uniform_int_distribution<std::int64_t> distribution;
+
     siv::PerlinNoise perlinHeight;
     siv::PerlinNoise perlinBiome;
+    siv::PerlinNoise perlinOre;
 
     std::vector<std::pair<int, int>> cordsToUpdate = {};
 };
