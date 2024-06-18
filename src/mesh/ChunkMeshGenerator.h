@@ -1,8 +1,9 @@
 #ifndef MINECRAFT_CHUNKMESHGENERATOR_H
 #define MINECRAFT_CHUNKMESHGENERATOR_H
 
-#include "../world/World.h"
 #include <vector>
+
+#include "../world/World.h"
 #include "MeshAtlas.h"
 
 class ChunkMeshGenerator {

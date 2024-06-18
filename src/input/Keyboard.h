@@ -2,6 +2,7 @@
 #define MINECRAFT_KEYBOARD_H
 
 #include <array>
+
 #include "GLFW/glfw3.h"
 
 class Keyboard {

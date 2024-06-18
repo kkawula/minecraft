@@ -1,11 +1,12 @@
 #ifndef MINECRAFT_MESH_H
 #define MINECRAFT_MESH_H
 
-#include <GL/glew.h>
 #include <vector>
-#include "../world/Block.h"
-#include <glm/glm.hpp>
 #include <iostream>
+
+#include <GL/glew.h>
+
+#include "../world/Block.h"
 #include "../config.h"
 
 class Mesh {

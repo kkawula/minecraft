@@ -3,9 +3,10 @@
 
 #include <map>
 #include <memory>
+#include <set>
+
 #include "Mesh.h"
 #include "../config.h"
-#include <set>
 
 class MeshAtlas {
 public:

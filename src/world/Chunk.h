@@ -1,10 +1,11 @@
 #ifndef MINECRAFT_CHUNK_H
 #define MINECRAFT_CHUNK_H
 
-#include "Block.h"
-#include "../mesh/Mesh.h"
 #include <utility>
 #include <iostream>
+
+#include "Block.h"
+#include "../mesh/Mesh.h"
 #include "../config.h"
 
 class Chunk {

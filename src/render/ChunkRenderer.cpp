@@ -1,4 +1,5 @@
 #include "ChunkRenderer.h"
+
 #include "../utils/FileSystem.h"
 
 ChunkRenderer::ChunkRenderer(MeshAtlas& atlas) : shader(FileSystem::getShaderPath("block_vert"), FileSystem::getShaderPath("block_frag")), texture(FileSystem::getTexturePath("blockPack")) {
