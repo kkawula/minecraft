@@ -74,8 +74,8 @@ void ChunkMeshGenerator::checkAndAddFace(int chunkX, int chunkZ, int x, int y, i
     }
 
     // TODO: implement it as an X-RAY on keybind, currently working all the time
-    if(selfType == Block::COAL_VEIN || selfType == Block::IRON_VEIN || selfType == Block::EMERALD_VEIN || selfType == Block::DIAMOND_VEIN)
-        addFaceVertices(vert, x, y, z, blocks[x][y][z], face);
+    //if(selfType == Block::COAL_VEIN || selfType == Block::IRON_VEIN || selfType == Block::EMERALD_VEIN || selfType == Block::DIAMOND_VEIN)
+    //    addFaceVertices(vert, x, y, z, blocks[x][y][z], face);
 
     if(shouldAdd) {
         addFaceVertices(vert, x, y, z, blocks[x][y][z], face);

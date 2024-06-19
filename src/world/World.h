@@ -103,7 +103,6 @@ private:
     void GenerateTerrain(int i, int j);
     void GenerateVegetation(int i, int j);
     Block GenerateOreOrRock(int globalX, int globalY, int globalZ);
-    void LayBedrock(int i, int j);
 
     float GetHeightValue(int x, int z);
     float GetBiomeValue(int x, int z);

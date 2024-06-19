@@ -220,8 +220,9 @@ void Player::dig(World &world, Camera &camera)
         int z = floor(position.z + rayPos.z);
         auto block = world.getBlock(x, y, z);
 
-        if(block.GetType() != Block::AIR && block.GetType() != Block::WATER && block.GetType() != Block::BEDROCK)
+        if(block.GetType() != Block::AIR && block.GetType() != Block::WATER)
         {
+            if(block.GetType() == Block::BEDROCK) break;
             Block newBlock = Block(Block::AIR);
             world.setBlock(x, y, z, newBlock);
             world.addCordsToUpdate(x, z);

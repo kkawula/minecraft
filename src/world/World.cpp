@@ -46,61 +46,70 @@ void World::GenerateTerrain(int i, int j) {
 
     std::vector<std::future<void>> futures;
 
-    for (int x = 0; x < config::CHUNK_SIZE; ++x) {
-        for (int z = 0; z < config::CHUNK_SIZE; ++z) {
-            futures.push_back(std::async(std::launch::async, [=, &chunk]() {
-                int globalX = i * config::CHUNK_SIZE + x;
-                int globalZ = j * config::CHUNK_SIZE + z;
+    int blockSize = 1;
 
-                float heightValue = GetHeightValue(globalX, globalZ);
-                float biomeValue = GetBiomeValue(globalX, globalZ);
+    for (int x = 0; x < config::CHUNK_SIZE; x += blockSize) {
+        futures.push_back(std::async(std::launch::async, [=, &chunk]() {
+            for (int dx = 0; dx < blockSize; ++dx) {
+                if (x + dx >= config::CHUNK_SIZE) break;
+                for (int z = 0; z < config::CHUNK_SIZE; ++z) {
+                    int globalX = i * config::CHUNK_SIZE + (x + dx);
+                    int globalZ = j * config::CHUNK_SIZE + z;
 
-                int height = heightValue * config::CHUNK_HEIGHT_TO_GENERATE + config::BASE_HEIGHT;
+                    float heightValue = GetHeightValue(globalX, globalZ);
+                    float biomeValue = GetBiomeValue(globalX, globalZ);
 
-                for (int y = 0; y < config::CHUNK_HEIGHT; ++y) {
-                    Block block;
+                    int height = heightValue * config::CHUNK_HEIGHT_TO_GENERATE + config::BASE_HEIGHT;
 
-                    if (y <= height) {
-                        int dirtAppearingHeight = 1;
-                        int rockAppearingHeight = 3;
-                        if (y <= config::WATER_LEVEL + 2 * biomeValue) {
-                            block = Block(Block::SAND);
-                            dirtAppearingHeight = 3;
-                            rockAppearingHeight = 5;
-                        } else {
-                            if (biomeValue < 0.3) {
-                                block = Block(Block::SAND);
-                                dirtAppearingHeight = 3;
-                                rockAppearingHeight = 5;
-                            } else if (biomeValue > 0.6 && heightValue > 0.4) {
-                                block = Block(Block::ROCK);
-                                dirtAppearingHeight = config::CHUNK_HEIGHT; // so that it doesn't appear
-                                rockAppearingHeight = 5;
-                                if(heightValue > 0.48) block = Block(Block::FULL_SNOW);
-                                else if(heightValue >= 0.45 && y == height) block = Block(Block::SNOW);
-                            } else {
-                                block = Block(Block::GRASS);
+                    for (int y = 0; y < config::CHUNK_HEIGHT; ++y) {
+                        Block block;
+
+                        if (y == 0) {
+                            block = Block(Block::BEDROCK);
+                        }
+                        else {
+                            if (y <= height) {
+                                int dirtAppearingHeight = 1;
+                                int rockAppearingHeight = 3;
+                                if (y <= config::WATER_LEVEL + 2 * biomeValue) {
+                                    block = Block(Block::SAND);
+                                    dirtAppearingHeight = 3;
+                                    rockAppearingHeight = 5;
+                                } else {
+                                    if (biomeValue < 0.3) {
+                                        block = Block(Block::SAND);
+                                        dirtAppearingHeight = 3;
+                                        rockAppearingHeight = 5;
+                                    } else if (biomeValue > 0.6 && heightValue > 0.4) {
+                                        block = Block(Block::ROCK);
+                                        dirtAppearingHeight = config::CHUNK_HEIGHT; // so that it doesn't appear
+                                        rockAppearingHeight = 5;
+                                        if (heightValue > 0.48) block = Block(Block::FULL_SNOW);
+                                        else if (heightValue >= 0.45 && y == height) block = Block(Block::SNOW);
+                                    } else {
+                                        block = Block(Block::GRASS);
+                                    }
+                                }
+
+                                if (y <= height - rockAppearingHeight) {
+                                    block = GenerateOreOrRock(globalX, y, globalZ);
+                                } else if (y <= height - dirtAppearingHeight) {
+                                    block = Block(Block::DIRT);
+                                }
+                            } else if (y <= config::WATER_LEVEL) {
+                                block = Block(Block::WATER);
+                            } else if (chunk->GetBlock(x + dx, y, z).GetType() == Block::AIR) {
+                                block = Block(Block::AIR);
                             }
                         }
 
-                        if(y <= height - rockAppearingHeight){
-                            block = GenerateOreOrRock(globalX, y, globalZ);
-                        } else if(y <= height - dirtAppearingHeight){
-                            block = Block(Block::DIRT);
-                        }
-                    } else if(y <= config::WATER_LEVEL){
-                        block = Block(Block::WATER);
-                    } else if(chunk->GetBlock(x, y, z).GetType() == Block::AIR){
-                        block = Block(Block::AIR);
+                        chunk->SetBlock(x + dx, y, z, block);
                     }
-
-                    chunk->SetBlock(x, y, z, block);
                 }
-            }));
-        }
+            }
+        }));
     }
 
-    // Wait for all futures to complete
     for (auto& future : futures) {
         future.get();
     }
@@ -120,6 +129,7 @@ Block World::GenerateOreOrRock(int globalX, int globalY, int globalZ) {
 
     return Block(Block::ROCK);
 }
+
 
 void World::GenerateVegetation(int i, int j) {
     std::shared_ptr<Chunk> chunk = GetChunk(i, j);
@@ -156,12 +166,14 @@ void World::GenerateVegetation(int i, int j) {
     }
 }
 
+
 void World::GenerateCactus(const std::shared_ptr<Chunk>& chunk, int x, int y, int z) {
     for(int i = 0; i < 3 + rand() % 3; i++){
         auto block = Block(Block::CACTUS);
         chunk->SetBlock(x, y + i, z, block);
     }
 }
+
 
 void World::GenerateTree(const std::shared_ptr<Chunk>& chunk, int x, int y, int z) {
     int woodType = ((rand() % 6) == 0) ? Block::BIRCH_WOOD : Block::OAK_WOOD;
@@ -229,17 +241,6 @@ void World::GenerateTree(const std::shared_ptr<Chunk>& chunk, int x, int y, int 
         auto block = Block(Block::LEAF);
         if(chunk->GetBlock(x + xoff, Y, z + zoff).GetType() == Block::AIR){
             chunk->SetBlock(x + xoff, Y, z + zoff, block);
-        }
-    }
-}
-
-
-void World::LayBedrock(int i, int j) {
-    std::shared_ptr<Chunk> chunk = GetChunk(i, j);
-
-    for (int x = 0; x < config::CHUNK_SIZE; ++x) {
-        for (int z = 0; z < config::CHUNK_SIZE; ++z) {
-            chunk->SetBlock(x, 0, z, Block(Block::BEDROCK));
         }
     }
 }
