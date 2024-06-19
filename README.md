@@ -69,8 +69,12 @@ But for multiplatform development, I recommend using the terminal. WSL should wo
 - <kbd>**W**</kbd><kbd>**A**</kbd><kbd>**S**</kbd><kbd>**D**</kbd> - Move
 - <kbd>**Space**</kbd> - Jump
 - <kbd>**Left Shift**</kbd> - Sprint
-- <kbd>**left mouse button**</kbd> - Destroy block
-- <kbd>**right mouse button**</kbd> - Place block
+- <kbd>**Left mouse button**</kbd> - Destroy block
+- <kbd>**Right mouse button**</kbd> - Place block
+- <kbd>**/\<blockID> Enter**</kbd> - Select block
+
+## Blocks
+
 
 ## Unstandard libraries
 
