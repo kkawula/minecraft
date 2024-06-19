@@ -3,6 +3,14 @@
 #include <algorithm>
 #include <memory>
 #include <mutex>
+#include <future>
+
+std::vector<World::oreProperties> World::ores = {
+        {Block::COAL_VEIN, 0.08f, 0.9f, 25, config::CHUNK_HEIGHT},
+        {Block::IRON_VEIN, 0.06f, 0.95f, 15, config::CHUNK_HEIGHT},
+        {Block::EMERALD_VEIN, 0.06f, 0.9999f, 0, 50},
+        {Block::DIAMOND_VEIN, 0.1f, 0.9999f, 0, 20}
+};
 
 float World::GetHeightValue(int x, int z) {
     float frequency = 0.004;
@@ -36,59 +44,81 @@ void World::GenerateTerrain(int i, int j) {
     std::pair<int, int> chunkPosition = std::make_pair(i, j);
     std::shared_ptr<Chunk> chunk = std::make_shared<Chunk>();
 
+    std::vector<std::future<void>> futures;
+
     for (int x = 0; x < config::CHUNK_SIZE; ++x) {
         for (int z = 0; z < config::CHUNK_SIZE; ++z) {
-            int globalX = i * config::CHUNK_SIZE + x;
-            int globalZ = j * config::CHUNK_SIZE + z;
+            futures.push_back(std::async(std::launch::async, [=, &chunk]() {
+                int globalX = i * config::CHUNK_SIZE + x;
+                int globalZ = j * config::CHUNK_SIZE + z;
 
-            float heightValue = GetHeightValue(globalX, globalZ);
-            float biomeValue = GetBiomeValue(globalX, globalZ);
+                float heightValue = GetHeightValue(globalX, globalZ);
+                float biomeValue = GetBiomeValue(globalX, globalZ);
 
-            int height = heightValue * config::CHUNK_HEIGHT_TO_GENERATE + config::BASE_HEIGHT;
+                int height = heightValue * config::CHUNK_HEIGHT_TO_GENERATE + config::BASE_HEIGHT;
 
-            for (int y = 0; y < config::CHUNK_HEIGHT; ++y) {
-                Block block;
+                for (int y = 0; y < config::CHUNK_HEIGHT; ++y) {
+                    Block block;
 
-                if (y <= height) {
-                    int dirtAppearingHeight = 1;
-                    int rockAppearingHeight = 3;
-                    if (y <= config::WATER_LEVEL + 2 * biomeValue) {
-                        block = Block(Block::SAND);
-                        dirtAppearingHeight = 3;
-                        rockAppearingHeight = 5;
-                    } else {
-                        if (biomeValue < 0.3) {
+                    if (y <= height) {
+                        int dirtAppearingHeight = 1;
+                        int rockAppearingHeight = 3;
+                        if (y <= config::WATER_LEVEL + 2 * biomeValue) {
                             block = Block(Block::SAND);
                             dirtAppearingHeight = 3;
                             rockAppearingHeight = 5;
-                        } else if (biomeValue > 0.6 && heightValue > 0.4) {
-                            block = Block(Block::ROCK);
-                            dirtAppearingHeight = config::CHUNK_HEIGHT; // so that it doesn't appear
-                            rockAppearingHeight = 5;
-                            if(heightValue > 0.48) block = Block(Block::FULL_SNOW);
-                            else if(heightValue >= 0.45 && y == height) block = Block(Block::SNOW);
                         } else {
-                            block = Block(Block::GRASS);
+                            if (biomeValue < 0.3) {
+                                block = Block(Block::SAND);
+                                dirtAppearingHeight = 3;
+                                rockAppearingHeight = 5;
+                            } else if (biomeValue > 0.6 && heightValue > 0.4) {
+                                block = Block(Block::ROCK);
+                                dirtAppearingHeight = config::CHUNK_HEIGHT; // so that it doesn't appear
+                                rockAppearingHeight = 5;
+                                if(heightValue > 0.48) block = Block(Block::FULL_SNOW);
+                                else if(heightValue >= 0.45 && y == height) block = Block(Block::SNOW);
+                            } else {
+                                block = Block(Block::GRASS);
+                            }
                         }
+
+                        if(y <= height - rockAppearingHeight){
+                            block = GenerateOreOrRock(globalX, y, globalZ);
+                        } else if(y <= height - dirtAppearingHeight){
+                            block = Block(Block::DIRT);
+                        }
+                    } else if(y <= config::WATER_LEVEL){
+                        block = Block(Block::WATER);
+                    } else if(chunk->GetBlock(x, y, z).GetType() == Block::AIR){
+                        block = Block(Block::AIR);
                     }
 
-                    if(y <= height - rockAppearingHeight){
-                        block = Block(Block::ROCK);
-                    }
-                    else if(y <= height - dirtAppearingHeight){
-                        block = Block(Block::DIRT);
-                    }
-                } else if(y <= config::WATER_LEVEL){
-                    block = Block(Block::WATER);
-                } else if(chunk->GetBlock(x, y, z).GetType() == Block::AIR){
-                    block = Block(Block::AIR);
+                    chunk->SetBlock(x, y, z, block);
                 }
-
-                chunk->SetBlock(x, y, z, block);
-            }
+            }));
         }
     }
+
+    // Wait for all futures to complete
+    for (auto& future : futures) {
+        future.get();
+    }
+
     chunks[chunkPosition] = chunk;
+}
+
+
+Block World::GenerateOreOrRock(int globalX, int globalY, int globalZ) {
+    for (const auto& ore : ores) {
+        float noiseValue = perlinOre.octave3D_01((globalX * ore.frequency), (globalY * ore.frequency), (globalZ * ore.frequency), 4);
+
+        if (noiseValue > ore.threshold && ore.minHeight < globalY && globalY < ore.topHeight) {
+            return Block(ore.blockType);
+        }
+    }
+
+    return Block(Block::ROCK);
 }
 
 void World::GenerateVegetation(int i, int j) {
@@ -203,54 +233,6 @@ void World::GenerateTree(const std::shared_ptr<Chunk>& chunk, int x, int y, int 
     }
 }
 
-void World::GenerateOres(int i, int j) {
-    struct oreProperties {
-        int type;
-        float frequency;
-        float threshold;
-        int minHeight;
-        int topHeight;
-    };
-
-    std::vector<oreProperties> ores;
-
-    // COAL
-    ores.push_back({Block::COAL_VEIN, 0.08f, 0.9f, 25, config::CHUNK_HEIGHT});
-
-    // IRON
-    ores.push_back({Block::IRON_VEIN, 0.06f, 0.95f,  15, config::CHUNK_HEIGHT});
-
-    // EMERALD
-    ores.push_back({Block::EMERALD_VEIN, 0.06f, 0.9999f, 0,  50});
-
-    // DIAMONDS
-    ores.push_back({Block::DIAMOND_VEIN, 0.1f, 0.9999f, 0, 20});
-
-    for (const auto& ore : ores) {
-        GenerateSpecificOre(i, j, ore.frequency, ore.threshold, ore.minHeight, ore.topHeight, ore.type);
-    }
-}
-
-void World::GenerateSpecificOre(int i, int j, float frequency, float threshold, int minHeight, int topHeight, int blockType) {
-    std::shared_ptr<Chunk> chunk = GetChunk(i, j);
-
-    for (int x = 0; x < config::CHUNK_SIZE; ++x) {
-        for (int y = 0; y < config::CHUNK_HEIGHT_TO_GENERATE; ++y) {
-            for (int z = 0; z < config::CHUNK_SIZE; ++z) {
-                int globalX = i * config::CHUNK_SIZE + x;
-                int globalY = y;
-                int globalZ = j * config::CHUNK_SIZE + z;
-
-                float noiseValue = perlinOre.octave3D_01((globalX * frequency), (globalY * frequency), (globalZ * frequency), 4);
-
-                if (noiseValue > threshold && getBlock(globalX, globalY, globalZ).GetType() == Block::ROCK &&
-                    minHeight < globalY && globalY < topHeight) {
-                    chunk->SetBlock(x, y, z, Block(blockType));
-                }
-            }
-        }
-    }
-}
 
 void World::LayBedrock(int i, int j) {
     std::shared_ptr<Chunk> chunk = GetChunk(i, j);
@@ -267,8 +249,6 @@ void World::generateChunk(int x, int z) {
     std::lock_guard<std::mutex> lock(worldMutex);
     GenerateTerrain(x, z);
     GenerateVegetation(x, z);
-    GenerateOres(x, z);
-    LayBedrock(x, z);
 }
 
 
@@ -277,6 +257,5 @@ World::World()
           distribution(std::numeric_limits<std::int64_t>::min(), std::numeric_limits<std::int64_t>::max()),
           perlinHeight(rng()),
           perlinBiome(rng()),
-          perlinOre(rng()) {
-}
-
+          perlinOre(rng())
+          {}

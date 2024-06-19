@@ -102,8 +102,7 @@ public:
 private:
     void GenerateTerrain(int i, int j);
     void GenerateVegetation(int i, int j);
-    void GenerateOres(int i, int j);
-    void GenerateSpecificOre(int i, int j, float frequency, float threshold, int minHeight, int topHeight, int blockType);
+    Block GenerateOreOrRock(int globalX, int globalY, int globalZ);
     void LayBedrock(int i, int j);
 
     float GetHeightValue(int x, int z);
@@ -120,6 +119,16 @@ private:
     siv::PerlinNoise perlinHeight;
     siv::PerlinNoise perlinBiome;
     siv::PerlinNoise perlinOre;
+
+    struct oreProperties {
+        int blockType;
+        float frequency;
+        float threshold;
+        int minHeight;
+        int topHeight;
+    };
+
+    static std::vector<oreProperties> ores;
 
     std::vector<std::pair<int, int>> cordsToUpdate = {};
 
