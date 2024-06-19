@@ -62,7 +62,7 @@ or
 
 Green magic button in your IDE e.g. CLion.
 
-But for multiplatform development, I recommend using the terminal. WSL should works fine.
+But for multiplatform development, I recommend using the terminal. WSL should work fine.
 
 ## Controls
 - <kbd>**Esc**</kbd> - Exit
@@ -171,7 +171,7 @@ But for multiplatform development, I recommend using the terminal. WSL should wo
 </table>
 
 
-## Unstandard libraries
+## Non-standard libraries
 
 - **GLFW**: Window creation and input handling
 - **GLAD**: OpenGL loader
@@ -189,6 +189,16 @@ But for multiplatform development, I recommend using the terminal. WSL should wo
 ![image](screenshots/s35.png)
 ![image](screenshots/s40.png)
 ![image](screenshots/s50.png)
+![image](screenshots/s60.png)
+
+##
+
+# Final results
+![image](screenshots/final1.jpeg)
+![image](screenshots/final2.jpeg)
+![image](screenshots/final3.jpeg)
+![image](screenshots/final4.jpeg)
+![image](screenshots/house.jpg)
 
 ##
 
