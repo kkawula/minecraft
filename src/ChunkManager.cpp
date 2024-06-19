@@ -109,7 +109,6 @@ void ChunkManager::startChunkGenerationDeamon() {
             {
                 std::lock_guard<std::mutex> lock(queueUpdateMutex);
                 if (chunksToUpdate.empty()) {
-                    std::this_thread::sleep_for(std::chrono::milliseconds (50));
                     continue;
                 }
                 chunk = chunksToUpdate.front();
@@ -126,8 +125,7 @@ void ChunkManager::startChunkGenerationDeamon() {
                 std::lock_guard<std::mutex> lock(queueRenderMutex);
                 chunksToRender.emplace(i, j);
             }
-            std::this_thread::sleep_for(std::chrono::milliseconds (5));
-
+            std::this_thread::sleep_for(std::chrono::milliseconds (1));
         }
     });
 }

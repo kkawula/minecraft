@@ -109,9 +109,31 @@ void Player::handleMouseScroll(Camera &camera, GLfloat yOffset)
 
 void Player::keyboardInput(Keyboard &keyboard, Camera &camera, World &world)
 {
+    if (isEnteringBlockID) {
+        for (int key = GLFW_KEY_0; key <= GLFW_KEY_9; ++key) {
+            if (keyboard.isKeyPressed(key)) {
+                enteredBlockID += static_cast<char>('0' + (key - GLFW_KEY_0));
+            }
+        }
+        if (keyboard.isKeyPressed(GLFW_KEY_ENTER)) {
+            if (!enteredBlockID.empty()) {
+                blockID = std::max(std::stoi(enteredBlockID) % Block::blockTypesAmount, 1);
+            }
+            enteredBlockID.clear();
+            isEnteringBlockID = false;
+        }
+        return;
+    }
+
     glm::vec3 front = camera.getFront();
     glm::vec3 right = camera.getRight();
     glm::vec3 worldUp = camera.getWorldUp();
+
+    if (keyboard.isKeyPressed(GLFW_KEY_SLASH)) {
+        isEnteringBlockID = true;
+        enteredBlockID.clear();
+        return;
+    }
 
     if(keyboard.isKeyPressed(GLFW_KEY_LEFT_ALT))
     {
@@ -200,7 +222,8 @@ void Player::dig(World &world, Camera &camera)
 
         if(block.GetType() != Block::AIR && block.GetType() != Block::WATER)
         {
-            Block newBlock = Block(Block::AIR, false, true, false);
+            if(block.GetType() == Block::BEDROCK) break;
+            Block newBlock = Block(Block::AIR);
             world.setBlock(x, y, z, newBlock);
             world.addCordsToUpdate(x, z);
             break;
@@ -208,7 +231,7 @@ void Player::dig(World &world, Camera &camera)
     }
 }
 
-glm::vec3 getPlacedBlockPosition(GLfloat x, GLfloat y, GLfloat z);
+glm::vec3 getPlacedBlockPosition(GLfloat x, GLfloat y, GLfloat z, glm::vec3 rayStep);
 
 void Player::placeBlock(World &world, Camera &camera)
 {
@@ -223,11 +246,12 @@ void Player::placeBlock(World &world, Camera &camera)
 
         if(block.GetType() != Block::AIR && block.GetType() != Block::WATER)
         {
-            glm::vec3 positionCorrection = getPlacedBlockPosition(position.x + rayPos.x, position.y + .5 + rayPos.y, position.z + rayPos.z);
+            glm::vec3 positionCorrection = getPlacedBlockPosition(position.x + rayPos.x, position.y + .5 + rayPos.y, position.z + rayPos.z, rayStep);
             glm::vec3 newBlockPosition=  {x + positionCorrection.x, y + positionCorrection.y, z + positionCorrection.z};
-            if(!isCollidingWithPlayer(newBlockPosition))
+            int blockTypeAtPosition = world.getBlock(newBlockPosition.x, newBlockPosition.y, newBlockPosition.z).GetType();
+            if(!isCollidingWithPlayer(newBlockPosition) && (blockTypeAtPosition == Block::AIR || blockTypeAtPosition == Block::WATER))
             {
-                Block newBlock = Block(Block::GRASS, true, false, true);
+                auto newBlock = Block(this->blockID);
                 world.setBlock(newBlockPosition.x, newBlockPosition.y, newBlockPosition.z, newBlock);
                 world.addCordsToUpdate(newBlockPosition.x, newBlockPosition.z);
             }
@@ -238,7 +262,7 @@ void Player::placeBlock(World &world, Camera &camera)
 
 bool Player::isCollidingWithPlayer(const glm::vec3 &blockPosition) {
     glm::vec3 playerMinCorner = position - box.dimensions;
-    glm::vec3 playerMaxCorner = position + glm::vec3{box.dimensions.x, 0.5, box.dimensions.z};
+    glm::vec3 playerMaxCorner = position + glm::vec3{box.dimensions.x, 0.7, box.dimensions.z};
 
     glm::vec3 blockMinCorner = blockPosition;
     glm::vec3 blockMaxCorner = blockPosition + glm::vec3{1,1,1};
@@ -251,7 +275,7 @@ bool Player::isCollidingWithPlayer(const glm::vec3 &blockPosition) {
 }
 
 
-glm::vec3 getPlacedBlockPosition(GLfloat x, GLfloat y, GLfloat z)
+glm::vec3 getPlacedBlockPosition(GLfloat x, GLfloat y, GLfloat z, glm::vec3 rayStep)
 {
     double intpart;
     x = std::modf(x, &intpart);
@@ -262,13 +286,30 @@ glm::vec3 getPlacedBlockPosition(GLfloat x, GLfloat y, GLfloat z)
     if(z < 0) z++;
 
     int vectors[6][3] = {
-            {-1, 0, 0}, // Left face
-            {1, 0, 0}, // Right face
-            {0, -1, 0}, // Bottom face
-            {0, 1, 0}, // Top face
-            {0, 0, -1}, // Back face
-            {0, 0, 1}  // Front face
+            {-1, 0, 0},  // Left face
+            {1, 0, 0},   // Right face
+            {0, -1, 0},  // Bottom face
+            {0, 1, 0},   // Top face
+            {0, 0, -1},  // Back face
+            {0, 0, 1}    // Front face
     };
+
+    GLfloat prevX = x - rayStep.x;
+    GLfloat prevY = y - rayStep.y;
+    GLfloat prevZ = z - rayStep.z;
+
+    if (std::abs(prevX - floor(prevX)) < 0.001) {
+        if (rayStep.x > 0) return glm::vec3(-1, 0, 0);  // Left face
+        if (rayStep.x < 0) return glm::vec3(1, 0, 0);   // Right face
+    }
+    if (std::abs(prevY - floor(prevY)) < 0.001) {
+        if (rayStep.y > 0) return glm::vec3(0, -1, 0);  // Bottom face
+        if (rayStep.y < 0) return glm::vec3(0, 1, 0);   // Top face
+    }
+    if (std::abs(prevZ - floor(prevZ)) < 0.001) {
+        if (rayStep.z > 0) return glm::vec3(0, 0, -1);  // Back face
+        if (rayStep.z < 0) return glm::vec3(0, 0, 1);   // Front face
+    }
 
     std::pair leftFace = std::make_pair(x, 0);
     std::pair rightFace = std::make_pair(1 - x, 1);
