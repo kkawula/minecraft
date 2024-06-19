@@ -135,7 +135,7 @@ void Player::keyboardInput(Keyboard &keyboard, Camera &camera, World &world)
         return;
     }
 
-    if(keyboard.isKeyPressed(GLFW_KEY_LEFT_ALT))
+    if(keyboard.isKeyPressed(GLFW_KEY_M))
     {
         isFlying = !isFlying;
         if(isFlying) velocity = glm::vec3(.0f);
