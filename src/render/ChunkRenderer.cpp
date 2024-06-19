@@ -14,7 +14,7 @@ void ChunkRenderer::Render(Camera& camera) {
     texture.Bind(0);
     glUniform1i(glGetUniformLocation(shader.Program, "ourTexture1"), 0);
 
-    glm::mat4 projection = glm::perspective(camera.GetZoom(), (GLfloat)config::WINDOW_WIDTH / (GLfloat)config::WINDOW_HEIGHT, 0.1f, 1000.0f);
+    glm::mat4 projection = glm::perspective(camera.GetZoom(), (GLfloat)16/9, 0.1f, 1000.0f);
     glm::mat4 view = camera.GetViewMatrix();
 
     GLint modelLoc = glGetUniformLocation(shader.Program, "model");
