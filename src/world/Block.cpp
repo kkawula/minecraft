@@ -21,6 +21,8 @@ std::unordered_map<int, std::array<int, 6>> Block::blockTextureIndices = {
         {Block::COAL_VEIN,      {51,51,51,51,51,51}},
         {Block::BEDROCK,        {53,53,53,53,53,53}},
         {Block::BRICK,          {54,54,54,54,54,54}},
+        {Block::OAK_PLANKS,     {18,18,18,18,18,18}},
+        {Block::BIRCH_PLANKS,   {22,22,22,22,22,22}},
 };
 
 std::unordered_map<int, Block::BlockProperties> Block::blockProperties = {
