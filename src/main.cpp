@@ -59,7 +59,7 @@ Player player(startingPosition);
 
 int main(int argc, char *argv[])
 {
-    Window window(config::WINDOW_WIDTH, config::WINDOW_HEIGHT, "Minecraft");
+    Window window("Minecraft");
     FileSystem::initialize(argv[0]);
 
     // Set the required callback functions

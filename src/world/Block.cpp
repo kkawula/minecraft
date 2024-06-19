@@ -46,7 +46,9 @@ std::unordered_map<int, Block::BlockProperties> Block::blockProperties = {
         { EMERALD_VEIN, { true, false, true } },
         { COAL_VEIN, { true, false, true } },
         { BEDROCK, { true, false, true } },
-        { BRICK, { true, false, true } }
+        { BRICK, { true, false, true } },
+        { OAK_PLANKS, { true, false, true } },
+        { BIRCH_PLANKS, { true, false, true } }
 };
 
 std::array<int, 6> Block::GetTextureIndices(int blockType) {
