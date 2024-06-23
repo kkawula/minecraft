@@ -1,7 +1,12 @@
 # Minecraft clone in C++
-This is a simple graphics and game engine project, that implements something similar to minecraft.
+This is a simple game engine project, that implements something similar to minecraft.
 
 > #### **_Contributions are welcome!!_**
+### TODO
+- [ ] change the way of storing chunks, delete smart pointers from map
+- [ ] add rendering of missing blocks
+- [ ] add clouds rendering
+- [ ] improve water mesh generator
 
 ## Installation and Setup 
 
